@@ -34,6 +34,7 @@
 // functionality to a given base class.  SteerLibraryMixin assumes its base
 // class supports the AbstractVehicle interface.
 //
+// 10-04-04 bk:  put everything into the OpenSteer namespace
 // 02-06-03 cwr: create mixin (from "SteerMass")
 // 06-03-02 cwr: removed TS dependencies
 // 11-21-01 cwr: created
@@ -52,267 +53,272 @@
 #include "Utilities.h"
 
 
-// ----------------------------------------------------------------------------
+
+namespace OpenSteer {
+
+    // ----------------------------------------------------------------------------
 
 
-template <class Super>
-class SteerLibraryMixin : public Super
-{
-public:
-
-    // Constructor: initializes state
-    SteerLibraryMixin ()
+    template <class Super>
+    class SteerLibraryMixin : public Super
     {
-        // set inital state
-        reset ();
-    }
+    public:
 
-    // reset state
-    void reset (void)
-    {
-        // initial state of wander behavior
-        WanderSide = 0;
-        WanderUp = 0;
+        // Constructor: initializes state
+        SteerLibraryMixin ()
+        {
+            // set inital state
+            reset ();
+        }
 
-        // default to non-gaudyPursuitAnnotation
-        gaudyPursuitAnnotation = false;
-    }
+        // reset state
+        void reset (void)
+        {
+            // initial state of wander behavior
+            WanderSide = 0;
+            WanderUp = 0;
 
-    // -------------------------------------------------- steering behaviors
+            // default to non-gaudyPursuitAnnotation
+            gaudyPursuitAnnotation = false;
+        }
 
-    // Wander behavior
-    float WanderSide;
-    float WanderUp;
-    Vec3 steerForWander (float dt);
+        // -------------------------------------------------- steering behaviors
 
-    // Seek behavior
-    Vec3 steerForSeek (const Vec3& target);
+        // Wander behavior
+        float WanderSide;
+        float WanderUp;
+        Vec3 steerForWander (float dt);
 
-    // Flee behavior
-    Vec3 steerForFlee (const Vec3& target);
+        // Seek behavior
+        Vec3 steerForSeek (const Vec3& target);
 
-    // xxx proposed, experimental new seek/flee [cwr 9-16-02]
-    Vec3 xxxsteerForFlee (const Vec3& target);
-    Vec3 xxxsteerForSeek (const Vec3& target);
+        // Flee behavior
+        Vec3 steerForFlee (const Vec3& target);
 
-    // Path Following behaviors
-    Vec3 steerToFollowPath (const int direction,
-                            const float predictionTime,
-                            Pathway& path);
-    Vec3 steerToStayOnPath (const float predictionTime, Pathway& path);
+        // xxx proposed, experimental new seek/flee [cwr 9-16-02]
+        Vec3 xxxsteerForFlee (const Vec3& target);
+        Vec3 xxxsteerForSeek (const Vec3& target);
 
-    // ------------------------------------------------------------------------
-    // Obstacle Avoidance behavior
-    //
-    // Returns a steering force to avoid a given obstacle.  The purely
-    // lateral steering force will turn our vehicle towards a silhouette edge
-    // of the obstacle.  Avoidance is required when (1) the obstacle
-    // intersects the vehicle's current path, (2) it is in front of the
-    // vehicle, and (3) is within minTimeToCollision seconds of travel at the
-    // vehicle's current velocity.  Returns a zero vector value (Vec3::zero)
-    // when no avoidance is required.
+        // Path Following behaviors
+        Vec3 steerToFollowPath (const int direction,
+                                const float predictionTime,
+                                Pathway& path);
+        Vec3 steerToStayOnPath (const float predictionTime, Pathway& path);
 
-
-    Vec3 steerToAvoidObstacle (const float minTimeToCollision,
-                               const Obstacle& obstacle);
-
-
-    // avoids all obstacles in an ObstacleGroup
-
-    Vec3 steerToAvoidObstacles (const float minTimeToCollision,
-                                const ObstacleGroup& obstacles);
+        // ------------------------------------------------------------------------
+        // Obstacle Avoidance behavior
+        //
+        // Returns a steering force to avoid a given obstacle.  The purely
+        // lateral steering force will turn our vehicle towards a silhouette edge
+        // of the obstacle.  Avoidance is required when (1) the obstacle
+        // intersects the vehicle's current path, (2) it is in front of the
+        // vehicle, and (3) is within minTimeToCollision seconds of travel at the
+        // vehicle's current velocity.  Returns a zero vector value (Vec3::zero)
+        // when no avoidance is required.
 
 
-    // ------------------------------------------------------------------------
-    // Unaligned collision avoidance behavior: avoid colliding with other
-    // nearby vehicles moving in unconstrained directions.  Determine which
-    // (if any) other other vehicle we would collide with first, then steers
-    // to avoid the site of that potential collision.  Returns a steering
-    // force vector, which is zero length if there is no impending collision.
+        Vec3 steerToAvoidObstacle (const float minTimeToCollision,
+                                   const Obstacle& obstacle);
 
 
-    Vec3 steerToAvoidNeighbors (const float minTimeToCollision,
-                                const AVGroup& others);
+        // avoids all obstacles in an ObstacleGroup
+
+        Vec3 steerToAvoidObstacles (const float minTimeToCollision,
+                                    const ObstacleGroup& obstacles);
 
 
-    // Given two vehicles, based on their current positions and velocities,
-    // determine the time until nearest approach
-    float predictNearestApproachTime (AbstractVehicle& other);
-
-    // Given the time until nearest approach (predictNearestApproachTime)
-    // determine position of each vehicle at that time, and the distance
-    // between them
-    float computeNearestApproachPositions (AbstractVehicle& other,
-                                           float time);
+        // ------------------------------------------------------------------------
+        // Unaligned collision avoidance behavior: avoid colliding with other
+        // nearby vehicles moving in unconstrained directions.  Determine which
+        // (if any) other other vehicle we would collide with first, then steers
+        // to avoid the site of that potential collision.  Returns a steering
+        // force vector, which is zero length if there is no impending collision.
 
 
-    /// XXX globals only for the sake of graphical annotation
-    Vec3 hisPositionAtNearestApproach;
-    Vec3 ourPositionAtNearestApproach;
+        Vec3 steerToAvoidNeighbors (const float minTimeToCollision,
+                                    const AVGroup& others);
 
 
-    // ------------------------------------------------------------------------
-    // avoidance of "close neighbors" -- used only by steerToAvoidNeighbors
-    //
-    // XXX  Does a hard steer away from any other agent who comes withing a
-    // XXX  critical distance.  Ideally this should be replaced with a call
-    // XXX  to steerForSeparation.
+        // Given two vehicles, based on their current positions and velocities,
+        // determine the time until nearest approach
+        float predictNearestApproachTime (AbstractVehicle& other);
+
+        // Given the time until nearest approach (predictNearestApproachTime)
+        // determine position of each vehicle at that time, and the distance
+        // between them
+        float computeNearestApproachPositions (AbstractVehicle& other,
+                                               float time);
 
 
-    Vec3 steerToAvoidCloseNeighbors (const float minSeparationDistance,
-                                     const AVGroup& others);
+        /// XXX globals only for the sake of graphical annotation
+        Vec3 hisPositionAtNearestApproach;
+        Vec3 ourPositionAtNearestApproach;
 
 
-    // ------------------------------------------------------------------------
-    // used by boid behaviors
+        // ------------------------------------------------------------------------
+        // avoidance of "close neighbors" -- used only by steerToAvoidNeighbors
+        //
+        // XXX  Does a hard steer away from any other agent who comes withing a
+        // XXX  critical distance.  Ideally this should be replaced with a call
+        // XXX  to steerForSeparation.
 
 
-    bool inBoidNeighborhood (const AbstractVehicle& other,
-                             const float minDistance,
-                             const float maxDistance,
-                             const float cosMaxAngle);
+        Vec3 steerToAvoidCloseNeighbors (const float minSeparationDistance,
+                                         const AVGroup& others);
 
 
-    // ------------------------------------------------------------------------
-    // Separation behavior -- determines the direction away from nearby boids
+        // ------------------------------------------------------------------------
+        // used by boid behaviors
 
 
-    Vec3 steerForSeparation (const float maxDistance,
-                             const float cosMaxAngle,
-                             const AVGroup& flock);
+        bool inBoidNeighborhood (const AbstractVehicle& other,
+                                 const float minDistance,
+                                 const float maxDistance,
+                                 const float cosMaxAngle);
 
 
-    // ------------------------------------------------------------------------
-    // Alignment behavior
-
-    Vec3 steerForAlignment (const float maxDistance,
-                            const float cosMaxAngle,
-                            const AVGroup& flock);
+        // ------------------------------------------------------------------------
+        // Separation behavior -- determines the direction away from nearby boids
 
 
-    // ------------------------------------------------------------------------
-    // Cohesion behavior
+        Vec3 steerForSeparation (const float maxDistance,
+                                 const float cosMaxAngle,
+                                 const AVGroup& flock);
 
 
-    Vec3 steerForCohesion (const float maxDistance,
-                           const float cosMaxAngle,
-                           const AVGroup& flock);
+        // ------------------------------------------------------------------------
+        // Alignment behavior
+
+        Vec3 steerForAlignment (const float maxDistance,
+                                const float cosMaxAngle,
+                                const AVGroup& flock);
 
 
-    // ------------------------------------------------------------------------
-    // pursuit of another vehicle (& version with ceiling on prediction time)
+        // ------------------------------------------------------------------------
+        // Cohesion behavior
 
 
-    Vec3 steerForPursuit (const AbstractVehicle& quarry);
-
-    Vec3 steerForPursuit (const AbstractVehicle& quarry,
-                          const float maxPredictionTime);
-
-    // for annotation
-    bool gaudyPursuitAnnotation;
+        Vec3 steerForCohesion (const float maxDistance,
+                               const float cosMaxAngle,
+                               const AVGroup& flock);
 
 
-    // ------------------------------------------------------------------------
-    // evasion of another vehicle
+        // ------------------------------------------------------------------------
+        // pursuit of another vehicle (& version with ceiling on prediction time)
 
 
-    Vec3 steerForEvasion (const AbstractVehicle& menace,
-                          const float maxPredictionTime);
+        Vec3 steerForPursuit (const AbstractVehicle& quarry);
+
+        Vec3 steerForPursuit (const AbstractVehicle& quarry,
+                              const float maxPredictionTime);
+
+        // for annotation
+        bool gaudyPursuitAnnotation;
 
 
-    // ------------------------------------------------------------------------
-    // tries to maintain a given speed, returns a maxForce-clipped steering
-    // force along the forward/backward axis
+        // ------------------------------------------------------------------------
+        // evasion of another vehicle
 
 
-    Vec3 steerForTargetSpeed (const float targetSpeed);
+        Vec3 steerForEvasion (const AbstractVehicle& menace,
+                              const float maxPredictionTime);
 
 
-    // ----------------------------------------------------------- utilities
-    // XXX these belong somewhere besides the steering library
-    // XXX above AbstractVehicle, below SimpleVehicle
-    // XXX ("utility vehicle"?)
+        // ------------------------------------------------------------------------
+        // tries to maintain a given speed, returns a maxForce-clipped steering
+        // force along the forward/backward axis
 
-    // xxx cwr experimental 9-9-02 -- names OK?
-    bool isAhead (const Vec3& target) const {return isAhead (target, 0.707f);};
-    bool isAside (const Vec3& target) const {return isAside (target, 0.707f);};
-    bool isBehind (const Vec3& target) const {return isBehind (target, -0.707f);};
 
-    bool isAhead (const Vec3& target, float cosThreshold) const
-    {
-        const Vec3 targetDirection = (target - position ()).normalize ();
-        return forward().dot(targetDirection) > cosThreshold;
+        Vec3 steerForTargetSpeed (const float targetSpeed);
+
+
+        // ----------------------------------------------------------- utilities
+        // XXX these belong somewhere besides the steering library
+        // XXX above AbstractVehicle, below SimpleVehicle
+        // XXX ("utility vehicle"?)
+
+        // xxx cwr experimental 9-9-02 -- names OK?
+        bool isAhead (const Vec3& target) const {return isAhead (target, 0.707f);};
+        bool isAside (const Vec3& target) const {return isAside (target, 0.707f);};
+        bool isBehind (const Vec3& target) const {return isBehind (target, -0.707f);};
+
+        bool isAhead (const Vec3& target, float cosThreshold) const
+        {
+            const Vec3 targetDirection = (target - position ()).normalize ();
+            return forward().dot(targetDirection) > cosThreshold;
+        };
+        bool isAside (const Vec3& target, float cosThreshold) const
+        {
+            const Vec3 targetDirection = (target - position ()).normalize ();
+            const float dp = forward().dot(targetDirection);
+            return (dp < cosThreshold) && (dp > -cosThreshold);
+        };
+        bool isBehind (const Vec3& target, float cosThreshold) const
+        {
+            const Vec3 targetDirection = (target - position()).normalize ();
+            return forward().dot(targetDirection) < cosThreshold;
+        };
+
+
+        // xxx cwr 9-6-02 temporary to support old code
+        typedef struct {
+            int intersect;
+            float distance;
+            Vec3 surfacePoint;
+            Vec3 surfaceNormal;
+            SphericalObstacle* obstacle;
+        } PathIntersection;
+
+        // xxx experiment cwr 9-6-02
+        void findNextIntersectionWithSphere (SphericalObstacle& obs,
+                                             PathIntersection& intersection);
+
+
+        // ------------------------------------------------ graphical annotation
+        // (parameter names commented out to prevent compiler warning from "-W")
+
+
+        // called when steerToAvoidObstacles decides steering is required
+        // (default action is to do nothing, layered classes can overload it)
+        virtual void annotateAvoidObstacle (const float /*minDistanceToCollision*/)
+        {
+        }
+
+        // called when steerToFollowPath decides steering is required
+        // (default action is to do nothing, layered classes can overload it)
+        virtual void annotatePathFollowing (const Vec3& /*future*/,
+                                            const Vec3& /*onPath*/,
+                                            const Vec3& /*target*/,
+                                            const float /*outside*/)
+        {
+        }
+
+        // called when steerToAvoidCloseNeighbors decides steering is required
+        // (default action is to do nothing, layered classes can overload it)
+        virtual void annotateAvoidCloseNeighbor (const AbstractVehicle& /*other*/,
+                                                 const float /*additionalDistance*/)
+        {
+        }
+
+        // called when steerToAvoidNeighbors decides steering is required
+        // (default action is to do nothing, layered classes can overload it)
+        virtual void annotateAvoidNeighbor (const AbstractVehicle& /*threat*/,
+                                            const float /*steer*/,
+                                            const Vec3& /*ourFuture*/,
+                                            const Vec3& /*threatFuture*/)
+        {
+        }
     };
-    bool isAside (const Vec3& target, float cosThreshold) const
-    {
-        const Vec3 targetDirection = (target - position ()).normalize ();
-        const float dp = forward().dot(targetDirection);
-        return (dp < cosThreshold) && (dp > -cosThreshold);
-    };
-    bool isBehind (const Vec3& target, float cosThreshold) const
-    {
-        const Vec3 targetDirection = (target - position()).normalize ();
-        return forward().dot(targetDirection) < cosThreshold;
-    };
 
-
-    // xxx cwr 9-6-02 temporary to support old code
-    typedef struct {
-        int intersect;
-        float distance;
-        Vec3 surfacePoint;
-        Vec3 surfaceNormal;
-        SphericalObstacle* obstacle;
-    } PathIntersection;
-
-    // xxx experiment cwr 9-6-02
-    void findNextIntersectionWithSphere (SphericalObstacle& obs,
-                                         PathIntersection& intersection);
-
-
-    // ------------------------------------------------ graphical annotation
-    // (parameter names commented out to prevent compiler warning from "-W")
-
-
-    // called when steerToAvoidObstacles decides steering is required
-    // (default action is to do nothing, layered classes can overload it)
-    virtual void annotateAvoidObstacle (const float /*minDistanceToCollision*/)
-    {
-    }
-
-    // called when steerToFollowPath decides steering is required
-    // (default action is to do nothing, layered classes can overload it)
-    virtual void annotatePathFollowing (const Vec3& /*future*/,
-                                        const Vec3& /*onPath*/,
-                                        const Vec3& /*target*/,
-                                        const float /*outside*/)
-    {
-    }
-
-    // called when steerToAvoidCloseNeighbors decides steering is required
-    // (default action is to do nothing, layered classes can overload it)
-    virtual void annotateAvoidCloseNeighbor (const AbstractVehicle& /*other*/,
-                                             const float /*additionalDistance*/)
-    {
-    }
-
-    // called when steerToAvoidNeighbors decides steering is required
-    // (default action is to do nothing, layered classes can overload it)
-    virtual void annotateAvoidNeighbor (const AbstractVehicle& /*threat*/,
-                                        const float /*steer*/,
-                                        const Vec3& /*ourFuture*/,
-                                        const Vec3& /*threatFuture*/)
-    {
-    }
-};
-
+    
+} // namespace OpenSteer
 
 // ----------------------------------------------------------------------------
 
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 steerForWander (float dt)
 {
     // random walk WanderSide and WanderUp between -1 and +1
@@ -330,8 +336,8 @@ steerForWander (float dt)
 
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 steerForSeek (const Vec3& target)
 {
     const Vec3 desiredVelocity = target - position();
@@ -344,8 +350,8 @@ steerForSeek (const Vec3& target)
 
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 steerForFlee (const Vec3& target)
 {
     const Vec3 desiredVelocity = position - target;
@@ -358,8 +364,8 @@ steerForFlee (const Vec3& target)
 
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 xxxsteerForFlee (const Vec3& target)
 {
 //  const Vec3 offset = position - target;
@@ -370,8 +376,8 @@ xxxsteerForFlee (const Vec3& target)
 
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 xxxsteerForSeek (const Vec3& target)
 {
 //  const Vec3 offset = target - position;
@@ -386,8 +392,8 @@ xxxsteerForSeek (const Vec3& target)
 
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 steerToStayOnPath (const float predictionTime, Pathway& path)
 {
     // predict our future position
@@ -418,8 +424,8 @@ steerToStayOnPath (const float predictionTime, Pathway& path)
 
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 steerToFollowPath (const int direction,
                    const float predictionTime,
                    Pathway& path)
@@ -497,8 +503,8 @@ steerToFollowPath (const int direction,
 // XXX to avoid a non-grouped obstacle)
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 steerToAvoidObstacle (const float minTimeToCollision,
                       const Obstacle& obstacle)
 {
@@ -518,8 +524,8 @@ steerToAvoidObstacle (const float minTimeToCollision,
 // XXX like the older steerToAvoidObstacle does/did.  It needs to be fixed
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 steerToAvoidObstacles (const float minTimeToCollision,
                        const ObstacleGroup& obstacles)
 {
@@ -575,8 +581,8 @@ steerToAvoidObstacles (const float minTimeToCollision,
 
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 steerToAvoidNeighbors (const float minTimeToCollision,
                        const AVGroup& others)
 {
@@ -684,7 +690,7 @@ steerToAvoidNeighbors (const float minTimeToCollision,
 
 template<class Super>
 float
-SteerLibraryMixin<Super>::
+OpenSteer::SteerLibraryMixin<Super>::
 predictNearestApproachTime (AbstractVehicle& other)
 {
     // imagine we are at the origin with no velocity,
@@ -722,7 +728,7 @@ predictNearestApproachTime (AbstractVehicle& other)
 
 template<class Super>
 float
-SteerLibraryMixin<Super>::
+OpenSteer::SteerLibraryMixin<Super>::
 computeNearestApproachPositions (AbstractVehicle& other,
                                  float time)
 {
@@ -750,8 +756,8 @@ computeNearestApproachPositions (AbstractVehicle& other,
 
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 steerToAvoidCloseNeighbors (const float minSeparationDistance,
                             const AVGroup& others)
 {
@@ -785,7 +791,7 @@ steerToAvoidCloseNeighbors (const float minSeparationDistance,
 
 template<class Super>
 bool
-SteerLibraryMixin<Super>::
+OpenSteer::SteerLibraryMixin<Super>::
 inBoidNeighborhood (const AbstractVehicle& other,
                     const float minDistance,
                     const float maxDistance,
@@ -829,8 +835,8 @@ inBoidNeighborhood (const AbstractVehicle& other,
 
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 steerForSeparation (const float maxDistance,
                     const float cosMaxAngle,
                     const AVGroup& flock)
@@ -868,8 +874,8 @@ steerForSeparation (const float maxDistance,
 
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 steerForAlignment (const float maxDistance,
                    const float cosMaxAngle,
                    const AVGroup& flock)
@@ -905,8 +911,8 @@ steerForAlignment (const float maxDistance,
 
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 steerForCohesion (const float maxDistance,
                   const float cosMaxAngle,
                   const AVGroup& flock)
@@ -941,8 +947,8 @@ steerForCohesion (const float maxDistance,
 
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 steerForPursuit (const AbstractVehicle& quarry)
 {
     return steerForPursuit (quarry, FLT_MAX);
@@ -950,8 +956,8 @@ steerForPursuit (const AbstractVehicle& quarry)
 
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 steerForPursuit (const AbstractVehicle& quarry,
                  const float maxPredictionTime)
 {
@@ -1055,8 +1061,8 @@ steerForPursuit (const AbstractVehicle& quarry,
 
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 steerForEvasion (const AbstractVehicle& menace,
                  const float maxPredictionTime)
 {
@@ -1081,8 +1087,8 @@ steerForEvasion (const AbstractVehicle& menace,
 
 
 template<class Super>
-Vec3
-SteerLibraryMixin<Super>::
+OpenSteer::Vec3
+OpenSteer::SteerLibraryMixin<Super>::
 steerForTargetSpeed (const float targetSpeed)
 {
     const float mf = maxForce ();
@@ -1097,7 +1103,7 @@ steerForTargetSpeed (const float targetSpeed)
 
 template<class Super>
 void
-SteerLibraryMixin<Super>::
+OpenSteer::SteerLibraryMixin<Super>::
 findNextIntersectionWithSphere (SphericalObstacle& obs,
                                 PathIntersection& intersection)
 {

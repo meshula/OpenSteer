@@ -41,6 +41,7 @@
 // to match the interface used by OpenSteer to the interface provided by the
 // preexisting 3d vector type.
 //
+// 10-04-04 bk:  put everything into the OpenSteer namespace
 // 03-26-03 cwr: created to replace for Hiranabe-san's execellent but larger
 //               vecmath package (http://objectclub.esm.co.jp/vecmath/)
 //
@@ -55,17 +56,16 @@
 // names for frequently used vector constants
 
 
-const Vec3 Vec3::zero    (0, 0, 0);
-const Vec3 Vec3::up      (0, 1, 0);
-const Vec3 Vec3::forward (0, 0, 1);
+const OpenSteer::Vec3 OpenSteer::Vec3::zero    (0, 0, 0);
+const OpenSteer::Vec3 OpenSteer::Vec3::up      (0, 1, 0);
+const OpenSteer::Vec3 OpenSteer::Vec3::forward (0, 0, 1);
 
 // XXX  This should be unified with LocalSpace::rightHanded, but I don't want
 // XXX  Vec3 to be based on LocalSpace which is based on Vec3.  Perhaps there
 // XXX  should be a tiny chirality.h header to define a const?  That could
 // XXX  then be included by both Vec3.h and LocalSpace.h
 
-const Vec3 Vec3::side    (-1, 0, 0);
-
+const OpenSteer::Vec3 OpenSteer::Vec3::side    (-1, 0, 0);
 
 // ----------------------------------------------------------------------------
 // Returns a position randomly distributed inside a sphere of unit radius
@@ -73,7 +73,8 @@ const Vec3 Vec3::side    (-1, 0, 0);
 // between 0 and 1
 
 
-Vec3 RandomVectorInUnitRadiusSphere (void)
+OpenSteer::Vec3 
+OpenSteer::RandomVectorInUnitRadiusSphere (void)
 {
     Vec3 v;
 
@@ -95,7 +96,8 @@ Vec3 RandomVectorInUnitRadiusSphere (void)
 // random and length will range between 0 and 1
 
 
-Vec3 randomVectorOnUnitRadiusXZDisk (void)
+OpenSteer::Vec3 
+OpenSteer::randomVectorOnUnitRadiusXZDisk (void)
 {
     Vec3 v;
 
@@ -119,10 +121,11 @@ Vec3 randomVectorOnUnitRadiusXZDisk (void)
 // cone.  Called by vecLimitMaxDeviationAngle and vecLimitMinDeviationAngle.
 
 
-Vec3 vecLimitDeviationAngleUtility (const bool insideOrOutside,
-                                    const Vec3& source,
-                                    const float cosineOfConeAngle,
-                                    const Vec3& basis)
+OpenSteer::Vec3 
+OpenSteer::vecLimitDeviationAngleUtility (const bool insideOrOutside,
+                                          const Vec3& source,
+                                          const float cosineOfConeAngle,
+                                          const Vec3& basis)
 {
     // immediately return zero length input vectors
     float sourceLength = source.length();
@@ -170,7 +173,8 @@ Vec3 vecLimitDeviationAngleUtility (const bool insideOrOutside,
 // remain within 20% of input length).
 
 
-Vec3 findPerpendicularIn3d (const Vec3& direction)
+OpenSteer::Vec3 
+OpenSteer::findPerpendicularIn3d (const Vec3& direction)
 {
     // to be filled in:
     Vec3 quasiPerp;  // a direction which is "almost perpendicular"

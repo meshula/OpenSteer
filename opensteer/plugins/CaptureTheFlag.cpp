@@ -57,6 +57,9 @@
 #include "OpenSteer/OpenSteerDemo.h"
 
 
+    
+    using namespace OpenSteer;
+
 // ----------------------------------------------------------------------------
 // short names for STL vectors (iterators) of SphericalObstacle pointers
 
@@ -979,3 +982,5 @@ CtfPlugIn gCtfPlugIn;
 
 
 // ----------------------------------------------------------------------------
+
+

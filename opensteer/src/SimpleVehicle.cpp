@@ -53,6 +53,7 @@
 // template-based mixin classes.  The intent of this design is to allow you to
 // reuse OpenSteer code with your application's own base class.
 //
+// 10-04-04 bk:  put everything into the OpenSteer namespace
 // 01-29-03 cwr: created
 //
 //
@@ -68,14 +69,14 @@
 // serial numbers  (XXX should this be part of a "OpenSteerDemo vehicle mixin"?)
 
 
-int SimpleVehicle::serialNumberCounter = 0;
+int OpenSteer::SimpleVehicle::serialNumberCounter = 0;
 
 
 // ----------------------------------------------------------------------------
 // constructor
 
 
-SimpleVehicle::SimpleVehicle (void)
+OpenSteer::SimpleVehicle::SimpleVehicle (void)
 {
     // set inital state
     reset ();
@@ -89,7 +90,7 @@ SimpleVehicle::SimpleVehicle (void)
 // destructor
 
 
-SimpleVehicle::~SimpleVehicle (void)
+OpenSteer::SimpleVehicle::~SimpleVehicle (void)
 {
 }
 
@@ -106,8 +107,9 @@ SimpleVehicle::~SimpleVehicle (void)
 // parameter names commented out to prevent compiler warning from "-W"
 
 
-Vec3 SimpleVehicle::adjustRawSteeringForce (const Vec3& force,
-                                            const float /* deltaTime */)
+OpenSteer::Vec3 
+OpenSteer::SimpleVehicle::adjustRawSteeringForce (const Vec3& force,
+                                                  const float /* deltaTime */)
 {
     const float maxAdjustedSpeed = 0.2f * maxSpeed ();
 
@@ -144,7 +146,8 @@ Vec3 SimpleVehicle::adjustRawSteeringForce (const Vec3& force,
 // used by both applySteeringForce and applyBrakingForce?
 
 
-void SimpleVehicle::applyBrakingForce (const float rate, const float deltaTime)
+void 
+OpenSteer::SimpleVehicle::applyBrakingForce (const float rate, const float deltaTime)
 {
     const float rawBraking = speed () * rate;
     const float clipBraking = ((rawBraking < maxForce ()) ?
@@ -160,8 +163,9 @@ void SimpleVehicle::applyBrakingForce (const float rate, const float deltaTime)
 // adjusting our orientation to maintain velocity-alignment.
 
 
-void SimpleVehicle::applySteeringForce (const Vec3& force,
-                                        const float elapsedTime)
+void 
+OpenSteer::SimpleVehicle::applySteeringForce (const Vec3& force,
+                                              const float elapsedTime)
 {
 
     const Vec3 adjustedForce = adjustRawSteeringForce (force, elapsedTime);
@@ -216,8 +220,9 @@ void SimpleVehicle::applySteeringForce (const Vec3& force,
 // parameter names commented out to prevent compiler warning from "-W"
 
 
-void SimpleVehicle::regenerateLocalSpace (const Vec3& newVelocity,
-                                          const float /* elapsedTime */)
+void 
+OpenSteer::SimpleVehicle::regenerateLocalSpace (const Vec3& newVelocity,
+                                                const float /* elapsedTime */)
 {
     // adjust orthonormal basis vectors to be aligned with new velocity
     if (speed() > 0) regenerateOrthonormalBasisUF (newVelocity / speed());
@@ -232,8 +237,9 @@ void SimpleVehicle::regenerateLocalSpace (const Vec3& newVelocity,
 // XXX experimental cwr 6-5-03
 
 
-void SimpleVehicle::regenerateLocalSpaceForBanking (const Vec3& newVelocity,
-                                                    const float elapsedTime)
+void 
+OpenSteer::SimpleVehicle::regenerateLocalSpaceForBanking (const Vec3& newVelocity,
+                                                          const float elapsedTime)
 {
     // the length of this global-upward-pointing vector controls the vehicle's
     // tendency to right itself as it is rolled over from turning acceleration
@@ -266,7 +272,8 @@ void SimpleVehicle::regenerateLocalSpaceForBanking (const Vec3& newVelocity,
 // measure path curvature (1/turning-radius), maintain smoothed version
 
 
-void SimpleVehicle::measurePathCurvature (const float elapsedTime)
+void 
+OpenSteer::SimpleVehicle::measurePathCurvature (const float elapsedTime)
 {
     if (elapsedTime > 0)
     {
@@ -288,8 +295,9 @@ void SimpleVehicle::measurePathCurvature (const float elapsedTime)
 // draw lines from vehicle's position showing its velocity and acceleration
 
 
-void SimpleVehicle::annotationVelocityAcceleration (float maxLengthA, 
-                                                    float maxLengthV)
+void 
+OpenSteer::SimpleVehicle::annotationVelocityAcceleration (float maxLengthA, 
+                                                          float maxLengthV)
 {
     const float desat = 0.4f;
     const float aScale = maxLengthA / maxForce ();
@@ -313,7 +321,8 @@ void SimpleVehicle::annotationVelocityAcceleration (float maxLengthA,
 // XXX move to a vehicle utility mixin?
 
 
-Vec3 SimpleVehicle::predictFuturePosition (const float predictionTime) const
+OpenSteer::Vec3 
+OpenSteer::SimpleVehicle::predictFuturePosition (const float predictionTime) const
 {
     return position() + (velocity() * predictionTime);
 }

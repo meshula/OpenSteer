@@ -32,6 +32,7 @@
 //
 // for use with obstacle avoidance
 //
+// 10-04-04 bk:  put everything into the OpenSteer namespace
 // 09-05-02 cwr: created
 //
 //
@@ -55,104 +56,109 @@
 #include "AbstractVehicle.h"
 
 
-// ----------------------------------------------------------------------------
-// Obstacle: a pure virtual base class for an abstract shape in space, to be
-// used with obstacle avoidance.
-//
-// XXX this should define generic methods for querying the obstacle shape
+namespace OpenSteer {
 
 
-class Obstacle
-{
-public:
-    enum seenFromState {outside, inside, both};
-    virtual seenFromState seenFrom (void) const = 0;
-    virtual void setSeenFrom (seenFromState s) = 0;
-
-    // XXX 4-23-03: Temporary work around (see comment above)
-    virtual Vec3 steerToAvoid (const AbstractVehicle& v,
-                               const float minTimeToCollision) const = 0;
-};
-
-
-// an STL vector of Obstacle pointers and an iterator for it:
-typedef std::vector<Obstacle*> ObstacleGroup;
-typedef ObstacleGroup::const_iterator ObstacleIterator;
-
-
-
-// ----------------------------------------------------------------------------
-// SphericalObstacle a simple concrete type of obstacle
-
-
-class SphericalObstacle : public Obstacle
-{
-public:
-    float radius;
-    Vec3 center;
-
-    // constructors
-    SphericalObstacle (float r, Vec3 c) : radius(r), center (c) {}
-    SphericalObstacle (void) : radius(1), center (Vec3::zero) {}
-
-    seenFromState seenFrom (void) const {return _seenFrom;}
-    void setSeenFrom (seenFromState s) {_seenFrom = s;}
-
-
-    // XXX 4-23-03: Temporary work around (see comment above)
+    // ----------------------------------------------------------------------------
+    // Obstacle: a pure virtual base class for an abstract shape in space, to be
+    // used with obstacle avoidance.
     //
-    // Checks for intersection of the given spherical obstacle with a
-    // volume of "likely future vehicle positions": a cylinder along the
-    // current path, extending minTimeToCollision seconds along the
-    // forward axis from current position.
-    //
-    // If they intersect, a collision is imminent and this function returns
-    // a steering force pointing laterally away from the obstacle's center.
-    //
-    // Returns a zero vector if the obstacle is outside the cylinder
-    //
-    // xxx couldn't this be made more compact using localizePosition?
+    // XXX this should define generic methods for querying the obstacle shape
 
-    Vec3 steerToAvoid (const AbstractVehicle& v,
-                       const float minTimeToCollision) const
+
+    class Obstacle
     {
-        // minimum distance to obstacle before avoidance is required
-        const float minDistanceToCollision = minTimeToCollision * v.speed();
-        const float minDistanceToCenter = minDistanceToCollision + radius;
+    public:
+        enum seenFromState {outside, inside, both};
+        virtual seenFromState seenFrom (void) const = 0;
+        virtual void setSeenFrom (seenFromState s) = 0;
 
-        // contact distance: sum of radii of obstacle and vehicle
-        const float totalRadius = radius + v.radius ();
+        // XXX 4-23-03: Temporary work around (see comment above)
+        virtual Vec3 steerToAvoid (const AbstractVehicle& v,
+                                   const float minTimeToCollision) const = 0;
+    };
 
-        // obstacle center relative to vehicle position
-        const Vec3 localOffset = center - v.position ();
 
-        // distance along vehicle's forward axis to obstacle's center
-        const float forwardComponent = localOffset.dot (v.forward ());
-        const Vec3 forwardOffset = forwardComponent * v.forward ();
+    // an STL vector of Obstacle pointers and an iterator for it:
+    typedef std::vector<Obstacle*> ObstacleGroup;
+    typedef ObstacleGroup::const_iterator ObstacleIterator;
 
-        // offset from forward axis to obstacle's center
-        const Vec3 offForwardOffset = localOffset - forwardOffset;
 
-        // test to see if sphere overlaps with obstacle-free corridor
-        const bool inCylinder = offForwardOffset.length() < totalRadius;
-        const bool nearby = forwardComponent < minDistanceToCenter;
-        const bool inFront = forwardComponent > 0;
 
-        // if all three conditions are met, steer away from sphere center
-        if (inCylinder && nearby && inFront)
+    // ----------------------------------------------------------------------------
+    // SphericalObstacle a simple concrete type of obstacle
+
+
+    class SphericalObstacle : public Obstacle
+    {
+    public:
+        float radius;
+        Vec3 center;
+
+        // constructors
+        SphericalObstacle (float r, Vec3 c) : radius(r), center (c) {}
+        SphericalObstacle (void) : radius(1), center (Vec3::zero) {}
+
+        seenFromState seenFrom (void) const {return _seenFrom;}
+        void setSeenFrom (seenFromState s) {_seenFrom = s;}
+
+
+        // XXX 4-23-03: Temporary work around (see comment above)
+        //
+        // Checks for intersection of the given spherical obstacle with a
+        // volume of "likely future vehicle positions": a cylinder along the
+        // current path, extending minTimeToCollision seconds along the
+        // forward axis from current position.
+        //
+        // If they intersect, a collision is imminent and this function returns
+        // a steering force pointing laterally away from the obstacle's center.
+        //
+        // Returns a zero vector if the obstacle is outside the cylinder
+        //
+        // xxx couldn't this be made more compact using localizePosition?
+
+        Vec3 steerToAvoid (const AbstractVehicle& v,
+                           const float minTimeToCollision) const
         {
-            return offForwardOffset * -1;
+            // minimum distance to obstacle before avoidance is required
+            const float minDistanceToCollision = minTimeToCollision * v.speed();
+            const float minDistanceToCenter = minDistanceToCollision + radius;
+
+            // contact distance: sum of radii of obstacle and vehicle
+            const float totalRadius = radius + v.radius ();
+
+            // obstacle center relative to vehicle position
+            const Vec3 localOffset = center - v.position ();
+
+            // distance along vehicle's forward axis to obstacle's center
+            const float forwardComponent = localOffset.dot (v.forward ());
+            const Vec3 forwardOffset = forwardComponent * v.forward ();
+
+            // offset from forward axis to obstacle's center
+            const Vec3 offForwardOffset = localOffset - forwardOffset;
+
+            // test to see if sphere overlaps with obstacle-free corridor
+            const bool inCylinder = offForwardOffset.length() < totalRadius;
+            const bool nearby = forwardComponent < minDistanceToCenter;
+            const bool inFront = forwardComponent > 0;
+
+            // if all three conditions are met, steer away from sphere center
+            if (inCylinder && nearby && inFront)
+            {
+                return offForwardOffset * -1;
+            }
+            else
+            {
+                return Vec3::zero;
+            }
         }
-        else
-        {
-            return Vec3::zero;
-        }
-    }
 
-private:
-    seenFromState _seenFrom;
-};
+    private:
+        seenFromState _seenFrom;
+    };
 
-
+} // namespace OpenSteer
+    
+    
 // ----------------------------------------------------------------------------
 #endif // OPENSTEER_OBSTACLE_H

@@ -40,6 +40,7 @@
 // Usage: allocate a clock, set its "paused" or "targetFPS" parameters,
 // then call updateGlobalSimulationClock before each simulation step.
 //
+// 10-04-04 bk:  put everything into the OpenSteer namespace
 // 09-24-02 cwr: major overhaul
 // 06-26-02 cwr: created
 //
@@ -69,7 +70,7 @@
 // Constructor
 
 
-Clock::Clock (void)
+OpenSteer::Clock::Clock (void)
 {
     // default is "real time, variable frame rate" and not paused
     setFixedFrameRate (0);
@@ -128,7 +129,8 @@ Clock::Clock (void)
 //     optionally: "wait" for next realtime frame boundary
 
 
-void Clock::update (void)
+void 
+OpenSteer::Clock::update (void)
 {
     // keep track of average frame rate and average usage percentage
     updateSmoothedRegisters ();
@@ -190,7 +192,8 @@ void Clock::update (void)
 // thread waits (eg usleep)) but they are likely to be unportable. xxx)
 
 
-void Clock::frameRateSync (void)
+void 
+OpenSteer::Clock::frameRateSync (void)
 {
     // when in real time fixed frame rate mode
     // (not animation mode and not variable frame rate mode)
@@ -216,7 +219,8 @@ void Clock::frameRateSync (void)
 // Used for OpenSteerDemo's "single step forward" and animation mode
 
 
-float Clock::advanceSimulationTimeOneFrame (void)
+float 
+OpenSteer::Clock::advanceSimulationTimeOneFrame (void)
 {
     // decide on what frame time is (use fixed rate, average for variable rate)
     const float fps = (getVariableFrameRateMode () ?
@@ -232,7 +236,8 @@ float Clock::advanceSimulationTimeOneFrame (void)
 }
 
 
-void Clock::advanceSimulationTime (const float seconds)
+void 
+OpenSteer::Clock::advanceSimulationTime (const float seconds)
 {
     if (seconds < 0)
         OpenSteerDemo::errorExit ("negative arg to advanceSimulationTime.");
@@ -240,6 +245,8 @@ void Clock::advanceSimulationTime (const float seconds)
         newAdvanceTime += seconds;
 }
 
+
+namespace {
 
 // ----------------------------------------------------------------------------
 // Returns the number of seconds of real time (represented as a float) since
@@ -249,14 +256,17 @@ void Clock::advanceSimulationTime (const float seconds)
 
 
 
-float clockErrorExit (void)
-{
-    OpenSteerDemo::errorExit ("Problem reading system clock.\n");
-    return 0.0f;
-}
+    float 
+    clockErrorExit (void)
+    {
+        OpenSteer::OpenSteerDemo::errorExit ("Problem reading system clock.\n");
+        return 0.0f;
+    }
 
+} // anonymous namespace
 
-float Clock::realTimeSinceFirstClockUpdate (void)
+float 
+OpenSteer::Clock::realTimeSinceFirstClockUpdate (void)
 #ifdef _WIN32
 {
     // get time from Windows

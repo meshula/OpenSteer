@@ -30,6 +30,7 @@
 //
 // OpenSteerDemo PlugIn class
 // 
+// 10-04-04 bk:  put everything into the OpenSteer namespace
 // 11-13-02 cwr: created 
 //
 //
@@ -45,16 +46,16 @@
 // XXX replace with STL utilities
 
 
-int PlugIn::itemsInRegistry = 0;
-const int PlugIn::totalSizeOfRegistry = 1000;
-PlugIn* PlugIn::registry [totalSizeOfRegistry];
+int OpenSteer::PlugIn::itemsInRegistry = 0;
+const int OpenSteer::PlugIn::totalSizeOfRegistry = 1000;
+OpenSteer::PlugIn* OpenSteer::PlugIn::registry [totalSizeOfRegistry];
 
 
 // ----------------------------------------------------------------------------
 // constructor
 
 
-PlugIn::PlugIn (void)
+OpenSteer::PlugIn::PlugIn (void)
 {
     // save this new instance in the registry
     addToRegistry ();
@@ -65,14 +66,15 @@ PlugIn::PlugIn (void)
 // destructor
 
 
-PlugIn::~PlugIn() {}
+OpenSteer::PlugIn::~PlugIn() {}
 
 
 // ----------------------------------------------------------------------------
 // returns pointer to the next PlugIn in "selection order"
 
 
-PlugIn* PlugIn::next (void)
+OpenSteer::PlugIn* 
+OpenSteer::PlugIn::next (void)
 {
     for (int i = 0; i < itemsInRegistry; i++)
     {
@@ -91,7 +93,8 @@ PlugIn* PlugIn::next (void)
 // returns NULL if none is found
 
 
-PlugIn* PlugIn::findByName (const char* string)
+OpenSteer::PlugIn* 
+OpenSteer::PlugIn::findByName (const char* string)
 {
     if (string)
     {
@@ -110,7 +113,8 @@ PlugIn* PlugIn::findByName (const char* string)
 // apply a given function to all PlugIns in the registry
 
 
-void PlugIn::applyToAll (plugInCallBackFunction f)
+void 
+OpenSteer::PlugIn::applyToAll (plugInCallBackFunction f)
 {
     for (int i = 0; i < itemsInRegistry; i++)
     {
@@ -125,7 +129,8 @@ void PlugIn::applyToAll (plugInCallBackFunction f)
 // XXX replace with STL utilities
 
 
-void PlugIn::sortBySelectionOrder (void)
+void 
+OpenSteer::PlugIn::sortBySelectionOrder (void)
 {
     // I know, I know, just what the world needs:
     // another inline shell sort implementation...
@@ -154,7 +159,8 @@ void PlugIn::sortBySelectionOrder (void)
 // returns pointer to default PlugIn (currently, first in registry)
 
 
-PlugIn* PlugIn::findDefault (void)
+OpenSteer::PlugIn* 
+OpenSteer::PlugIn::findDefault (void)
 {
     // return NULL if no PlugIns exist
     if (itemsInRegistry == 0) return NULL;
@@ -175,7 +181,8 @@ PlugIn* PlugIn::findDefault (void)
 // (for use by contractors)
 
 
-void PlugIn::addToRegistry (void)
+void 
+OpenSteer::PlugIn::addToRegistry (void)
 {
     // save this instance in the registry
     registry[itemsInRegistry++] = this;

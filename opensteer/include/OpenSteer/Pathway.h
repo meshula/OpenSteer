@@ -30,6 +30,7 @@
 //
 // Pathway and PolylinePathway, for path following.
 //
+// 10-04-04 bk:  put everything into the OpenSteer namespace
 // 06-03-02 cwr: created
 //
 //
@@ -43,118 +44,122 @@
 #include "Vec3.h"
 
 
-// ----------------------------------------------------------------------------
-// Pathway: a pure virtual base class for an abstract pathway in space, as for
-// example would be used in path following.
+namespace OpenSteer {
+
+    // ----------------------------------------------------------------------------
+    // Pathway: a pure virtual base class for an abstract pathway in space, as for
+    // example would be used in path following.
 
 
-class Pathway
-{
-public:
-    // Given an arbitrary point ("A"), returns the nearest point ("P") on
-    // this path.  Also returns, via output arguments, the path tangent at
-    // P and a measure of how far A is outside the Pathway's "tube".  Note
-    // that a negative distance indicates A is inside the Pathway.
-    virtual Vec3 mapPointToPath (const Vec3& point,
-                                 Vec3& tangent,
-                                 float& outside) = 0;
-
-    // given a distance along the path, convert it to a point on the path
-    virtual Vec3 mapPathDistanceToPoint (float pathDistance) = 0;
-
-    // Given an arbitrary point, convert it to a distance along the path.
-    virtual float mapPointToPathDistance (const Vec3& point) = 0;
-
-    // is the given point inside the path tube?
-    bool isInsidePath (const Vec3& point)
+    class Pathway
     {
-        float outside; Vec3 tangent;
-        mapPointToPath (point, tangent, outside);
-        return outside < 0;
-    }
+    public:
+        // Given an arbitrary point ("A"), returns the nearest point ("P") on
+        // this path.  Also returns, via output arguments, the path tangent at
+        // P and a measure of how far A is outside the Pathway's "tube".  Note
+        // that a negative distance indicates A is inside the Pathway.
+        virtual Vec3 mapPointToPath (const Vec3& point,
+                                     Vec3& tangent,
+                                     float& outside) = 0;
 
-    // how far outside path tube is the given point?  (negative is inside)
-    float howFarOutsidePath (const Vec3& point)
+        // given a distance along the path, convert it to a point on the path
+        virtual Vec3 mapPathDistanceToPoint (float pathDistance) = 0;
+
+        // Given an arbitrary point, convert it to a distance along the path.
+        virtual float mapPointToPathDistance (const Vec3& point) = 0;
+
+        // is the given point inside the path tube?
+        bool isInsidePath (const Vec3& point)
+        {
+            float outside; Vec3 tangent;
+            mapPointToPath (point, tangent, outside);
+            return outside < 0;
+        }
+
+        // how far outside path tube is the given point?  (negative is inside)
+        float howFarOutsidePath (const Vec3& point)
+        {
+            float outside; Vec3 tangent;
+            mapPointToPath (point, tangent, outside);
+            return outside;
+        }
+    };
+
+
+    // ----------------------------------------------------------------------------
+    // PolylinePathway: a simple implementation of the Pathway protocol.  The path
+    // is a "polyline" a series of line segments between specified points.  A
+    // radius defines a volume for the path which is the union of a sphere at each
+    // point and a cylinder along each segment.
+
+
+    class PolylinePathway: public virtual Pathway
     {
-        float outside; Vec3 tangent;
-        mapPointToPath (point, tangent, outside);
-        return outside;
-    }
-};
+    public:
+
+        int pointCount;
+        Vec3* points;
+        float radius;
+        bool cyclic;
+
+        PolylinePathway (void) {}
+
+        // construct a PolylinePathway given the number of points (vertices),
+        // an array of points, and a path radius.
+        PolylinePathway (const int _pointCount,
+                         const Vec3 _points[],
+                         const float _radius,
+                         const bool _cyclic);
+
+        // utility for constructors in derived classes
+        void initialize (const int _pointCount,
+                         const Vec3 _points[],
+                         const float _radius,
+                         const bool _cyclic);
+
+        // Given an arbitrary point ("A"), returns the nearest point ("P") on
+        // this path.  Also returns, via output arguments, the path tangent at
+        // P and a measure of how far A is outside the Pathway's "tube".  Note
+        // that a negative distance indicates A is inside the Pathway.
+        Vec3 mapPointToPath (const Vec3& point, Vec3& tangent, float& outside);
 
 
-// ----------------------------------------------------------------------------
-// PolylinePathway: a simple implementation of the Pathway protocol.  The path
-// is a "polyline" a series of line segments between specified points.  A
-// radius defines a volume for the path which is the union of a sphere at each
-// point and a cylinder along each segment.
+        // given an arbitrary point, convert it to a distance along the path
+        float mapPointToPathDistance (const Vec3& point);
 
+        // given a distance along the path, convert it to a point on the path
+        Vec3 mapPathDistanceToPoint (float pathDistance);
 
-class PolylinePathway: public virtual Pathway
-{
-public:
+        // utility methods
 
-    int pointCount;
-    Vec3* points;
-    float radius;
-    bool cyclic;
+        // compute minimum distance from a point to a line segment
+        float pointToSegmentDistance (const Vec3& point,
+                                      const Vec3& ep0,
+                                      const Vec3& ep1);
 
-    PolylinePathway (void) {}
+        // assessor for total path length;
+        float getTotalPathLength (void) {return totalPathLength;};
 
-    // construct a PolylinePathway given the number of points (vertices),
-    // an array of points, and a path radius.
-    PolylinePathway (const int _pointCount,
-                     const Vec3 _points[],
-                     const float _radius,
-                     const bool _cyclic);
+    // XXX removed the "private" because it interfered with derived
+    // XXX classes later this should all be rewritten and cleaned up
+    // private:
 
-    // utility for constructors in derived classes
-    void initialize (const int _pointCount,
-                     const Vec3 _points[],
-                     const float _radius,
-                     const bool _cyclic);
+        // xxx shouldn't these 5 just be local variables?
+        // xxx or are they used to pass secret messages between calls?
+        // xxx seems like a bad design
+        float segmentLength;
+        float segmentProjection;
+        Vec3 local;
+        Vec3 chosen;
+        Vec3 segmentNormal;
 
-    // Given an arbitrary point ("A"), returns the nearest point ("P") on
-    // this path.  Also returns, via output arguments, the path tangent at
-    // P and a measure of how far A is outside the Pathway's "tube".  Note
-    // that a negative distance indicates A is inside the Pathway.
-    Vec3 mapPointToPath (const Vec3& point, Vec3& tangent, float& outside);
+        float* lengths;
+        Vec3* normals;
+        float totalPathLength;
+    };
 
-
-    // given an arbitrary point, convert it to a distance along the path
-    float mapPointToPathDistance (const Vec3& point);
-
-    // given a distance along the path, convert it to a point on the path
-    Vec3 mapPathDistanceToPoint (float pathDistance);
-
-    // utility methods
-
-    // compute minimum distance from a point to a line segment
-    float pointToSegmentDistance (const Vec3& point,
-                                  const Vec3& ep0,
-                                  const Vec3& ep1);
-
-    // assessor for total path length;
-    float getTotalPathLength (void) {return totalPathLength;};
-
-// XXX removed the "private" because it interfered with derived
-// XXX classes later this should all be rewritten and cleaned up
-// private:
-
-    // xxx shouldn't these 5 just be local variables?
-    // xxx or are they used to pass secret messages between calls?
-    // xxx seems like a bad design
-    float segmentLength;
-    float segmentProjection;
-    Vec3 local;
-    Vec3 chosen;
-    Vec3 segmentNormal;
-
-    float* lengths;
-    Vec3* normals;
-    float totalPathLength;
-};
-
-
+} // namespace OpenSteer
+    
+    
 // ----------------------------------------------------------------------------
 #endif // OPENSTEER_PATHWAY_H

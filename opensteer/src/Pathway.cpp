@@ -30,6 +30,7 @@
 //
 // Pathway and PolylinePathway, for path following.
 //
+// 10-04-04 bk:  put everything into the OpenSteer namespace
 // 06-03-02 cwr: created
 //
 //
@@ -44,7 +45,7 @@
 // an array of points, and a path radius.
 
 
-PolylinePathway::PolylinePathway (const int _pointCount,
+OpenSteer::PolylinePathway::PolylinePathway (const int _pointCount,
                                   const Vec3 _points[],
                                   const float _radius,
                                   const bool _cyclic)
@@ -57,10 +58,11 @@ PolylinePathway::PolylinePathway (const int _pointCount,
 // utility for constructors
 
 
-void PolylinePathway::initialize (const int _pointCount,
-                                  const Vec3 _points[],
-                                  const float _radius,
-                                  const bool _cyclic)
+void 
+OpenSteer::PolylinePathway::initialize (const int _pointCount,
+                                        const Vec3 _points[],
+                                        const float _radius,
+                                        const bool _cyclic)
 {
     // set data members, allocate arrays
     radius = _radius;
@@ -104,9 +106,10 @@ void PolylinePathway::initialize (const int _pointCount,
 // that a negative distance indicates A is inside the Pathway.
 
 
-Vec3 PolylinePathway::mapPointToPath (const Vec3& point,
-                                      Vec3& tangent,
-                                      float& outside)
+OpenSteer::Vec3 
+OpenSteer::PolylinePathway::mapPointToPath (const Vec3& point,
+                                            Vec3& tangent,
+                                            float& outside)
 {
     float d;
     float minDistance = FLT_MAX;
@@ -138,7 +141,8 @@ Vec3 PolylinePathway::mapPointToPath (const Vec3& point,
 // given an arbitrary point, convert it to a distance along the path
 
 
-float PolylinePathway::mapPointToPathDistance (const Vec3& point)
+float 
+OpenSteer::PolylinePathway::mapPointToPathDistance (const Vec3& point)
 {
     float d;
     float minDistance = FLT_MAX;
@@ -167,7 +171,8 @@ float PolylinePathway::mapPointToPathDistance (const Vec3& point)
 // given a distance along the path, convert it to a point on the path
 
 
-Vec3 PolylinePathway::mapPathDistanceToPoint (float pathDistance)
+OpenSteer::Vec3 
+OpenSteer::PolylinePathway::mapPathDistanceToPoint (float pathDistance)
 {
     // clip or wrap given path distance according to cyclic flag
     float remaining = pathDistance;
@@ -210,9 +215,10 @@ Vec3 PolylinePathway::mapPathDistanceToPoint (float pathDistance)
 // tangled up with the internal state of the PolylinePathway instance)
 
 
-float PolylinePathway::pointToSegmentDistance (const Vec3& point,
-                                               const Vec3& ep0,
-                                               const Vec3& ep1)
+float 
+OpenSteer::PolylinePathway::pointToSegmentDistance (const Vec3& point,
+                                                    const Vec3& ep0,
+                                                    const Vec3& ep1)
 {
     // convert the test point to be "local" to ep0
     local = point - ep0;

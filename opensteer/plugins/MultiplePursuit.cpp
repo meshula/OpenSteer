@@ -40,6 +40,9 @@
 #include "OpenSteer/OpenSteerDemo.h"
 
 
+
+using namespace OpenSteer;
+
 // ----------------------------------------------------------------------------
 // This PlugIn uses two vehicle types: MpWanderer and MpPursuer.  They have
 // a common base class, MpBase, which is a specialization of SimpleVehicle.
@@ -251,6 +254,7 @@ public:
 
 
 MpPlugIn gMpPlugIn;
+
 
 
 // ----------------------------------------------------------------------------

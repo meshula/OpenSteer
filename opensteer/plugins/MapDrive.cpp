@@ -64,6 +64,9 @@
 // ----------------------------------------------------------------------------
 
 
+using namespace OpenSteer;
+
+
 #ifdef OLDTERRAINMAP
 // class BinaryTerrainMap : public TerrainMap
 class TerrainMap
@@ -850,7 +853,7 @@ public:
         const Vec3 center = position () + localCenterOfCurvature;
         const float sign = signedRadius < 0 ? 1.0f : -1.0f;
         const float arcRadius = signedRadius * -sign;
-        const float twoPi = 2 * M_PI;
+        const float twoPi = 2 * OPENSTEER_M_PI;
         const float circumference = twoPi * arcRadius;
         const float rawLength = speed() * minTimeToCollision * sign;
         const float fracLimit = 1.0f / 6.0f;
@@ -872,7 +875,7 @@ public:
         }
 
         // assert loops will terminate
-	assert (spacing > 0);
+    assert (spacing > 0);
 
         // scan corridor straight ahead of vehicle,
         // keep track of nearest obstacle on left and right sides
@@ -1276,7 +1279,7 @@ public:
         const Vec3 center = position () + localCenterOfCurvature;
         const float sign = signedRadius < 0 ? 1.0f : -1.0f;
         const float arcRadius = signedRadius * -sign;
-        const float twoPi = 2 * M_PI;
+        const float twoPi = 2 * OPENSTEER_M_PI;
         const float circumference = twoPi * arcRadius;
         const Vec3 qqqLift (0, 0.2f, 0);
         Vec3 ignore;
@@ -1356,7 +1359,7 @@ public:
             const Vec3 center = position () + localCenterOfCurvature;
             const float sign = signedRadius < 0 ? 1.0f : -1.0f;
             const float arcRadius = signedRadius * -sign;
-            const float twoPi = 2 * M_PI;
+            const float twoPi = 2 * OPENSTEER_M_PI;
             const float circumference = twoPi * arcRadius;
             const float rawLength = speed() * predictionTime * sign;
             const float arcLength = arcLengthLimit (rawLength,
@@ -1968,7 +1971,7 @@ public:
         const float arcLength = trimmedLinear.dot (forward ());
         //
         const float arcRadius = signedRadius * -sign;
-        const float twoPi = 2 * M_PI;
+        const float twoPi = 2 * OPENSTEER_M_PI;
         const float circumference = twoPi * arcRadius;
         const float arcAngle = twoPi * arcLength / circumference;
         // ---------- this block imported from steerToAvoidObstaclesOnMap
@@ -2116,7 +2119,7 @@ public:
 
         // determine the angular step per segment
         const float radius = spoke.length ();
-        const float twoPi = 2 * M_PI;
+        const float twoPi = 2 * OPENSTEER_M_PI;
         const float circumference = twoPi * radius;
         const float arcAngle = twoPi * arcLength / circumference;
         const float step = arcAngle / segments;

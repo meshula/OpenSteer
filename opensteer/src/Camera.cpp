@@ -33,6 +33,7 @@
 // a camera ("point of view") with various "aiming modes" to track a
 // moving vehicle
 //
+// 10-04-04 bk:  put everything into the OpenSteer namespace
 // 06-26-02 cwr: created 
 //
 //
@@ -47,7 +48,7 @@
 // constructor
 
 
-Camera::Camera (void)
+OpenSteer::Camera::Camera (void)
 {
     reset ();
 }
@@ -57,7 +58,8 @@ Camera::Camera (void)
 // reset all camera state to default values
 
 
-void Camera::reset (void)
+void 
+OpenSteer::Camera::reset (void)
 {
     // reset camera's position and orientation
     resetLocalSpace ();
@@ -108,9 +110,10 @@ void Camera::reset (void)
 // parameter names commented out to prevent compiler warning from "-W"
 
 
-void Camera::update (const float /*currentTime*/,
-                     const float elapsedTime,
-                     const bool simulationPaused)
+void 
+OpenSteer::Camera::update (const float /*currentTime*/,
+                        const float elapsedTime,
+                        const bool simulationPaused)
 {
     // vehicle being tracked (just a reference with a more concise name)
     const AbstractVehicle& v = *vehicleToTrack;
@@ -191,10 +194,11 @@ void Camera::update (const float /*currentTime*/,
 // make next update (say at simulation initialization time).
 
 
-void Camera::smoothCameraMove (const Vec3& newPosition,
-                               const Vec3& newTarget,
-                               const Vec3& newUp,
-                               const float elapsedTime)
+void 
+OpenSteer::Camera::smoothCameraMove (const Vec3& newPosition,
+                                     const Vec3& newTarget,
+                                     const Vec3& newUp,
+                                     const float elapsedTime)
 {
     if (smoothNextMove)
     {
@@ -234,7 +238,8 @@ void Camera::smoothCameraMove (const Vec3& newPosition,
 // parameter names commented out to prevent compiler warning from "-W"
 
 
-Vec3 Camera::constDistHelper (const float /*elapsedTime*/)
+OpenSteer::Vec3 
+OpenSteer::Camera::constDistHelper (const float /*elapsedTime*/)
 {
     // is the "global up"/"vertical" offset constraint enabled?  (it forces
     // the camera's global-up (Y) cordinate to be a above/below the target
@@ -275,7 +280,8 @@ Vec3 Camera::constDistHelper (const float /*elapsedTime*/)
 // select next camera mode, used by OpenSteerDemo
 
 
-void Camera::selectNextMode (void)
+void 
+OpenSteer::Camera::selectNextMode (void)
 {
     mode = successorMode (mode);
     if (mode >= cmEndMode) mode = successorMode (cmStartMode);
@@ -286,7 +292,8 @@ void Camera::selectNextMode (void)
 // cycles through the various camera modes
 
 
-Camera::cameraMode Camera::successorMode (const cameraMode cm) const
+OpenSteer::Camera::cameraMode 
+OpenSteer::Camera::successorMode (const cameraMode cm) const
 {
     return (cameraMode)(((int)cm) + 1);
 }
@@ -296,7 +303,8 @@ Camera::cameraMode Camera::successorMode (const cameraMode cm) const
 // string naming current camera mode, used by OpenSteerDemo
 
 
-char* Camera::modeName (void)
+char* 
+OpenSteer::Camera::modeName (void)
 {
     switch (mode)
     {
@@ -315,7 +323,8 @@ char* Camera::modeName (void)
 // "mouse adjustment vector" from OpenSteerDemo (xxx experiment 10-17-02)
 
 
-void Camera::mouseAdjustOffset (const Vec3& adjustment)
+void 
+OpenSteer::Camera::mouseAdjustOffset (const Vec3& adjustment)
 {
     // vehicle being tracked (just a reference with a more concise name)
     const AbstractVehicle& v = *vehicleToTrack;
@@ -388,9 +397,10 @@ void Camera::mouseAdjustOffset (const Vec3& adjustment)
 // ----------------------------------------------------------------------------
 
 
-Vec3 Camera::mouseAdjust2 (const bool polar,
-                           const Vec3& adjustment,
-                           const Vec3& offsetToAdjust)
+OpenSteer::Vec3 
+OpenSteer::Camera::mouseAdjust2 (const bool polar,
+                                 const Vec3& adjustment,
+                                 const Vec3& offsetToAdjust)
 {
     // value to be returned
     Vec3 result = offsetToAdjust;

@@ -45,6 +45,10 @@
 #include "OpenSteer/OpenSteerDemo.h"
 
 
+
+using namespace OpenSteer;
+
+
 // ----------------------------------------------------------------------------
 
 
@@ -229,6 +233,7 @@ public:
 
 
 LowSpeedTurnPlugIn gLowSpeedTurnPlugIn;
+
 
 
 // ----------------------------------------------------------------------------

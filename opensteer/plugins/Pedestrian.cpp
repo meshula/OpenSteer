@@ -45,6 +45,11 @@
 #include "OpenSteer/Proximity.h"
 
 
+
+
+using namespace OpenSteer;
+
+
 // ----------------------------------------------------------------------------
 
 
@@ -701,6 +706,8 @@ public:
 
 
 PedestrianPlugIn gPedestrianPlugIn;
+
+
 
 
 // ----------------------------------------------------------------------------

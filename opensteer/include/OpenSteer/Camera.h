@@ -33,6 +33,7 @@
 // a camera ("point of view") with various "aiming modes" to track a
 // moving vehicle
 //
+// 10-04-04 bk:  put everything into the OpenSteer namespace
 // 06-26-02 cwr: created 
 //
 //
@@ -50,130 +51,133 @@
 // ----------------------------------------------------------------------------
 
 
-class Camera : public LocalSpace
-{
-public:
+namespace OpenSteer {
 
-    // constructor
-    Camera ();
+    class Camera : public LocalSpace
+    {
+    public:
 
-    // reset all camera state to default values
-    void reset (void);
+        // constructor
+        Camera ();
 
-    // "look at" point, center of view
-    Vec3 target;
+        // reset all camera state to default values
+        void reset (void);
 
-    // vehicle being tracked
-    const AbstractVehicle* vehicleToTrack;
+        // "look at" point, center of view
+        Vec3 target;
 
-    // aim at predicted position of vehicleToTrack, this far into thefuture
-    float aimLeadTime;
+        // vehicle being tracked
+        const AbstractVehicle* vehicleToTrack;
 
-    // per frame simulation update
-    void update (const float currentTime,
-                 const float elapsedTime,
-                 const bool simulationPaused);
-    void update (const float currentTime, const float elapsedTime)
-    {update (currentTime, elapsedTime, false);};
+        // aim at predicted position of vehicleToTrack, this far into thefuture
+        float aimLeadTime;
 
-    // helper function for "drag behind" mode
-    Vec3 constDistHelper (const float elapsedTime);
+        // per frame simulation update
+        void update (const float currentTime,
+                     const float elapsedTime,
+                     const bool simulationPaused);
+        void update (const float currentTime, const float elapsedTime)
+        {update (currentTime, elapsedTime, false);};
 
-    // Smoothly move camera ...
-    void smoothCameraMove (const Vec3& newPosition,
-                           const Vec3& newTarget,
-                           const Vec3& newUp,
-                           const float elapsedTime);
+        // helper function for "drag behind" mode
+        Vec3 constDistHelper (const float elapsedTime);
 
-    void doNotSmoothNextMove (void) {smoothNextMove = false;};
+        // Smoothly move camera ...
+        void smoothCameraMove (const Vec3& newPosition,
+                               const Vec3& newTarget,
+                               const Vec3& newUp,
+                               const float elapsedTime);
 
-    bool smoothNextMove;
-    float smoothMoveSpeed;
+        void doNotSmoothNextMove (void) {smoothNextMove = false;};
 
-    // adjust the offset vector of the current camera mode based on a
-    // "mouse adjustment vector" from OpenSteerDemo (xxx experiment 10-17-02)
-    void mouseAdjustOffset (const Vec3& adjustment);
-    Vec3 mouseAdjust2 (const bool polar,
-                       const Vec3& adjustment,
-                       const Vec3& offsetToAdjust);
-    Vec3 mouseAdjustPolar (const Vec3& adjustment,
-                           const Vec3& offsetToAdjust)
-    {return mouseAdjust2 (true, adjustment, offsetToAdjust);};
-    Vec3 mouseAdjustOrtho (const Vec3& adjustment,
-                           const Vec3& offsetToAdjust)
-    {return mouseAdjust2 (false, adjustment, offsetToAdjust);};
+        bool smoothNextMove;
+        float smoothMoveSpeed;
 
-    // xxx since currently (10-21-02) the camera's Forward and Side basis
-    // xxx vectors are not being set, construct a temporary local space for
-    // xxx the camera view -- so as not to make the camera behave
-    // xxx differently (which is to say, correctly) during mouse adjustment.
-    LocalSpace ls;
-    const LocalSpace& xxxls (void)
-    {ls.regenerateOrthonormalBasis (target - position(), up()); return ls;}
+        // adjust the offset vector of the current camera mode based on a
+        // "mouse adjustment vector" from OpenSteerDemo (xxx experiment 10-17-02)
+        void mouseAdjustOffset (const Vec3& adjustment);
+        Vec3 mouseAdjust2 (const bool polar,
+                           const Vec3& adjustment,
+                           const Vec3& offsetToAdjust);
+        Vec3 mouseAdjustPolar (const Vec3& adjustment,
+                               const Vec3& offsetToAdjust)
+        {return mouseAdjust2 (true, adjustment, offsetToAdjust);};
+        Vec3 mouseAdjustOrtho (const Vec3& adjustment,
+                               const Vec3& offsetToAdjust)
+        {return mouseAdjust2 (false, adjustment, offsetToAdjust);};
+
+        // xxx since currently (10-21-02) the camera's Forward and Side basis
+        // xxx vectors are not being set, construct a temporary local space for
+        // xxx the camera view -- so as not to make the camera behave
+        // xxx differently (which is to say, correctly) during mouse adjustment.
+        LocalSpace ls;
+        const LocalSpace& xxxls (void)
+        {ls.regenerateOrthonormalBasis (target - position(), up()); return ls;}
 
 
-    // camera mode selection
-    enum cameraMode 
-        {
-            // marks beginning of list
-            cmStartMode,
-        
-            // fixed global position and aimpoint
-            cmFixed,
+        // camera mode selection
+        enum cameraMode 
+            {
+                // marks beginning of list
+                cmStartMode,
+            
+                // fixed global position and aimpoint
+                cmFixed,
 
-            // camera position is directly above (in global Up/Y) target
-            // camera up direction is target's forward direction
-            cmStraightDown,
+                // camera position is directly above (in global Up/Y) target
+                // camera up direction is target's forward direction
+                cmStraightDown,
 
-            // look at subject vehicle, adjusting camera position to be a
-            // constant distance from the subject
-            cmFixedDistanceOffset,
+                // look at subject vehicle, adjusting camera position to be a
+                // constant distance from the subject
+                cmFixedDistanceOffset,
 
-            // camera looks at subject vehicle from a fixed offset in the
-            // local space of the vehicle (as if attached to the vehicle)
-            cmFixedLocalOffset,
+                // camera looks at subject vehicle from a fixed offset in the
+                // local space of the vehicle (as if attached to the vehicle)
+                cmFixedLocalOffset,
 
-            // camera looks in the vehicle's forward direction, camera
-            // position has a fixed local offset from the vehicle.
-            cmOffsetPOV,
+                // camera looks in the vehicle's forward direction, camera
+                // position has a fixed local offset from the vehicle.
+                cmOffsetPOV,
 
-            // cmFixedPositionTracking // xxx maybe?
+                // cmFixedPositionTracking // xxx maybe?
 
-            // marks the end of the list for cycling (to cmStartMode+1)
-            cmEndMode
-        };
+                // marks the end of the list for cycling (to cmStartMode+1)
+                cmEndMode
+            };
 
-    // current mode for this camera instance
-    cameraMode mode;
+        // current mode for this camera instance
+        cameraMode mode;
 
-    // string naming current camera mode, used by OpenSteerDemo
-    char* modeName (void);
+        // string naming current camera mode, used by OpenSteerDemo
+        char* modeName (void);
 
-    // select next camera mode, used by OpenSteerDemo
-    void selectNextMode (void);
+        // select next camera mode, used by OpenSteerDemo
+        void selectNextMode (void);
 
-    // the mode that comes after the given mode (used by selectNextMode)
-    cameraMode successorMode (const cameraMode cm) const;
+        // the mode that comes after the given mode (used by selectNextMode)
+        cameraMode successorMode (const cameraMode cm) const;
 
-    // "static" camera mode parameters
-    Vec3 fixedPosition;
-    Vec3 fixedTarget;
-    Vec3 fixedUp;
+        // "static" camera mode parameters
+        Vec3 fixedPosition;
+        Vec3 fixedTarget;
+        Vec3 fixedUp;
 
-    // "constant distance from vehicle" camera mode parameters
-    float fixedDistDistance;             // desired distance from it
-    float fixedDistVOffset;              // fixed vertical offset from it
+        // "constant distance from vehicle" camera mode parameters
+        float fixedDistDistance;             // desired distance from it
+        float fixedDistVOffset;              // fixed vertical offset from it
 
-    // "look straight down at vehicle" camera mode parameters
-    float lookdownDistance;             // fixed vertical offset from it
+        // "look straight down at vehicle" camera mode parameters
+        float lookdownDistance;             // fixed vertical offset from it
 
-    // "fixed local offset" camera mode parameters
-    Vec3 fixedLocalOffset;
+        // "fixed local offset" camera mode parameters
+        Vec3 fixedLocalOffset;
 
-    // "offset POV" camera mode parameters
-    Vec3 povOffset;
-};
+        // "offset POV" camera mode parameters
+        Vec3 povOffset;
+    };
 
+} // namespace OpenSteer
 
 // ----------------------------------------------------------------------------
 #endif // OPENSTEER_CAMERA_H

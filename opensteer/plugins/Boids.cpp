@@ -42,17 +42,22 @@
 #include "OpenSteer/Proximity.h"
 
 
-// ----------------------------------------------------------------------------
 
 
-typedef AbstractProximityDatabase<AbstractVehicle*> ProximityDatabase;
-typedef AbstractTokenForProximityDatabase<AbstractVehicle*> ProximityToken;
-
+// Include names declared in the OpenSteer namespace into the namespaces to search to find names.
+using namespace OpenSteer;
 
 // ----------------------------------------------------------------------------
 
 
-class Boid : public SimpleVehicle
+typedef OpenSteer::AbstractProximityDatabase<AbstractVehicle*> ProximityDatabase;
+typedef OpenSteer::AbstractTokenForProximityDatabase<AbstractVehicle*> ProximityToken;
+
+
+// ----------------------------------------------------------------------------
+
+
+class Boid : public OpenSteer::SimpleVehicle
 {
 public:
 
@@ -458,6 +463,7 @@ public:
 
 
 BoidsPlugIn gBoidsPlugIn;
+
 
 
 // ----------------------------------------------------------------------------
