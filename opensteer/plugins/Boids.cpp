@@ -142,6 +142,13 @@ public:
 
         return separationW + alignmentW + cohesionW;
     }
+
+    // make boids "bank" as they fly
+    void regenerateLocalSpace (const Vec3& newVelocity,
+                               const float elapsedTime)
+    {
+        regenerateLocalSpaceForBanking (newVelocity, elapsedTime);
+    }
 };
 
 

@@ -143,6 +143,17 @@ public:
     // adjusting our orientation to maintain velocity-alignment.
     void applySteeringForce (const Vec3& force, const float deltaTime);
 
+    // the default version: keep FORWARD parallel to velocity, change
+    // UP as little as possible.
+    virtual void regenerateLocalSpace (const Vec3& newVelocity,
+                                       const float elapsedTime);
+
+    // alternate version: keep FORWARD parallel to velocity, adjust UP
+    // according to a no-basis-in-reality "banking" behavior, something
+    // like what birds and airplanes do.  (XXX experimental cwr 6-5-03)
+    void regenerateLocalSpaceForBanking (const Vec3& newVelocity,
+                                         const float elapsedTime);
+
     // adjust the steering force passed to applySteeringForce.
     // allows a specific vehicle class to redefine this adjustment.
     // default is to disallow backward-facing steering at low speed.

@@ -165,7 +165,6 @@ void SimpleVehicle::applySteeringForce (const Vec3& force,
     const Vec3 adjustedForce = adjustRawSteeringForce (force, elapsedTime);
 
     // enforce limit on magnitude of steering force
-//  const Vec3 clippedForce = TruncateLength (adjustedForce, maxForce ());
     const Vec3 clippedForce = adjustedForce.truncateLength (maxForce ());
 
     // compute acceleration and velocity
@@ -190,6 +189,58 @@ void SimpleVehicle::applySteeringForce (const Vec3& force,
 
     // Euler integrate (per frame) velocity into position
     setPosition (position() + (newVelocity * elapsedTime));
+
+    // regenerate local space (by default: align vehicle's forward axis with
+    // new velocity, but this behavior may be overridden by derived classes.)
+    regenerateLocalSpace (newVelocity, elapsedTime);
+}
+
+
+// ----------------------------------------------------------------------------
+// the default version: keep FORWARD parallel to velocity, change UP as
+// little as possible.
+
+
+void SimpleVehicle::regenerateLocalSpace (const Vec3& newVelocity,
+                                          const float elapsedTime)
+{
+    // adjust orthonormal basis vectors to be aligned with new velocity
+    if (speed() > 0) regenerateOrthonormalBasisUF (newVelocity / speed());
+}
+
+
+// ----------------------------------------------------------------------------
+// alternate version: keep FORWARD parallel to velocity, adjust UP according
+// to a no-basis-in-reality "banking" behavior, something like what birds and
+// airplanes do
+
+// XXX experimental cwr 6-5-03
+
+
+void SimpleVehicle::regenerateLocalSpaceForBanking (const Vec3& newVelocity,
+                                                    const float elapsedTime)
+{
+    // the length of this global-upward-pointing vector controls the vehicle's
+    // tendency to right itself as it is rolled over from turning acceleration
+    const Vec3 globalUp (0, 0.2f, 0);
+
+    // acceleration points toward the center of local path curvature, the
+    // length determines how much the vehicle will roll while turning
+    const Vec3 accelUp = smoothedAcceleration * 0.05f;
+
+    // combined banking, sum of UP due to turning and global UP
+    const Vec3 bankUp = accelUp + globalUp;
+
+    // blend bankUp into vehicle's UP basis vector
+    const float smoothRate = elapsedTime * 3;
+    Vec3 tempUp = up();
+    blendIntoAccumulator (smoothRate, bankUp, tempUp);
+    setUp (tempUp.normalize());
+
+//  annotationLine (position(), position() + (globalUp * 4), gWhite);  // XXX
+//  annotationLine (position(), position() + (bankUp   * 4), gOrange); // XXX
+//  annotationLine (position(), position() + (accelUp  * 4), gRed);    // XXX
+//  annotationLine (position(), position() + (up ()    * 1), gYellow); // XXX
 
     // adjust orthonormal basis vectors to be aligned with new velocity
     if (speed() > 0) regenerateOrthonormalBasisUF (newVelocity / speed());

@@ -178,7 +178,7 @@ float inline square (float x)
 // and the value of the expression.  For example "angle = 35.6"
 
 
-#define debugPrint(e) (cout << #e" = " << (e) << std::endl << flush)
+#define debugPrint(e) (std::cout << #e" = " << (e) << std::endl << std::flush)
 
 
 // ----------------------------------------------------------------------------
