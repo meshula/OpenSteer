@@ -76,10 +76,8 @@ char* appVersionName = "SteerTest 0.7";
 // The number of our GLUT window
 int windowID; 
 
-const int initialWindowWidth = 1200;
-const int initialWindowHeight = 1000;
-// const int initialWindowWidth = 640-11;
-// const int initialWindowHeight = 480-28;
+const int initialWindowWidth = 620;
+const int initialWindowHeight = 420;
 
 
 bool gMouseAdjustingCameraAngle = false;
@@ -137,8 +135,8 @@ void reshapeFunc (int width, int height)
     const GLfloat h = height;
     const GLfloat aspectRatio = (height == 0) ? 1 : w/h;
     const GLfloat fieldOfViewY = 45;
-    const GLfloat hither = 0.1f;
-    const GLfloat yon = 1000;
+    const GLfloat hither = 1;  // put this on Camera so PlugIns can frob it
+    const GLfloat yon = 400;   // put this on Camera so PlugIns can frob it
     gluPerspective (fieldOfViewY, aspectRatio, hither, yon);
 
     // leave in modelview mode
@@ -622,8 +620,8 @@ void initializeGraphics (int argc, char **argv)
     glutInitDisplayMode (mode);
 
     // create and initialize our window with GLUT tools
+    glutInitWindowPosition (0, 0);
     glutInitWindowSize (initialWindowWidth, initialWindowHeight);
-    glutInitWindowPosition (40, 40);
     windowID = glutCreateWindow (appVersionName);
     reshapeFunc (initialWindowWidth, initialWindowHeight);
     initGL ();
