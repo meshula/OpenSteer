@@ -28,20 +28,20 @@
 // ----------------------------------------------------------------------------
 //
 //
-// SteerTest
+// OpenSteerDemo
 //
-// This class encapsulates the state of the SteerTest application and
+// This class encapsulates the state of the OpenSteerDemo application and
 // the services it provides to its plug-ins
 //
-// 11-14-02 cwr: recast App class as SteerTest 
+// 11-14-02 cwr: recast App class as OpenSteerDemo 
 // 06-26-02 cwr: App class created 
 //
 //
 // ----------------------------------------------------------------------------
 
 
-#ifndef OPENSTEER_STEERTEST_H
-#define OPENSTEER_STEERTEST_H
+#ifndef OPENSTEER_OPENSTEERDEMO_H
+#define OPENSTEER_OPENSTEERDEMO_H
 
 
 #include "OpenSteer/Vec3.h"
@@ -51,7 +51,7 @@
 #include "OpenSteer/Utilities.h"
 
 
-class SteerTest
+class OpenSteerDemo
 {
 public:
     // ------------------------------------------------------ component objects
@@ -74,7 +74,7 @@ public:
 
     // -------------------------------------------- initialize, update and exit
 
-    // initialize SteerTest
+    // initialize OpenSteerDemo
     //     XXX  if I switch from "totally static" to "singleton"
     //     XXX  class structure this becomes the constructor
     static void initialize (void);
@@ -82,7 +82,7 @@ public:
     // main update function: step simulation forward and redraw scene
     static void updateSimulationAndRedraw (void);
 
-    // exit SteerTest with a given text message or error code
+    // exit OpenSteerDemo with a given text message or error code
     static void errorExit (const char* message);
     static void exit (int exitCode);
 
@@ -119,7 +119,7 @@ public:
 
     static const AVGroup& allVehiclesOfSelectedPlugIn(void);
 
-    // -------------------------------------------------------- SteerTest phase
+    // ---------------------------------------------------- OpenSteerDemo phase
 
     static bool phaseIsDraw     (void) {return phase == drawPhase;}
     static bool phaseIsUpdate   (void) {return phase == updatePhase;}
@@ -234,11 +234,11 @@ public:
 
     // ----------------------------------------------------------- console text
 
-    // print a line on the console with "SteerTest: " then the given ending
+    // print a line on the console with "OpenSteerDemo: " then the given ending
     static void printMessage (const char* message);
     static void printMessage (const std::ostringstream& message);
 
-    // like printMessage but prefix is "SteerTest: Warning: "
+    // like printMessage but prefix is "OpenSteerDemo: Warning: "
     static void printWarning (const char* message);
     static void printWarning (const std::ostringstream& message);
 
@@ -279,4 +279,4 @@ private:
 
 
 // ----------------------------------------------------------------------------
-#endif // OPENSTEER_STEERTEST_H
+#endif // OPENSTEER_OPENSTEERDEMO_H

@@ -40,7 +40,7 @@
       <br>
       <br>
       <!-- CHANGE DATE AT BOTTOM OF FILE TOO -->
-      <small>October 7, 2003<br>
+      <small>October 7, 2003 [modified 9-30-04 cwr]<br>
       <small>Version 0.8</small></small>
       <br>
       <br>
@@ -75,7 +75,7 @@
       <a name="TableofContents"></a>Table of Contents </b></big> </big><br>
       <a href="#Introduction">Introduction</a> <br>
       <a href="#WetPaint">Wet Paint</a> <br>
-      <a href="#UsingSteerTest">Using SteerTest</a> <br>
+      <a href="#UsingOpenSteerDemo">Using OpenSteerDemo</a> <br>
       <a href="#SamplePlugIns">Sample PlugIns</a> <br>
       <a href="#WritingPlugIns">Writing PlugIns</a> <br>
       <a href="#SteeringLibrary">Steering Library</a> <br>
@@ -114,29 +114,29 @@ Code" below]</a></small> Note that Opensteer is intended for use by
 programmers. It does not plug into interactive production tools, nor
 does it support behavior authoring by non-programmers.</p>
 <p>In addition to the library, OpenSteer provides an
-interactive application called <b>SteerTest</b> which initially
-demonstrates several steering behaviors. SteerTest can also help you
+interactive application called <b>OpenSteerDemo</b> which initially
+demonstrates several steering behaviors. OpenSteerDemo can also help you
 create novel steering behaviors, providing facilities to visualize,
-annotate and debug your code. SteerTest is written in C++ and uses
+annotate and debug your code. OpenSteerDemo is written in C++ and uses
 OpenGL
 graphics. All OpenGL calls are segregated in one module, in case you
 need to substitute another graphics API.
 </p>
-<p>SteerTest is based on a <i>plug-in</i> architecture: an empty
-framework into which plug-ins can be added incrementally. SteerTest
+<p>OpenSteerDemo is based on a <i>plug-in</i> architecture: an empty
+framework into which plug-ins can be added incrementally. OpenSteerDemo
 comes with several sample plug-ins.
 <small><a href="#SamplePlugIns">[see "Sample PlugIns"
 below]</a></small> You can easily create your own plug-ins by starting
-from these examples. A SteerTest plug-in specifies several generic
-actions required by the SteerTest framework: open, close, reset, run
+from these examples. A OpenSteerDemo plug-in specifies several generic
+actions required by the OpenSteerDemo framework: open, close, reset, run
 one simulation step, display one frame, and so on. The plug-in defines
 vehicle classes and manages them in simulation. It defines scene
 geometry in terms of obstacles, pathways and so on. Plug-ins control
 the camera and handle Function Keys.</p>
-<p>SteerTest's plug-in framework allows a game AI programmer to
+<p>OpenSteerDemo's plug-in framework allows a game AI programmer to
 quickly prototype behaviors during game design, and to develop
 behaviors before the main game engine is finished. In OpenSteer 0.8,
-SteerTest allows the user to interactively control simulation time
+OpenSteerDemo allows the user to interactively control simulation time
 (stop, start, single step), select the vehicle/character/agent of
 interest, and adjust the
 view and tracking behavior of the camera.</p>
@@ -163,31 +163,31 @@ was fixed in a future release (he said, hoping to avoid specific
 promises of future enhancements).</p>
 <big>
 <big><b><br>
-<a name="UsingSteerTest"></a>
-Using SteerTest
+<a name="UsingOpenSteerDemo"></a>
+Using OpenSteerDemo
 </b></big></big>
 <p>After installation <small><a href="#InstallingOpenSteer">[see
-"Installing OpenSteer" below]</a></small> launch the SteerTest
+"Installing OpenSteer" below]</a></small> launch the OpenSteerDemo
 application. <small>(On Linux, Mac or Windows you can do this by
 double clicking on a desktop icon. If you have downloaded the
 OpenSteer source code and compiled it yourself, you can also launch the
 application from your IDE build tools. If you use the supplied
 Makefile for Linux, you can execute the <span
  style="font-weight: bold;">make run</span> command.)</small> When you
-first use SteerTest, this <a href="stref.html">quick
+first use OpenSteerDemo, this <a href="stref.html">quick
 reference guide</a> may be helpful. The application will open a
-single window labeled "SteerTest 0.8". You should see a diagrammatic 3d
+single window labeled "OpenSteerDemo 0.8". You should see a diagrammatic 3d
 view of the default PlugIn. Typically you will see moving vehicles,
 annotation graphics and textual overlays, as shown in <small><a
  href="#Figure1">[Figure 1]</a></small>.</p>
 <a name="Figure1"></a>
 <div align="center"><img src="images/typical_SteerTest.png" width="673"
- height="558" alt="typical SteerTest window"><br>
+ height="558" alt="typical OpenSteerDemo window"><br>
 <br>
-Figure 1: typical SteerTest window
+Figure 1: typical OpenSteerDemo window
 <br>
 </div>
-<p>Eventually SteerTest may have a menu-based graphical user
+<p>Eventually OpenSteerDemo may have a menu-based graphical user
 interface. For now it supports limited mouse-based interaction
 (camera view adjustment, vehicle selection) and recognizes several
 single key commands:</p>
@@ -235,7 +235,7 @@ the <a href="stref.html">quick reference guide</a>)</td>
     </tr>
     <tr>
       <td class="graybox">Esc</td>
-      <td class="graybox">exit SteerTest</td>
+      <td class="graybox">exit OpenSteerDemo</td>
     </tr>
   </tbody>
 </table>
@@ -243,13 +243,13 @@ the <a href="stref.html">quick reference guide</a>)</td>
 Keys (labeled F1 through F12 on most keyboards). Typing a <span
  style="font-weight: bold;">?</span> should list which ones are handled
 by the current PlugIn.</p>
-<p>SteerTest keeps track of a single <i>selected</i> agent which the
+<p>OpenSteerDemo keeps track of a single <i>selected</i> agent which the
 camera follows. In some demos additional annotation is provided for
 the selected agent. The user can change selection with the mouse.
 Pointing the mouse near an agent will cause it to highlight (for
 example, in the provided 2d demos, a gray disk is drawn under it).
 Clicking the (left) mouse button selects the highlighted agent.
-SteerTest's camera (<i>point of view</i>) adjusts itself automatically
+OpenSteerDemo's camera (<i>point of view</i>) adjusts itself automatically
 to keep the selected vehicle in view. Several different camera aiming
 modes are provided:</p>
 <table border="0" cellspacing="3" cellpadding="0" width="90%"
@@ -283,7 +283,7 @@ offset in the vehicle's local space </td>
   </tbody>
 </table>
 <p>You can adjust the camera's view with the mouse (or whatever input
-device you use). SteerTest lets you adjust the camera's <i>position
+device you use). OpenSteerDemo lets you adjust the camera's <i>position
 </i>relative to its <i>aimpoint. </i>The aimpoint is defined by
 camera
 aiming mode and is normally the (predicted future position of the)
@@ -300,10 +300,10 @@ both the Ctrl and Alt ("control-meta-") keys while dragging the mouse
 with its left button held down. Note that adjustments in "offset POV"
 camera aiming mode actually translate rather than rotate the camera
 position relative to the selected vehicle.</p>
-<p>To preserve a stable view, SteerTest's camera will smoothly
+<p>To preserve a stable view, OpenSteerDemo's camera will smoothly
 interpolate over changes due to: motion of the selected vehicle,
 mouse-based camera adjustment, or switching camera aiming modes.</p>
-<p>SteerTest's clock provides two time streams: <i>real time </i>and
+<p>OpenSteerDemo's clock provides two time streams: <i>real time </i>and
 <i>simulation time. </i>The redraw cycle and camera update are based
 on passage of real time. Simulation time normally follows real time
 but can also be <i>paused, </i>freezing simulation of vehicle motion.
@@ -317,12 +317,12 @@ rate
 the latter, the system will wait after a simulate-redraw for the start
 of a new frame boundary. If the update takes longer than a frame time
 it waits for the second frame boundary (aka "frame out" or "double
-framing"). You can control this behavior with SteerTest's
+framing"). You can control this behavior with OpenSteerDemo's
 <b>&nbsp;f&nbsp;</b> keyboard command (to cycle among frame rate
 presets) or from your PlugIn code by setting<span class="sourcecode">
-SteerTest::clock.targetFPS </span>(an int) to the desired frame rate,
+OpenSteerDemo::clock.targetFPS </span>(an int) to the desired frame rate,
 or 0 for variable frame rate. For more detail, see <b>Clock.h</b></p>
-<p>SteerTest aims to support a developer's work by providing tools and
+<p>OpenSteerDemo aims to support a developer's work by providing tools and
 utilities that while helpful, might not be critical enough to justify
 writing them during a production schedule. This includes various API
 for drawing annotation using elements such as lines, vectors, boxes,
@@ -330,15 +330,15 @@ circles, disks, spheres and text attached to the screen or positions
 in 3d space. A facility is provided for drawing <i>streamers/trails
 </i>which display a vehicle's recent motion then fade away. There are
 utilities for drawing a ground plane and highlighting vehicles in
-various ways. See <b>Annotation.h</b> and <b>SteerTest.h</b> for
-details. You can turn annotation on and off with SteerTest's <b>&nbsp;a&nbsp;</b>
+various ways. See <b>Annotation.h</b> and <b>OpenSteerDemo.h</b> for
+details. You can turn annotation on and off with OpenSteerDemo's <b>&nbsp;a&nbsp;</b>
 command.</p>
 <p>
 <big><big><b><br>
 <a name="SamplePlugIns"></a>
 Sample PlugIns
 </b></big></big></p>
-SteerTest is distributed with several PlugIns intended to serve both
+OpenSteerDemo is distributed with several PlugIns intended to serve both
 as demonstrations of steering behaviors, and as sample code: jumping
 off places for you to begin developing your own steering behaviors.
 The current list of sample PlugIns are:
@@ -433,7 +433,7 @@ type of programming. It mixes the mathematical and algorithmic rigor
 of computer programming with a more artistic, aesthetic-based phase of
 parameter tweaking. OpenSteer is intended to allow you to focus on
 developing steering behaviors without having to worry about all of the
-required framework. This is supported through SteerTest's PlugIn
+required framework. This is supported through OpenSteerDemo's PlugIn
 mechanism. When you write a PlugIn, you need to provide only the code
 that is specific to your own steering behaviors and vehicles.</p>
 <p>Currently the best source of detailed information on the PlugIn
@@ -442,7 +442,7 @@ the commented-out meta-example called<span class="sourcecode">
 FooPlugIn. </span>That header file defines two classes:<span
  class="sourcecode"> AbstractPlugIn </span>(a pure virtual interface
 class) and<span class="sourcecode"> PlugIn </span>which provides the
-base implementation. To create a new SteerTest PlugIn, you will
+base implementation. To create a new OpenSteerDemo PlugIn, you will
 define a new class which inherits the base implementation from<span
  class="sourcecode"> PlugIn. </span>It provides some default methods
 (see
@@ -488,7 +488,7 @@ CaptureTheFlag are more complicated samples.</p>
 <p>Probably the easiest way to get started on your own PlugIn is to
 pick one of the samples that seems most closely related, make a
 renamed copy of it, build OpenSteer to verify that the new PlugIn
-appears in SteerTest and has its old behavior, then make incremental
+appears in OpenSteerDemo and has its old behavior, then make incremental
 changes to the working PlugIn. (Note: <b>in OpenSteer 0.8: </b>you
 should leave your new PlugIn's source file in the same directory as
 the provided sample PlugIns (<b>opensteer/plugins/</b>). That way it
@@ -510,7 +510,7 @@ class OneTurningPlugIn : public PlugIn {...}<br>
 is irrelevant, what
 matters is that a single instance of the new PlugIn class (<span
  class="sourcecode">OneTurningPlugIn</span>) is allocated for the
-lifetime of the SteerTest application. The actual "plugging in" is
+lifetime of the OpenSteerDemo application. The actual "plugging in" is
 handled by the constructor(/destructor) of the<span class="sourcecode">
 PlugIn</span> base class. A class which is intended to be
 instantiated exactly once is sometimes called a <i>singleton</i>.
@@ -523,14 +523,14 @@ for a class of vehicle defined elsewhere.</p>
 <p>Normally your PlugIn will define one or more classes of Vehicle.
 OpenSteer tries to provide a lot of flexibility in how this can be
 done. On the other hand, if you are just trying to get your first
-experiment running under SteerTest, you probably want what Devo called
+experiment running under OpenSteerDemo, you probably want what Devo called
 "freedom <i>from </i>choice." The easiest approach, and what all the
 provided samples do, is to define a new vehicle class as a
 specialization of<span class="sourcecode"> SimpleVehicle. </span>In
 general, all that is required to make use of the OpenSteer steering
 library is to support the<span class="sourcecode">
 AbstractVehicle</span> protocol in whatever manner you see fit.</p>
-<p>SteerTest and the provided PlugIns make use of two types defined
+<p>OpenSteerDemo and the provided PlugIns make use of two types defined
 in<span class="sourcecode"> AbstractVehicle: AbstractVehicle::group
 </span>and<span class="sourcecode"> AbstractVehicle::iterator</span>.
 These are<span class="sourcecode"> typedef</span>ed to the names<span
@@ -567,11 +567,11 @@ specific typedef for color.</p>
     <p>One way to help debug or analyze your steering behaviors is to
 pick one vehicle and provide additional information about it, using
 graphical annotation or printed output. A convenient choice is
-SteerTest's <span style="font-style: italic;">selected vehicle: </span>the
+OpenSteerDemo's <span style="font-style: italic;">selected vehicle: </span>the
 one the camera normally follows and which can be changed with a mouse
-click (or the SteerTest <b>&nbsp;s&nbsp;</b> command). To trigger code
+click (or the OpenSteerDemo <b>&nbsp;s&nbsp;</b> command). To trigger code
 specifically for the selected vehicle, use something like this in your
-vehicle's update method:&nbsp;&nbsp; <span class="sourcecode">if&nbsp;(this&nbsp;==&nbsp;SteerTest::selectedVehicle)&nbsp;{...}</span>
+vehicle's update method:&nbsp;&nbsp; <span class="sourcecode">if&nbsp;(this&nbsp;==&nbsp;OpenSteerDemo::selectedVehicle)&nbsp;{...}</span>
     </p>
   </li>
 </ul>
@@ -778,9 +778,9 @@ may need to install them before you can build OpenSteer.</i></p>
 <p>You can download software at
 <a href="http://sourceforge.net/project/showfiles.php?group_id=77546">OpenSteer's
 file release page at SourceForge</a>. There you will find both the
-source code and precompiled SteerTest applications. The source code is
+source code and precompiled OpenSteerDemo applications. The source code is
 in a zip archive called
-<b>OpenSteer_0_8_source.zip</b>. The SteerTest application is available
+<b>OpenSteer_0_8_source.zip</b>. The OpenSteerDemo application is available
 as precompiled binary executables for Linux, Mac OS X, and Windows. <br>
 </p>
 <p>OpenSteer 0.8 includes a Makefile to
@@ -842,7 +842,7 @@ of OpenSteer:</p>
     </tr>
     <tr>
       <td class="graybox">.../opensteer/plugins/</td>
-      <td class="graybox">source for supplied SteerTest PlugIns (*.cpp
+      <td class="graybox">source for supplied OpenSteerDemo PlugIns (*.cpp
 files)</td>
     </tr>
   </tbody>
@@ -854,13 +854,13 @@ Known Bugs and Missing Features
 </b></big></big></p>
 <ul>
   <li>
-    <p>In SteerTest, it seems like you ought to be able to use the
+    <p>In OpenSteerDemo, it seems like you ought to be able to use the
     mouse to interactively adjust position and orientation of the
     vehicles. But you can't. Other things you can't do include
     interactively creating new instances of a PlugIn's vehicle types,
     or deleting old ones. As anyone who has tried it knows, the
     hardest part of creating interesting life-like behaviors is tuning
-    the parameters.  It sure would be nice if SteerTest provided
+    the parameters.  It sure would be nice if OpenSteerDemo provided
     mouse-driven sliders ("valuators") PlugIns could call to
     interactively adjust behavioral parameters.</p>
   </li>
@@ -907,7 +907,7 @@ them.</p>
   straight up and horizontally.<br>
   </li>
   <li>
-    <p>One ought to be able to add a PlugIn to SteerTest at runtime.</p>
+    <p>One ought to be able to add a PlugIn to OpenSteerDemo at runtime.</p>
   </li>
   <li>
     <p>Compiling OpenSteer on GCC requires version 3 or later. (I'm

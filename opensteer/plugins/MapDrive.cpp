@@ -28,7 +28,7 @@
 // ----------------------------------------------------------------------------
 //
 //
-// Driving through map-based obstacles    (SteerTest PlugIn)
+// Driving through map-based obstacles    (OpenSteerDemo PlugIn)
 //
 // This demonstration is inspired by the DARPA Grand Challenge cross country
 // race for autonomous vehicles (http://www.darpa.mil/grandchallenge/).  A
@@ -52,7 +52,7 @@
 #include <iomanip>
 #include <sstream>
 #include <cassert>
-#include "OpenSteer/SteerTest.h"
+#include "OpenSteer/OpenSteerDemo.h"
 #include "OpenSteer/SimpleVehicle.h"
 
 // to use local version of the map class
@@ -433,7 +433,7 @@ public:
 
         // keep track for reliability statistics
         collisionLastTime = false;
-        timeOfLastCollision = SteerTest::clock.getTotalSimulationTime ();
+        timeOfLastCollision = OpenSteerDemo::clock.getTotalSimulationTime ();
 
         // keep track of average speed
         totalDistance = 0;
@@ -711,7 +711,7 @@ public:
         {
             std::ostringstream message;
             message << "collision after "<<timeSinceLastCollision<<" seconds";
-            SteerTest::printMessage (message);
+            OpenSteerDemo::printMessage (message);
             sumOfCollisionFreeTimes += timeSinceLastCollision;
             countOfCollisionFreeTimes++;
             timeOfLastCollision = currentTime;
@@ -1165,7 +1165,7 @@ public:
         annotationLine (pp - ff - ss, pp + ff - ss, gWhite);
         annotationLine (pp + ff + ss, pp + ff - ss, gWhite);
 
-        //SteerTest::clock.setPausedState (true);
+        //OpenSteerDemo::clock.setPausedState (true);
     }
 
 
@@ -1826,7 +1826,7 @@ public:
                 lapsFinished++;
 
                 const Vec3 camOffsetBefore =
-                    SteerTest::camera.position() - position ();
+                    OpenSteerDemo::camera.position() - position ();
 
                 // set position on other side of the map (set new X coordinate)
                 setPosition ((((px < 0) ? 1 : -1) *
@@ -1839,11 +1839,11 @@ public:
                 resetStuckCycleDetection ();
 
                 // new camera position and aimpoint to compensate for teleport
-                SteerTest::camera.target = position ();
-                SteerTest::camera.setPosition (position () + camOffsetBefore);
+                OpenSteerDemo::camera.target = position ();
+                OpenSteerDemo::camera.setPosition (position () + camOffsetBefore);
 
                 // make camera jump immediately to new position
-                SteerTest::camera.doNotSmoothNextMove ();
+                OpenSteerDemo::camera.doNotSmoothNextMove ();
 
                 // prevent long streaks due to teleportation 
                 clearTrailHistory ();
@@ -2231,7 +2231,7 @@ float MapDriver::savedNearestWL = 0;
 
 
 // ----------------------------------------------------------------------------
-// PlugIn for SteerTest
+// PlugIn for OpenSteerDemo
 
 
 class MapDrivePlugIn : public PlugIn
@@ -2250,7 +2250,7 @@ public:
         // make new MapDriver
         vehicle = new MapDriver ();
         vehicles.push_back (vehicle);
-        SteerTest::selectedVehicle = vehicle;
+        OpenSteerDemo::selectedVehicle = vehicle;
 
         // marks as obstacles map cells adjacent to the path
         usePathFences = true; 
@@ -2258,16 +2258,16 @@ public:
         // scatter random rock clumps over map
         useRandomRocks = true;
 
-        // init SteerTest camera
+        // init OpenSteerDemo camera
         initCamDist = 30;
         initCamElev = 15;
-        SteerTest::init2dCamera (*vehicle, initCamDist, initCamElev);
+        OpenSteerDemo::init2dCamera (*vehicle, initCamDist, initCamElev);
         // "look straight down at vehicle" camera mode parameters
-        SteerTest::camera.lookdownDistance = 50;
+        OpenSteerDemo::camera.lookdownDistance = 50;
         // "static" camera mode parameters
-        SteerTest::camera.fixedPosition.set (145, 145, 145);
-        SteerTest::camera.fixedTarget.set (40, 0, 40);
-        SteerTest::camera.fixedUp = Vec3::up;
+        OpenSteerDemo::camera.fixedPosition.set (145, 145, 145);
+        OpenSteerDemo::camera.fixedTarget.set (40, 0, 40);
+        OpenSteerDemo::camera.fixedUp = Vec3::up;
 
         // reset this plugin
         reset ();
@@ -2294,7 +2294,7 @@ public:
     void redraw (const float currentTime, const float elapsedTime)
     {
         // update camera, tracking test vehicle
-        SteerTest::updateCamera (currentTime, elapsedTime, *vehicle);
+        OpenSteerDemo::updateCamera (currentTime, elapsedTime, *vehicle);
 
         // draw "ground plane"  (make it 4x map size)
         const float s = MapDriver::worldSize * 2;
@@ -2333,7 +2333,7 @@ public:
 
                << " mps\n\n";
         status << "collisions avoided for "
-               << (int)(SteerTest::clock.getTotalSimulationTime () -
+               << (int)(OpenSteerDemo::clock.getTotalSimulationTime () -
                         vehicle->timeOfLastCollision)
                << " seconds";
         if (vehicle->countOfCollisionFreeTimes > 0)
@@ -2439,10 +2439,10 @@ public:
         vehicle->reset ();
 
         // make camera jump immediately to new position
-        SteerTest::camera.doNotSmoothNextMove ();
+        OpenSteerDemo::camera.doNotSmoothNextMove ();
 
         // reset camera position
-        SteerTest::position2dCamera (*vehicle, initCamDist, initCamElev);
+        OpenSteerDemo::position2dCamera (*vehicle, initCamDist, initCamElev);
     }
 
     void handleFunctionKeys (int keyNumber)
@@ -2478,13 +2478,13 @@ public:
         std::ostringstream message;
         message << "Function keys handled by ";
         message << '"' << name() << '"' << ':' << std::ends;
-        SteerTest::printMessage (message);
-        SteerTest::printMessage ("  F1     select next driving demo.");
-        SteerTest::printMessage ("  F2     reverse path following direction.");
-        SteerTest::printMessage ("  F3     toggle path fences.");
-        SteerTest::printMessage ("  F4     toggle random rock clumps.");
-        SteerTest::printMessage ("  F5     toggle curved prediction.");
-        SteerTest::printMessage ("");
+        OpenSteerDemo::printMessage (message);
+        OpenSteerDemo::printMessage ("  F1     select next driving demo.");
+        OpenSteerDemo::printMessage ("  F2     reverse path following direction.");
+        OpenSteerDemo::printMessage ("  F3     toggle path fences.");
+        OpenSteerDemo::printMessage ("  F4     toggle random rock clumps.");
+        OpenSteerDemo::printMessage ("  F5     toggle curved prediction.");
+        OpenSteerDemo::printMessage ("");
     }
 
     void reversePathFollowDirection (void)
@@ -2534,7 +2534,7 @@ public:
             break;
         }
         message << std::ends;
-        SteerTest::printMessage (message);
+        OpenSteerDemo::printMessage (message);
     }
 
     // random utility, worth moving to Utilities.h?

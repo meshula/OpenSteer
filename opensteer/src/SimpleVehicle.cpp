@@ -31,8 +31,8 @@
 // SimpleVehicle
 //
 // A steerable point mass with a velocity-aligned local coordinate system.
-// SimpleVehicle is useful for developing prototype vehicles in SteerTest, it
-// is the base class for vehicles in the PlugIns supplied with OpenSteer.
+// SimpleVehicle is useful for developing prototype vehicles in OpenSteerDemo,
+// it is the base class for vehicles in the PlugIns supplied with OpenSteer.
 // Note that SimpleVehicle is provided only as sample code.  Your application
 // can use the OpenSteer library without using SimpleVehicle, as long as you
 // implement the AbstractVehicle protocol.
@@ -60,12 +60,12 @@
 
 
 #include "OpenSteer/SimpleVehicle.h"
-#include "OpenSteer/SteerTest.h"
+#include "OpenSteer/OpenSteerDemo.h"
 #include <algorithm>
 
 
 // ----------------------------------------------------------------------------
-// serial numbers  (XXX should this be part of a "SteerTest vehicle mixin"?)
+// serial numbers  (XXX should this be part of a "OpenSteerDemo vehicle mixin"?)
 
 
 int SimpleVehicle::serialNumberCounter = 0;

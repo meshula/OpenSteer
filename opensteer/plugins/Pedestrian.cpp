@@ -41,7 +41,7 @@
 #include <sstream>
 #include "OpenSteer/Pathway.h"
 #include "OpenSteer/SimpleVehicle.h"
-#include "OpenSteer/SteerTest.h"
+#include "OpenSteer/OpenSteerDemo.h"
 #include "OpenSteer/Proximity.h"
 
 
@@ -284,7 +284,7 @@ public:
         const Vec3 color = headOn ? red : green;
         const char* string = headOn ? "OUCH!" : "pardon me";
         const Vec3 location = position() + Vec3 (0, 0.5f, 0);
-        if (SteerTest::annotationIsOn())
+        if (OpenSteerDemo::annotationIsOn())
             draw2dTextAt3dLocation (*string, location, color);
     }
 
@@ -417,7 +417,7 @@ PolylinePathway* getTestPath (void)
 
 
 // ----------------------------------------------------------------------------
-// SteerTest PlugIn
+// OpenSteerDemo PlugIn
 
 
 class PedestrianPlugIn : public PlugIn
@@ -442,10 +442,10 @@ public:
 
         // initialize camera and selectedVehicle
         Pedestrian& firstPedestrian = **crowd.begin();
-        SteerTest::init3dCamera (firstPedestrian);
-        SteerTest::camera.mode = Camera::cmFixedDistanceOffset;
-        SteerTest::camera.fixedTarget.set (15, 0, 30);
-        SteerTest::camera.fixedPosition.set (15, 70, -70);
+        OpenSteerDemo::init3dCamera (firstPedestrian);
+        OpenSteerDemo::camera.mode = Camera::cmFixedDistanceOffset;
+        OpenSteerDemo::camera.fixedTarget.set (15, 0, 30);
+        OpenSteerDemo::camera.fixedPosition.set (15, 70, -70);
     }
 
     void update (const float currentTime, const float elapsedTime)
@@ -460,21 +460,17 @@ public:
     void redraw (const float currentTime, const float elapsedTime)
     {
         // selected Pedestrian (user can mouse click to select another)
-        AbstractVehicle& selected = *SteerTest::selectedVehicle;
+        AbstractVehicle& selected = *OpenSteerDemo::selectedVehicle;
 
         // Pedestrian nearest mouse (to be highlighted)
-        AbstractVehicle& nearMouse = *SteerTest::vehicleNearestToMouse ();
+        AbstractVehicle& nearMouse = *OpenSteerDemo::vehicleNearestToMouse ();
 
         // update camera
-        SteerTest::updateCamera (currentTime, elapsedTime, selected);
+        OpenSteerDemo::updateCamera (currentTime, elapsedTime, selected);
 
         // draw "ground plane"
-//         SteerTest::gridUtility (selected.position());
-//         SteerTest::gridUtility (SteerTest::selectedVehicle ?
-//                                 selected.position() :
-//                                 Vec3::zero);
-        if (SteerTest::selectedVehicle) gridCenter = selected.position();
-        SteerTest::gridUtility (gridCenter);
+        if (OpenSteerDemo::selectedVehicle) gridCenter = selected.position();
+        OpenSteerDemo::gridUtility (gridCenter);
 
         // draw and annotate each Pedestrian
         for (iterator i = crowd.begin(); i != crowd.end(); i++) (**i).draw (); 
@@ -483,18 +479,18 @@ public:
         drawPathAndObstacles ();
 
         // highlight Pedestrian nearest mouse
-        SteerTest::highlightVehicleUtility (nearMouse);
+        OpenSteerDemo::highlightVehicleUtility (nearMouse);
 
         // textual annotation (at the vehicle's screen position)
         serialNumberAnnotationUtility (selected, nearMouse);
 
         // textual annotation for selected Pedestrian
-        if (SteerTest::selectedVehicle && SteerTest::annotationIsOn())
+        if (OpenSteerDemo::selectedVehicle && OpenSteerDemo::annotationIsOn())
         {
             const Vec3 color (0.8f, 0.8f, 1.0f);
             const Vec3 textOffset (0, 0.25f, 0);
             const Vec3 textPosition = selected.position() + textOffset;
-            const Vec3 camPosition = SteerTest::camera.position();
+            const Vec3 camPosition = OpenSteerDemo::camera.position();
             const float camDistance = Vec3::distance (selected.position(),
                                                       camPosition);
             const char* spacer = "      ";
@@ -536,7 +532,7 @@ public:
     {
         // display a Pedestrian's serial number as a text label near its
         // screen position when it is near the selected vehicle or mouse.
-        if (&selected && &nearMouse && SteerTest::annotationIsOn())
+        if (&selected && &nearMouse && OpenSteerDemo::annotationIsOn())
         {
             for (iterator i = crowd.begin(); i != crowd.end(); i++)
             {
@@ -585,10 +581,10 @@ public:
         for (iterator i = crowd.begin(); i != crowd.end(); i++) (**i).reset ();
 
         // reset camera position
-        SteerTest::position2dCamera (*SteerTest::selectedVehicle);
+        OpenSteerDemo::position2dCamera (*OpenSteerDemo::selectedVehicle);
 
         // make camera jump immediately to new position
-        SteerTest::camera.doNotSmoothNextMove ();
+        OpenSteerDemo::camera.doNotSmoothNextMove ();
     }
 
     void handleFunctionKeys (int keyNumber)
@@ -608,14 +604,14 @@ public:
         std::ostringstream message;
         message << "Function keys handled by ";
         message << '"' << name() << '"' << ':' << std::ends;
-        SteerTest::printMessage (message);
-        SteerTest::printMessage (message);
-        SteerTest::printMessage ("  F1     add a pedestrian to the crowd.");
-        SteerTest::printMessage ("  F2     remove a pedestrian from crowd.");
-        SteerTest::printMessage ("  F3     use next proximity database.");
-        SteerTest::printMessage ("  F4     toggle directed path follow.");
-        SteerTest::printMessage ("  F5     toggle wander component on/off.");
-        SteerTest::printMessage ("");
+        OpenSteerDemo::printMessage (message);
+        OpenSteerDemo::printMessage (message);
+        OpenSteerDemo::printMessage ("  F1     add a pedestrian to the crowd.");
+        OpenSteerDemo::printMessage ("  F2     remove a pedestrian from crowd.");
+        OpenSteerDemo::printMessage ("  F3     use next proximity database.");
+        OpenSteerDemo::printMessage ("  F4     toggle directed path follow.");
+        OpenSteerDemo::printMessage ("  F5     toggle wander component on/off.");
+        OpenSteerDemo::printMessage ("");
     }
 
 
@@ -624,7 +620,7 @@ public:
         population++;
         Pedestrian* pedestrian = new Pedestrian (*pd);
         crowd.push_back (pedestrian);
-        if (population == 1) SteerTest::selectedVehicle = pedestrian;
+        if (population == 1) OpenSteerDemo::selectedVehicle = pedestrian;
     }
 
 
@@ -637,9 +633,9 @@ public:
             crowd.pop_back();
             population--;
 
-            // if it is SteerTest's selected vehicle, unselect it
-            if (pedestrian == SteerTest::selectedVehicle)
-                SteerTest::selectedVehicle = NULL;
+            // if it is OpenSteerDemo's selected vehicle, unselect it
+            if (pedestrian == OpenSteerDemo::selectedVehicle)
+                OpenSteerDemo::selectedVehicle = NULL;
 
             // delete the Pedestrian
             delete pedestrian;
@@ -649,7 +645,7 @@ public:
 
     // for purposes of demonstration, allow cycling through various
     // types of proximity databases.  this routine is called when the
-    // SteerTest user pushes a function key.
+    // OpenSteerDemo user pushes a function key.
     void nextPD (void)
     {
         // save pointer to old PD

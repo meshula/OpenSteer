@@ -54,7 +54,7 @@
 #include <iomanip>
 #include <sstream>
 #include "OpenSteer/SimpleVehicle.h"
-#include "OpenSteer/SteerTest.h"
+#include "OpenSteer/OpenSteerDemo.h"
 
 
 // ----------------------------------------------------------------------------
@@ -188,7 +188,7 @@ int resetCount = 0;
 
 
 // ----------------------------------------------------------------------------
-// state for SteerTest PlugIn
+// state for OpenSteerDemo PlugIn
 //
 // XXX consider moving this inside CtfPlugIn
 // XXX consider using STL (any advantage? consistency?)
@@ -647,7 +647,7 @@ void CtfSeeker::updateState (const float currentTime)
         if (currentTime > resetTime) 
         {
             // xxx a royal hack (should do this internal to CTF):
-            SteerTest::queueDelayedResetPlugInXXX ();
+            OpenSteerDemo::queueDelayedResetPlugInXXX ();
         }
     }
 }
@@ -812,7 +812,7 @@ void CtfBase::removeOneObstacle (void)
 
 
 // ----------------------------------------------------------------------------
-// PlugIn for SteerTest
+// PlugIn for OpenSteerDemo
 
 
 class CtfPlugIn : public PlugIn
@@ -840,10 +840,10 @@ public:
         }
 
         // initialize camera
-        SteerTest::init2dCamera (*ctfSeeker);
-        SteerTest::camera.mode = Camera::cmFixedDistanceOffset;
-        SteerTest::camera.fixedTarget.set (15, 0, 0);
-        SteerTest::camera.fixedPosition.set (80, 60, 0);
+        OpenSteerDemo::init2dCamera (*ctfSeeker);
+        OpenSteerDemo::camera.mode = Camera::cmFixedDistanceOffset;
+        OpenSteerDemo::camera.fixedTarget.set (15, 0, 0);
+        OpenSteerDemo::camera.fixedPosition.set (80, 60, 0);
 
         CtfBase::initializeObstacles ();
     }
@@ -863,24 +863,24 @@ public:
     void redraw (const float currentTime, const float elapsedTime)
     {
         // selected vehicle (user can mouse click to select another)
-        AbstractVehicle& selected = *SteerTest::selectedVehicle;
+        AbstractVehicle& selected = *OpenSteerDemo::selectedVehicle;
 
         // vehicle nearest mouse (to be highlighted)
-        AbstractVehicle& nearMouse = *SteerTest::vehicleNearestToMouse ();
+        AbstractVehicle& nearMouse = *OpenSteerDemo::vehicleNearestToMouse ();
 
         // update camera
-        SteerTest::updateCamera (currentTime, elapsedTime, selected);
+        OpenSteerDemo::updateCamera (currentTime, elapsedTime, selected);
 
         // draw "ground plane" centered between base and selected vehicle
-        const Vec3 goalOffset = gHomeBaseCenter-SteerTest::camera.position();
+        const Vec3 goalOffset = gHomeBaseCenter-OpenSteerDemo::camera.position();
         const Vec3 goalDirection = goalOffset.normalize ();
-        const Vec3 cameraForward = SteerTest::camera.xxxls().forward();
+        const Vec3 cameraForward = OpenSteerDemo::camera.xxxls().forward();
         const float goalDot = cameraForward.dot (goalDirection);
         const float blend = remapIntervalClip (goalDot, 1, 0, 0.5, 0);
         const Vec3 gridCenter = interpolate (blend,
                                              selected.position(),
                                              gHomeBaseCenter);
-        SteerTest::gridUtility (gridCenter);
+        OpenSteerDemo::gridUtility (gridCenter);
 
         // draw the seeker, obstacles and home base
         ctfSeeker->draw();
@@ -891,7 +891,7 @@ public:
         for (int i = 0; i < ctfEnemyCount; i++) ctfEnemies[i]->draw ();
 
         // highlight vehicle nearest mouse
-        SteerTest::highlightVehicleUtility (nearMouse);
+        OpenSteerDemo::highlightVehicleUtility (nearMouse);
     }
 
     void close (void)
@@ -921,10 +921,10 @@ public:
         for (int i = 0; i<ctfEnemyCount; i++) ctfEnemies[i]->reset ();
 
         // reset camera position
-        SteerTest::position2dCamera (*ctfSeeker);
+        OpenSteerDemo::position2dCamera (*ctfSeeker);
 
         // make camera jump immediately to new position
-        SteerTest::camera.doNotSmoothNextMove ();
+        OpenSteerDemo::camera.doNotSmoothNextMove ();
     }
 
     void handleFunctionKeys (int keyNumber)
@@ -941,10 +941,10 @@ public:
         std::ostringstream message;
         message << "Function keys handled by ";
         message << '"' << name() << '"' << ':' << std::ends;
-        SteerTest::printMessage (message);
-        SteerTest::printMessage ("  F1     add one obstacle.");
-        SteerTest::printMessage ("  F2     remove one obstacle.");
-        SteerTest::printMessage ("");
+        OpenSteerDemo::printMessage (message);
+        OpenSteerDemo::printMessage ("  F1     add one obstacle.");
+        OpenSteerDemo::printMessage ("  F2     remove one obstacle.");
+        OpenSteerDemo::printMessage ("");
     }
 
     const AVGroup& allVehicles (void) {return (const AVGroup&) all;}

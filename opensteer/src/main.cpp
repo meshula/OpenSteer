@@ -28,7 +28,7 @@
 // ------------------------------------------------------------------------
 //
 //
-// Main: top level routine for SteerTest application
+// Main: top level routine for OpenSteerDemo application
 //
 //  5-29-02 cwr: created
 //
@@ -36,14 +36,14 @@
 // ------------------------------------------------------------------------
 
 
-#include "OpenSteer/SteerTest.h"       // SteerTest application
-#include "OpenSteer/Draw.h"            // SteerTest graphics
+#include "OpenSteer/OpenSteerDemo.h"   // OpenSteerDemo application
+#include "OpenSteer/Draw.h"            // OpenSteerDemo graphics
 
 
 int main (int argc, char **argv) 
 {
-    // initialize SteerTest application
-    SteerTest::initialize ();
+    // initialize OpenSteerDemo application
+    OpenSteerDemo::initialize ();
 
     // initialize graphics
     initializeGraphics (argc, argv);

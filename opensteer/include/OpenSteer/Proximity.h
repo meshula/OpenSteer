@@ -99,7 +99,7 @@ public:
 // ----------------------------------------------------------------------------
 // This is the "brute force" O(n^2) approach implemented in terms of the
 // AbstractProximityDatabase protocol so it can be compared directly to other
-// approaches.  (The SteerTest Boids plugin allows switching at runtime.)
+// approaches.  (e.g. the Boids plugin allows switching at runtime.)
 
 
 template <class ContentType>

@@ -28,7 +28,7 @@
 // ----------------------------------------------------------------------------
 //
 //
-// SteerTest PlugIn class
+// OpenSteerDemo PlugIn class
 //
 // Provides AbstractPlugIn a pure abstract base class, and PlugIn a partial
 // implementation providing default methods to be sub-classed by the
@@ -38,7 +38,7 @@
 //
 //
 // ----------------------------------------------------------------------------
-// A pattern for a specific user-defined SteerTest PlugIn class called Foo.
+// A pattern for a specific user-defined OpenSteerDemo PlugIn class called Foo.
 // Defines class FooPlugIn, then makes a single instance (singleton) of it.
 /*
 
@@ -95,7 +95,7 @@ public:
     // ("built ins" have keys greater than 0 and less than 1)
     virtual float selectionOrderSortKey (void) = 0;
 
-    // allows a PlugIn to nominate itself as SteerTest's initially selected
+    // allows a PlugIn to nominate itself as OpenSteerDemo's initially selected
     // (default) PlugIn, which is otherwise the first in "selection order"
     virtual bool requestInitialSelection (void) = 0;
 

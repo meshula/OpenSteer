@@ -42,7 +42,7 @@
 #include <iomanip>
 #include <sstream>
 #include "OpenSteer/SimpleVehicle.h"
-#include "OpenSteer/SteerTest.h"
+#include "OpenSteer/OpenSteerDemo.h"
 
 
 // ----------------------------------------------------------------------------
@@ -121,7 +121,7 @@ float LowSpeedTurn::startSpeed;
 
 
 // ----------------------------------------------------------------------------
-// PlugIn for SteerTest
+// PlugIn for OpenSteerDemo
 
 
 const int lstCount = 5;
@@ -149,17 +149,17 @@ public:
         for (int i = 0; i < lstCount; i++) all.push_back (new LowSpeedTurn);
 
         // initial selected vehicle
-        SteerTest::selectedVehicle = *all.begin();
+        OpenSteerDemo::selectedVehicle = *all.begin();
 
         // initialize camera
-        SteerTest::camera.mode = Camera::cmFixed;
-        SteerTest::camera.fixedUp = lstPlusZ;
-        SteerTest::camera.fixedTarget = lstViewCenter;
-        SteerTest::camera.fixedPosition = lstViewCenter;
-        SteerTest::camera.fixedPosition.y += lstLookDownDistance;
-        SteerTest::camera.lookdownDistance = lstLookDownDistance;
-        SteerTest::camera.fixedDistVOffset = SteerTest::camera2dElevation;
-        SteerTest::camera.fixedDistDistance = SteerTest::cameraTargetDistance;
+        OpenSteerDemo::camera.mode = Camera::cmFixed;
+        OpenSteerDemo::camera.fixedUp = lstPlusZ;
+        OpenSteerDemo::camera.fixedTarget = lstViewCenter;
+        OpenSteerDemo::camera.fixedPosition = lstViewCenter;
+        OpenSteerDemo::camera.fixedPosition.y += lstLookDownDistance;
+        OpenSteerDemo::camera.lookdownDistance = lstLookDownDistance;
+        OpenSteerDemo::camera.fixedDistVOffset = OpenSteerDemo::camera2dElevation;
+        OpenSteerDemo::camera.fixedDistDistance = OpenSteerDemo::cameraTargetDistance;
     }
 
     void update (const float currentTime, const float elapsedTime)
@@ -174,16 +174,16 @@ public:
     void redraw (const float currentTime, const float elapsedTime)
     {
         // selected vehicle (user can mouse click to select another)
-        AbstractVehicle& selected = *SteerTest::selectedVehicle;
+        AbstractVehicle& selected = *OpenSteerDemo::selectedVehicle;
 
         // vehicle nearest mouse (to be highlighted)
-        AbstractVehicle& nearMouse = *SteerTest::vehicleNearestToMouse ();
+        AbstractVehicle& nearMouse = *OpenSteerDemo::vehicleNearestToMouse ();
 
         // update camera
-        SteerTest::updateCamera (currentTime, elapsedTime, selected);
+        OpenSteerDemo::updateCamera (currentTime, elapsedTime, selected);
 
         // draw "ground plane"
-        SteerTest::gridUtility (selected.position());
+        OpenSteerDemo::gridUtility (selected.position());
       
         // update, draw and annotate each agent
         for (iterator i = all.begin(); i != all.end(); i++)
@@ -205,7 +205,7 @@ public:
         }
 
         // highlight vehicle nearest mouse
-        SteerTest::highlightVehicleUtility (nearMouse);
+        OpenSteerDemo::highlightVehicleUtility (nearMouse);
     }
 
     void close (void)

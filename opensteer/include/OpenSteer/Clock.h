@@ -28,7 +28,7 @@
 // ----------------------------------------------------------------------------
 //
 //
-// discrete time simulation clock for SteerTest
+// discrete time simulation clock for OpenSteerDemo
 //
 // Keeps track of real clock time and simulation time.  Encapsulates the time
 // API of the underlying operating system.  Can be put in either "as fast as
@@ -76,7 +76,7 @@ public:
     float realTimeSinceFirstClockUpdate (void);
 
     // force simulation time ahead, ignoring passage of real time.
-    // Used for SteerTest's "single step forward" and animation mode
+    // Used for OpenSteerDemo's "single step forward" and animation mode
     float advanceSimulationTimeOneFrame (void);
     void advanceSimulationTime (const float seconds);
 

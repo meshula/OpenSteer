@@ -28,7 +28,7 @@
 // ----------------------------------------------------------------------------
 //
 //
-// camera control for SteerTest
+// camera control for OpenSteerDemo
 //
 // a camera ("point of view") with various "aiming modes" to track a
 // moving vehicle
@@ -40,7 +40,7 @@
 
 
 #include "OpenSteer/Camera.h"
-#include "OpenSteer/SteerTest.h"
+#include "OpenSteer/OpenSteerDemo.h"
 
 
 // ----------------------------------------------------------------------------
@@ -272,7 +272,7 @@ Vec3 Camera::constDistHelper (const float /*elapsedTime*/)
 
 
 // ----------------------------------------------------------------------------
-// select next camera mode, used by SteerTest
+// select next camera mode, used by OpenSteerDemo
 
 
 void Camera::selectNextMode (void)
@@ -293,7 +293,7 @@ Camera::cameraMode Camera::successorMode (const cameraMode cm) const
 
 
 // ----------------------------------------------------------------------------
-// string naming current camera mode, used by SteerTest
+// string naming current camera mode, used by OpenSteerDemo
 
 
 char* Camera::modeName (void)
@@ -312,7 +312,7 @@ char* Camera::modeName (void)
 
 // ----------------------------------------------------------------------------
 // adjust the offest vector of the current camera mode based on a
-// "mouse adjustment vector" from SteerTest (xxx experiment 10-17-02)
+// "mouse adjustment vector" from OpenSteerDemo (xxx experiment 10-17-02)
 
 
 void Camera::mouseAdjustOffset (const Vec3& adjustment)

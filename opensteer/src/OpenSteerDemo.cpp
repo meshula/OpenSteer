@@ -28,9 +28,9 @@
 // ----------------------------------------------------------------------------
 //
 //
-// SteerTest
+// OpenSteerDemo
 //
-// This class encapsulates the state of the SteerTest application and the
+// This class encapsulates the state of the OpenSteerDemo application and the
 // services it provides to its plug-ins.  It is never instantiated, all of
 // its members are static (belong to the class as a whole.)
 //
@@ -42,28 +42,28 @@
 
 #include <algorithm>
 #include <sstream>
-#include "OpenSteer/SteerTest.h"
+#include "OpenSteer/OpenSteerDemo.h"
 
 
 // ----------------------------------------------------------------------------
 // keeps track of both "real time" and "simulation time"
 
 
-Clock SteerTest::clock;
+Clock OpenSteerDemo::clock;
 
 
 // ----------------------------------------------------------------------------
 // camera automatically tracks selected vehicle
 
 
-Camera SteerTest::camera;
+Camera OpenSteerDemo::camera;
 
 
 // ----------------------------------------------------------------------------
 // currently selected plug-in (user can choose or cycle through them)
 
 
-PlugIn* SteerTest::selectedPlugIn = NULL;
+PlugIn* OpenSteerDemo::selectedPlugIn = NULL;
 
 
 // ----------------------------------------------------------------------------
@@ -72,21 +72,21 @@ PlugIn* SteerTest::selectedPlugIn = NULL;
 // near a vehicle causes it to become the Selected Vehicle.
 
 
-AbstractVehicle* SteerTest::selectedVehicle = NULL;
+AbstractVehicle* OpenSteerDemo::selectedVehicle = NULL;
 
 
 // ----------------------------------------------------------------------------
 // phase: identifies current phase of the per-frame update cycle
 
 
-int SteerTest::phase = SteerTest::overheadPhase;
+int OpenSteerDemo::phase = OpenSteerDemo::overheadPhase;
 
 
 // ----------------------------------------------------------------------------
 // graphical annotation: master on/off switch
 
 
-bool SteerTest::enableAnnotation = true;
+bool OpenSteerDemo::enableAnnotation = true;
 
 
 // ----------------------------------------------------------------------------
@@ -94,19 +94,19 @@ bool SteerTest::enableAnnotation = true;
 // XXX so they have to be initialized not-inline.
 
 
-const int SteerTest::overheadPhase = 0;
-const int SteerTest::updatePhase = 1;
-const int SteerTest::drawPhase = 2;
+const int OpenSteerDemo::overheadPhase = 0;
+const int OpenSteerDemo::updatePhase = 1;
+const int OpenSteerDemo::drawPhase = 2;
 
 
 // ----------------------------------------------------------------------------
-// initialize SteerTest application
+// initialize OpenSteerDemo application
 
 
 void printPlugIn (PlugIn& pi) {std::cout << " " << pi << std::endl;} // XXX
 
 
-void SteerTest::initialize (void)
+void OpenSteerDemo::initialize (void)
 {
     // select the default PlugIn
     selectDefaultPlugIn ();
@@ -135,7 +135,7 @@ void SteerTest::initialize (void)
 // main update function: step simulation forward and redraw scene
 
 
-void SteerTest::updateSimulationAndRedraw (void)
+void OpenSteerDemo::updateSimulationAndRedraw (void)
 {
     // update global simulation clock
     clock.update ();
@@ -156,20 +156,20 @@ void SteerTest::updateSimulationAndRedraw (void)
 
 
 // ----------------------------------------------------------------------------
-// exit SteerTest with a given text message or error code
+// exit OpenSteerDemo with a given text message or error code
 
 
-void SteerTest::errorExit (const char* message)
+void OpenSteerDemo::errorExit (const char* message)
 {
     printMessage (message);
 #ifdef _MSC_VER
-	MessageBox(0, message, "SteerTest Unfortunate Event", MB_ICONERROR);
+	MessageBox(0, message, "OpenSteerDemo Unfortunate Event", MB_ICONERROR);
 #endif
     exit (-1);
 }
 
 
-void SteerTest::exit (int exitCode)
+void OpenSteerDemo::exit (int exitCode)
 {
     ::exit (exitCode);
 }
@@ -179,7 +179,7 @@ void SteerTest::exit (int exitCode)
 // select the default PlugIn
 
 
-void SteerTest::selectDefaultPlugIn (void)
+void OpenSteerDemo::selectDefaultPlugIn (void)
 {
     PlugIn::sortBySelectionOrder ();
     selectedPlugIn = PlugIn::findDefault ();
@@ -190,7 +190,7 @@ void SteerTest::selectDefaultPlugIn (void)
 // select the "next" plug-in, cycling through "plug-in selection order"
 
 
-void SteerTest::selectNextPlugIn (void)
+void OpenSteerDemo::selectNextPlugIn (void)
 {
     closeSelectedPlugIn ();
     selectedPlugIn = selectedPlugIn->next ();
@@ -202,7 +202,7 @@ void SteerTest::selectNextPlugIn (void)
 // handle function keys an a per-plug-in basis
 
 
-void SteerTest::functionKeyForPlugIn (int keyNumber)
+void OpenSteerDemo::functionKeyForPlugIn (int keyNumber)
 {
     selectedPlugIn->handleFunctionKeys (keyNumber);
 }
@@ -212,7 +212,7 @@ void SteerTest::functionKeyForPlugIn (int keyNumber)
 // return name of currently selected plug-in
 
 
-const char* SteerTest::nameOfSelectedPlugIn (void)
+const char* OpenSteerDemo::nameOfSelectedPlugIn (void)
 {
     return (selectedPlugIn ? selectedPlugIn->name() : "no PlugIn");
 }
@@ -222,7 +222,7 @@ const char* SteerTest::nameOfSelectedPlugIn (void)
 // open the currently selected plug-in
 
 
-void SteerTest::openSelectedPlugIn (void)
+void OpenSteerDemo::openSelectedPlugIn (void)
 {
     camera.reset ();
     selectedVehicle = NULL;
@@ -234,8 +234,8 @@ void SteerTest::openSelectedPlugIn (void)
 // do a simulation update for the currently selected plug-in
 
 
-void SteerTest::updateSelectedPlugIn (const float currentTime,
-                                      const float elapsedTime)
+void OpenSteerDemo::updateSelectedPlugIn (const float currentTime,
+                                          const float elapsedTime)
 {
     // switch to Update phase
     pushPhase (updatePhase);
@@ -262,8 +262,8 @@ void SteerTest::updateSelectedPlugIn (const float currentTime,
 // redraw graphics for the currently selected plug-in
 
 
-void SteerTest::redrawSelectedPlugIn (const float currentTime,
-                                      const float elapsedTime)
+void OpenSteerDemo::redrawSelectedPlugIn (const float currentTime,
+                                          const float elapsedTime)
 {
     // switch to Draw phase
     pushPhase (drawPhase);
@@ -284,7 +284,7 @@ void SteerTest::redrawSelectedPlugIn (const float currentTime,
 // close the currently selected plug-in
 
 
-void SteerTest::closeSelectedPlugIn (void)
+void OpenSteerDemo::closeSelectedPlugIn (void)
 {
     selectedPlugIn->close ();
     selectedVehicle = NULL;
@@ -295,7 +295,7 @@ void SteerTest::closeSelectedPlugIn (void)
 // reset the currently selected plug-in
 
 
-void SteerTest::resetSelectedPlugIn (void)
+void OpenSteerDemo::resetSelectedPlugIn (void)
 {
     selectedPlugIn->reset ();
 }
@@ -311,13 +311,13 @@ void SteerTest::resetSelectedPlugIn (void)
 bool gDelayedResetPlugInXXX = false;
 
 
-void SteerTest::queueDelayedResetPlugInXXX (void)
+void OpenSteerDemo::queueDelayedResetPlugInXXX (void)
 {
     gDelayedResetPlugInXXX = true;
 }
 
 
-void SteerTest::doDelayedResetPlugInXXX (void)
+void OpenSteerDemo::doDelayedResetPlugInXXX (void)
 {
     if (gDelayedResetPlugInXXX)
     {
@@ -332,7 +332,7 @@ void SteerTest::doDelayedResetPlugInXXX (void)
 // vehicles(/agents/characters) defined by the currently selected PlugIn
 
 
-const AVGroup& SteerTest::allVehiclesOfSelectedPlugIn (void)
+const AVGroup& OpenSteerDemo::allVehiclesOfSelectedPlugIn (void)
 {
     return selectedPlugIn->allVehicles ();
 }
@@ -343,7 +343,7 @@ const AVGroup& SteerTest::allVehiclesOfSelectedPlugIn (void)
 // in allVehiclesOfSelectedPlugIn
 
 
-void SteerTest::selectNextVehicle (void)
+void OpenSteerDemo::selectNextVehicle (void)
 {
     if (selectedVehicle != NULL)
     {
@@ -371,7 +371,7 @@ void SteerTest::selectNextVehicle (void)
 // select vehicle nearest the given screen position (e.g.: of the mouse)
 
 
-void SteerTest::selectVehicleNearestScreenPosition (int x, int y)
+void OpenSteerDemo::selectVehicleNearestScreenPosition (int x, int y)
 {
     selectedVehicle = findVehicleNearestScreenPosition (x, y);
 }
@@ -383,7 +383,7 @@ void SteerTest::selectVehicleNearestScreenPosition (int x, int y)
 // there are no AbstractVehicle.
 
 
-AbstractVehicle* SteerTest::vehicleNearestToMouse (void)
+AbstractVehicle* OpenSteerDemo::vehicleNearestToMouse (void)
 {
     return (mouseInWindow ? 
             findVehicleNearestScreenPosition (mouseX, mouseY) :
@@ -406,7 +406,7 @@ AbstractVehicle* SteerTest::vehicleNearestToMouse (void)
 // xxx vehicle BEHIND the camera location.
 
 
-AbstractVehicle* SteerTest::findVehicleNearestScreenPosition (int x, int y)
+AbstractVehicle* OpenSteerDemo::findVehicleNearestScreenPosition (int x, int y)
 {
     // find the direction from the camera position to the given pixel
     const Vec3 direction = directionFromCameraToScreenPosition (x, y);
@@ -440,23 +440,23 @@ AbstractVehicle* SteerTest::findVehicleNearestScreenPosition (int x, int y)
 // for storing most recent mouse state
 
 
-int SteerTest::mouseX = 0;
-int SteerTest::mouseY = 0;
-bool SteerTest::mouseInWindow = false;
+int OpenSteerDemo::mouseX = 0;
+int OpenSteerDemo::mouseY = 0;
+bool OpenSteerDemo::mouseInWindow = false;
 
 
 // ----------------------------------------------------------------------------
 // set a certain initial camera state used by several plug-ins
 
 
-void SteerTest::init3dCamera (AbstractVehicle& selected)
+void OpenSteerDemo::init3dCamera (AbstractVehicle& selected)
 {
     init3dCamera (selected, cameraTargetDistance, camera2dElevation);
 }
 
-void SteerTest::init3dCamera (AbstractVehicle& selected,
-                              float distance,
-                              float elevation)
+void OpenSteerDemo::init3dCamera (AbstractVehicle& selected,
+                                  float distance,
+                                  float elevation)
 {
     position3dCamera (selected, distance, elevation);
     camera.fixedDistDistance = distance;
@@ -465,14 +465,14 @@ void SteerTest::init3dCamera (AbstractVehicle& selected,
 }
 
 
-void SteerTest::init2dCamera (AbstractVehicle& selected)
+void OpenSteerDemo::init2dCamera (AbstractVehicle& selected)
 {
     init2dCamera (selected, cameraTargetDistance, camera2dElevation);
 }
 
-void SteerTest::init2dCamera (AbstractVehicle& selected,
-                              float distance,
-                              float elevation)
+void OpenSteerDemo::init2dCamera (AbstractVehicle& selected,
+                                  float distance,
+                                  float elevation)
 {
     position2dCamera (selected, distance, elevation);
     camera.fixedDistDistance = distance;
@@ -481,14 +481,14 @@ void SteerTest::init2dCamera (AbstractVehicle& selected,
 }
 
 
-void SteerTest::position3dCamera (AbstractVehicle& selected)
+void OpenSteerDemo::position3dCamera (AbstractVehicle& selected)
 {
     position3dCamera (selected, cameraTargetDistance, camera2dElevation);
 }
 
-void SteerTest::position3dCamera (AbstractVehicle& selected,
-                                  float distance,
-                                  float /*elevation*/)
+void OpenSteerDemo::position3dCamera (AbstractVehicle& selected,
+                                      float distance,
+                                      float /*elevation*/)
 {
     selectedVehicle = &selected;
     if (&selected)
@@ -500,14 +500,14 @@ void SteerTest::position3dCamera (AbstractVehicle& selected,
 }
 
 
-void SteerTest::position2dCamera (AbstractVehicle& selected)
+void OpenSteerDemo::position2dCamera (AbstractVehicle& selected)
 {
     position2dCamera (selected, cameraTargetDistance, camera2dElevation);
 }
 
-void SteerTest::position2dCamera (AbstractVehicle& selected,
-                                  float distance,
-                                  float elevation)
+void OpenSteerDemo::position2dCamera (AbstractVehicle& selected,
+                                      float distance,
+                                      float elevation)
 {
     // position the camera as if in 3d:
     position3dCamera (selected, distance, elevation);
@@ -523,9 +523,9 @@ void SteerTest::position2dCamera (AbstractVehicle& selected,
 // camera updating utility used by several plug-ins
 
 
-void SteerTest::updateCamera (const float currentTime,
-                              const float elapsedTime,
-                              const AbstractVehicle& selected)
+void OpenSteerDemo::updateCamera (const float currentTime,
+                                  const float elapsedTime,
+                                  const AbstractVehicle& selected)
 {
     camera.vehicleToTrack = &selected;
     camera.update (currentTime, elapsedTime, clock.getPausedState ());
@@ -536,18 +536,18 @@ void SteerTest::updateCamera (const float currentTime,
 // some camera-related default constants
 
 
-const float SteerTest::camera2dElevation = 8;
-const float SteerTest::cameraTargetDistance = 13;
-const Vec3 SteerTest::cameraTargetOffset (0,
-                                          SteerTest::camera2dElevation,
-                                          0);
+const float OpenSteerDemo::camera2dElevation = 8;
+const float OpenSteerDemo::cameraTargetDistance = 13;
+const Vec3 OpenSteerDemo::cameraTargetOffset (0,
+                                              OpenSteerDemo::camera2dElevation,
+                                              0);
 
 
 // ----------------------------------------------------------------------------
 // ground plane grid-drawing utility used by several plug-ins
 
 
-void SteerTest::gridUtility (const Vec3& gridTarget)
+void OpenSteerDemo::gridUtility (const Vec3& gridTarget)
 {
     // round off target to the nearest multiple of 2 (because the
     // checkboard grid with a pitch of 1 tiles with a period of 2)
@@ -572,7 +572,7 @@ void SteerTest::gridUtility (const Vec3& gridTarget)
 // draws a gray disk on the XZ plane under a given vehicle
 
 
-void SteerTest::highlightVehicleUtility (const AbstractVehicle& vehicle)
+void OpenSteerDemo::highlightVehicleUtility (const AbstractVehicle& vehicle)
 {
     if (&vehicle != NULL)
         drawXZDisk (vehicle.radius(), vehicle.position(), gGray60, 20);
@@ -583,7 +583,7 @@ void SteerTest::highlightVehicleUtility (const AbstractVehicle& vehicle)
 // draws a gray circle on the XZ plane under a given vehicle
 
 
-void SteerTest::circleHighlightVehicleUtility (const AbstractVehicle& vehicle)
+void OpenSteerDemo::circleHighlightVehicleUtility (const AbstractVehicle& vehicle)
 {
     if (&vehicle != NULL) drawXZCircle (vehicle.radius () * 1.1f,
                                         vehicle.position(),
@@ -597,8 +597,8 @@ void SteerTest::circleHighlightVehicleUtility (const AbstractVehicle& vehicle)
 // xxx not used as of 11-20-02
 
 
-void SteerTest::drawBoxHighlightOnVehicle (const AbstractVehicle& v,
-                                           const Vec3 color)
+void OpenSteerDemo::drawBoxHighlightOnVehicle (const AbstractVehicle& v,
+                                               const Vec3 color)
 {
     if (&v)
     {
@@ -615,9 +615,9 @@ void SteerTest::drawBoxHighlightOnVehicle (const AbstractVehicle& v,
 // radiusMultiplier.
 
 
-void SteerTest::drawCircleHighlightOnVehicle (const AbstractVehicle& v,
-                                              const float radiusMultiplier,
-                                              const Vec3 color)
+void OpenSteerDemo::drawCircleHighlightOnVehicle (const AbstractVehicle& v,
+                                                  const float radiusMultiplier,
+                                                  const Vec3 color)
 {
     if (&v)
     {
@@ -634,25 +634,25 @@ void SteerTest::drawCircleHighlightOnVehicle (const AbstractVehicle& v,
 // ----------------------------------------------------------------------------
 
 
-void SteerTest::printMessage (const char* message)
+void OpenSteerDemo::printMessage (const char* message)
 {
-    std::cout << "SteerTest: " <<  message << std::endl << std::flush;
+    std::cout << "OpenSteerDemo: " <<  message << std::endl << std::flush;
 }
 
 
-void SteerTest::printMessage (const std::ostringstream& message)
+void OpenSteerDemo::printMessage (const std::ostringstream& message)
 {
     printMessage (message.str().c_str());
 }
 
 
-void SteerTest::printWarning (const char* message)
+void OpenSteerDemo::printWarning (const char* message)
 {
-    std::cout << "SteerTest: Warning: " <<  message << std::endl << std::flush;
+    std::cout << "OpenSteerDemo: Warning: " <<  message << std::endl << std::flush;
 }
 
 
-void SteerTest::printWarning (const std::ostringstream& message)
+void OpenSteerDemo::printWarning (const std::ostringstream& message)
 {
     printWarning (message.str().c_str());
 }
@@ -665,7 +665,7 @@ void SteerTest::printWarning (const std::ostringstream& message)
 // XXX perhaps from a list of "command" objects created at initialization
 
 
-void SteerTest::keyboardMiniHelp (void)
+void OpenSteerDemo::keyboardMiniHelp (void)
 {
     printMessage ("");
     printMessage ("defined single key commands:");
@@ -686,15 +686,15 @@ void SteerTest::keyboardMiniHelp (void)
 
 
 // ----------------------------------------------------------------------------
-// manage SteerTest phase transitions (xxx and maintain phase timers)
+// manage OpenSteerDemo phase transitions (xxx and maintain phase timers)
 
 
-int SteerTest::phaseStackIndex = 0;
-const int SteerTest::phaseStackSize = 5;
-int SteerTest::phaseStack [SteerTest::phaseStackSize];
+int OpenSteerDemo::phaseStackIndex = 0;
+const int OpenSteerDemo::phaseStackSize = 5;
+int OpenSteerDemo::phaseStack [OpenSteerDemo::phaseStackSize];
 
 
-void SteerTest::pushPhase (const int newPhase)
+void OpenSteerDemo::pushPhase (const int newPhase)
 {
     // update timer for current (old) phase: add in time since last switch
     updatePhaseTimers ();
@@ -710,7 +710,7 @@ void SteerTest::pushPhase (const int newPhase)
 }
 
 
-void SteerTest::popPhase (void)
+void OpenSteerDemo::popPhase (void)
 {
     // update timer for current (old) phase: add in time since last switch
     updatePhaseTimers ();
@@ -723,11 +723,11 @@ void SteerTest::popPhase (void)
 // ----------------------------------------------------------------------------
 
 
-float SteerTest::phaseTimerBase = 0;
-float SteerTest::phaseTimers [drawPhase+1];
+float OpenSteerDemo::phaseTimerBase = 0;
+float OpenSteerDemo::phaseTimers [drawPhase+1];
 
 
-void SteerTest::initPhaseTimers (void)
+void OpenSteerDemo::initPhaseTimers (void)
 {
     phaseTimers[drawPhase] = 0;
     phaseTimers[updatePhase] = 0;
@@ -736,7 +736,7 @@ void SteerTest::initPhaseTimers (void)
 }
 
 
-void SteerTest::updatePhaseTimers (void)
+void OpenSteerDemo::updatePhaseTimers (void)
 {
     const float currentRealTime = clock.realTimeSinceFirstClockUpdate();
     phaseTimers[phase] += currentRealTime - phaseTimerBase;

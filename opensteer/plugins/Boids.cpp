@@ -38,7 +38,7 @@
 
 #include <sstream>
 #include "OpenSteer/SimpleVehicle.h"
-#include "OpenSteer/SteerTest.h"
+#include "OpenSteer/OpenSteerDemo.h"
 #include "OpenSteer/Proximity.h"
 
 
@@ -247,7 +247,7 @@ int Boid::boundaryCondition = 0;
 
 
 // ----------------------------------------------------------------------------
-// PlugIn for SteerTest
+// PlugIn for OpenSteerDemo
 
 
 class BoidsPlugIn : public PlugIn
@@ -271,13 +271,13 @@ public:
         for (int i = 0; i < 200; i++) addBoidToFlock ();
 
         // initialize camera
-        SteerTest::init3dCamera (*SteerTest::selectedVehicle);
-        SteerTest::camera.mode = Camera::cmFixed;
-        SteerTest::camera.fixedDistDistance = SteerTest::cameraTargetDistance;
-        SteerTest::camera.fixedDistVOffset = 0;
-        SteerTest::camera.lookdownDistance = 20;
-        SteerTest::camera.aimLeadTime = 0.5;
-        SteerTest::camera.povOffset.set (0, 0.5, -2);
+        OpenSteerDemo::init3dCamera (*OpenSteerDemo::selectedVehicle);
+        OpenSteerDemo::camera.mode = Camera::cmFixed;
+        OpenSteerDemo::camera.fixedDistDistance = OpenSteerDemo::cameraTargetDistance;
+        OpenSteerDemo::camera.fixedDistVOffset = 0;
+        OpenSteerDemo::camera.lookdownDistance = 20;
+        OpenSteerDemo::camera.aimLeadTime = 0.5;
+        OpenSteerDemo::camera.povOffset.set (0, 0.5, -2);
     }
 
     void update (const float currentTime, const float elapsedTime)
@@ -292,22 +292,22 @@ public:
     void redraw (const float currentTime, const float elapsedTime)
     {
         // selected vehicle (user can mouse click to select another)
-        AbstractVehicle& selected = *SteerTest::selectedVehicle;
+        AbstractVehicle& selected = *OpenSteerDemo::selectedVehicle;
 
         // vehicle nearest mouse (to be highlighted)
-        AbstractVehicle& nearMouse = *SteerTest::vehicleNearestToMouse ();
+        AbstractVehicle& nearMouse = *OpenSteerDemo::vehicleNearestToMouse ();
 
         // update camera
-        SteerTest::updateCamera (currentTime, elapsedTime, selected);
+        OpenSteerDemo::updateCamera (currentTime, elapsedTime, selected);
 
         // draw each boid in flock
         for (iterator i = flock.begin(); i != flock.end(); i++) (**i).draw ();
 
         // highlight vehicle nearest mouse
-        SteerTest::drawCircleHighlightOnVehicle (nearMouse, 1, gGray70);
+        OpenSteerDemo::drawCircleHighlightOnVehicle (nearMouse, 1, gGray70);
 
         // highlight selected vehicle
-        SteerTest::drawCircleHighlightOnVehicle (selected, 1, gGray50);
+        OpenSteerDemo::drawCircleHighlightOnVehicle (selected, 1, gGray50);
 
         // display status in the upper left corner of the window
         std::ostringstream status;
@@ -346,15 +346,15 @@ public:
         for (iterator i = flock.begin(); i != flock.end(); i++) (**i).reset();
 
         // reset camera position
-        SteerTest::position3dCamera (*SteerTest::selectedVehicle);
+        OpenSteerDemo::position3dCamera (*OpenSteerDemo::selectedVehicle);
 
         // make camera jump immediately to new position
-        SteerTest::camera.doNotSmoothNextMove ();
+        OpenSteerDemo::camera.doNotSmoothNextMove ();
     }
 
     // for purposes of demonstration, allow cycling through various
     // types of proximity databases.  this routine is called when the
-    // SteerTest user pushes a function key.
+    // OpenSteerDemo user pushes a function key.
     void nextPD (void)
     {
         // save pointer to old PD
@@ -405,12 +405,12 @@ public:
         std::ostringstream message;
         message << "Function keys handled by ";
         message << '"' << name() << '"' << ':' << std::ends;
-        SteerTest::printMessage (message);
-        SteerTest::printMessage ("  F1     add a boid to the flock.");
-        SteerTest::printMessage ("  F2     remove a boid from the flock.");
-        SteerTest::printMessage ("  F3     use next proximity database.");
-        SteerTest::printMessage ("  F4     next flock boundary condition.");
-        SteerTest::printMessage ("");
+        OpenSteerDemo::printMessage (message);
+        OpenSteerDemo::printMessage ("  F1     add a boid to the flock.");
+        OpenSteerDemo::printMessage ("  F2     remove a boid from the flock.");
+        OpenSteerDemo::printMessage ("  F3     use next proximity database.");
+        OpenSteerDemo::printMessage ("  F4     next flock boundary condition.");
+        OpenSteerDemo::printMessage ("");
     }
 
     void addBoidToFlock (void)
@@ -418,7 +418,7 @@ public:
         population++;
         Boid* boid = new Boid (*pd);
         flock.push_back (boid);
-        if (population == 1) SteerTest::selectedVehicle = boid;
+        if (population == 1) OpenSteerDemo::selectedVehicle = boid;
     }
 
     void removeBoidFromFlock (void)
@@ -430,9 +430,9 @@ public:
             flock.pop_back();
             population--;
 
-            // if it is SteerTest's selected vehicle, unselect it
-            if (boid == SteerTest::selectedVehicle)
-                SteerTest::selectedVehicle = NULL;
+            // if it is OpenSteerDemo's selected vehicle, unselect it
+            if (boid == OpenSteerDemo::selectedVehicle)
+                OpenSteerDemo::selectedVehicle = NULL;
 
             // delete the Boid
             delete boid;

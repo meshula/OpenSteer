@@ -30,7 +30,7 @@
 //
 // AnnotationMixin
 //
-// This mixin (class with templated superclass) adds SteerTest-based
+// This mixin (class with templated superclass) adds OpenSteerDemo-based
 // graphical annotation functionality to a given base class, which is
 // typically something that supports the AbstractVehicle interface.
 //
@@ -45,7 +45,7 @@
 #define OPENSTEER_ANNOTATION_H
 
 
-#include "SteerTest.h"
+#include "OpenSteerDemo.h"
 
 
 // ----------------------------------------------------------------------------
@@ -86,7 +86,7 @@ public:
 
     // ------------------------------------------------------------------------
     // drawing of lines, circles and (filled) disks to annotate steering
-    // behaviors.  When called during SteerTest's simulation update phase,
+    // behaviors.  When called during OpenSteerDemo's simulation update phase,
     // these functions call a "deferred draw" routine which buffer the
     // arguments for use during the redraw phase.
     //
@@ -308,7 +308,7 @@ template<class Super>
 void AnnotationMixin<Super>::drawTrail (const Vec3& trailColor,
                                         const Vec3& tickColor)
 {
-    if (SteerTest::annotationIsOn())
+    if (OpenSteerDemo::annotationIsOn())
     {
         int index = trailIndex;
         for (int j = 0; j < trailVertexCount; j++)
@@ -353,9 +353,9 @@ void AnnotationMixin<Super>::drawTrail (const Vec3& trailColor,
 // ----------------------------------------------------------------------------
 // request (deferred) drawing of a line for graphical annotation
 //
-// This is called during SteerTest's simulation phase to annotate behavioral
+// This is called during OpenSteerDemo's simulation phase to annotate behavioral
 // or steering state.  When annotation is enabled, a description of the line
-// segment is queued to be drawn during SteerTest's redraw phase.
+// segment is queued to be drawn during OpenSteerDemo's redraw phase.
 
 
 template<class Super>
@@ -363,9 +363,9 @@ void AnnotationMixin<Super>::annotationLine (const Vec3& startPoint,
                                              const Vec3& endPoint,
                                              const Vec3& color)
 {
-    if (SteerTest::annotationIsOn())
+    if (OpenSteerDemo::annotationIsOn())
     {
-        if (SteerTest::phaseIsDraw())
+        if (OpenSteerDemo::phaseIsDraw())
         {
             drawLine (startPoint, endPoint, color);
         }
@@ -380,9 +380,9 @@ void AnnotationMixin<Super>::annotationLine (const Vec3& startPoint,
 // ----------------------------------------------------------------------------
 // request (deferred) drawing of a circle (or disk) for graphical annotation
 //
-// This is called during SteerTest's simulation phase to annotate behavioral
+// This is called during OpenSteerDemo's simulation phase to annotate behavioral
 // or steering state.  When annotation is enabled, a description of the
-// "circle or disk" is queued to be drawn during SteerTest's redraw phase.
+// "circle or disk" is queued to be drawn during OpenSteerDemo's redraw phase.
 
 
 template<class Super>
@@ -394,9 +394,9 @@ void AnnotationMixin<Super>::annotationCircleOrDisk (const float radius,
                                                      const bool filled,
                                                      const bool in3d)
 {
-    if (SteerTest::annotationIsOn())
+    if (OpenSteerDemo::annotationIsOn())
     {
-        if (SteerTest::phaseIsDraw())
+        if (OpenSteerDemo::phaseIsDraw())
         {
             drawCircleOrDisk (radius, axis, center, color,
                               segments, filled, in3d);

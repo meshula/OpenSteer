@@ -41,8 +41,7 @@
 #include <iomanip>
 #include <sstream>
 #include "OpenSteer/SimpleVehicle.h"
-#include "OpenSteer/SteerTest.h"
-// #include <draw.h> XXX CWR
+#include "OpenSteer/OpenSteerDemo.h"
 #include "OpenSteer/Draw.h"
 
 Vec3 playerPosition[9] = {
@@ -63,7 +62,7 @@ Vec3 playerPosition[9] = {
 class AABBox{
 public:
 	AABBox(Vec3 &min, Vec3& max): m_min(min), m_max(max){}
-	AABBox(Vec3 min, Vec3 max): m_min(min), m_max(max){} // XXX CWR
+	AABBox(Vec3 min, Vec3 max): m_min(min), m_max(max){}
 	bool	InsideX(const Vec3 p){if(p.x < m_min.x || p.x > m_max.x)	return false;return true;}
 	bool	InsideZ(const Vec3 p){if(p.z < m_min.z || p.z > m_max.z)	return false;return true;}
 	void	draw(){
@@ -120,11 +119,8 @@ public:
 	recordTrailVertex (currentTime, position());
 	}
 
-// XXX CWR
-// 	void kick(Vec3 &dir, const float elapsedTime){
 	void kick(Vec3 dir, const float elapsedTime){
 		setSpeed(dir.length());
-//		setForward(dir);
 		regenerateOrthonormalBasis(dir);
 	}
 
@@ -201,8 +197,7 @@ public:
 						float Z = m_Ball->position().z - position().z > 0 ? -1.0f : 1.0f;
 						Vec3 behindBall = m_Ball->position() + (b_ImTeamA ? Vec3(2,0,Z) : Vec3(-2,0,Z));
 						Vec3 behindBallForce = xxxsteerForSeek(behindBall);
-//						drawLineAlpha(position(), behindBall , Vec3(0,1,0), 1.0f);
-						annotationLine (position(), behindBall , Vec3(0,1,0)); // XXX cwr 9-5-03
+						annotationLine (position(), behindBall , Vec3(0,1,0));
 						Vec3 evadeTarget = xxxsteerForFlee(m_Ball->position());
 						applySteeringForce (behindBallForce*10 + evadeTarget, elapsedTime);
 						}
@@ -216,8 +211,6 @@ public:
 				}
 
 			}
-		//		annotationVelocityAcceleration ();
-//        recordTrailVertex (currentTime, position());
     }
 
     // draw this character/vehicle into the scene
@@ -229,10 +222,8 @@ public:
 	// per-instance reference to its group
 	const std::vector<Player*>	m_others;
 	const std::vector<Player*>	m_AllPlayers;
-// 	bool	b_ImTeamA;
-// 	Ball*	m_Ball;
-	Ball*	m_Ball;     // XXX cwr 9-5-03
-	bool	b_ImTeamA;  // XXX cwr 9-5-03
+	Ball*	m_Ball;
+	bool	b_ImTeamA;
 	int		m_MyID;
 	Vec3		m_home;
 };
@@ -240,13 +231,11 @@ public:
 
 
 // ----------------------------------------------------------------------------
-// PlugIn for SteerTest
+// PlugIn for OpenSteerDemo
 class MicTestPlugIn : public PlugIn
 {
 public:
     
-// XXX CWR
-//  const char* name (void) {return "Michaels first test";}
     const char* name (void) {return "Michael's Simple Soccer";}
 
     // float selectionOrderSortKey (void) {return 0.06f;}
@@ -271,7 +260,7 @@ public:
 		for(unsigned int i=0; i < m_PlayerCountA ; i++)
 		{
 			Player *pMicTest = new Player(TeamA, m_AllPlayers, m_Ball, true, i);
-			SteerTest::selectedVehicle = pMicTest;
+			OpenSteerDemo::selectedVehicle = pMicTest;
 			TeamA.push_back (pMicTest);
 			m_AllPlayers.push_back(pMicTest);
 		}
@@ -280,15 +269,15 @@ public:
 		for(unsigned int i=0; i < m_PlayerCountB ; i++)
 		{
 			Player *pMicTest = new Player(TeamB, m_AllPlayers, m_Ball, false, i);
-			SteerTest::selectedVehicle = pMicTest;
+			OpenSteerDemo::selectedVehicle = pMicTest;
 			TeamB.push_back (pMicTest);
 			m_AllPlayers.push_back(pMicTest);
 		}
         // initialize camera
-        SteerTest::init2dCamera (*m_Ball);
-        SteerTest::camera.setPosition (10, SteerTest::camera2dElevation, 10);
-        SteerTest::camera.fixedPosition.set (40, 40, 40);
-        SteerTest::camera.mode = Camera::cmFixed; // XXX CWR
+        OpenSteerDemo::init2dCamera (*m_Ball);
+        OpenSteerDemo::camera.setPosition (10, OpenSteerDemo::camera2dElevation, 10);
+        OpenSteerDemo::camera.fixedPosition.set (40, 40, 40);
+        OpenSteerDemo::camera.mode = Camera::cmFixed;
 		m_redScore = 0;
 		m_blueScore = 0;
     }
@@ -348,10 +337,10 @@ if(0)
 			draw2dTextAt3dLocation (*"start", Vec3::zero, gGreen);
 		}
 		// update camera, tracking test vehicle
-        SteerTest::updateCamera (currentTime, elapsedTime, *SteerTest::selectedVehicle);
+        OpenSteerDemo::updateCamera (currentTime, elapsedTime, *OpenSteerDemo::selectedVehicle);
 
         // draw "ground plane"
-		SteerTest::gridUtility (Vec3(0,0,0));
+		OpenSteerDemo::gridUtility (Vec3(0,0,0));
     }
 
     void close (void)
@@ -362,7 +351,7 @@ if(0)
 		for(unsigned int i=0; i < m_PlayerCountB ; i++)
 			delete TeamB[i];
 		TeamB.clear ();
-                m_AllPlayers.clear();  //  XXX CWR 9-5-03
+                m_AllPlayers.clear();
     }
 
     void reset (void)

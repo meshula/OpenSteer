@@ -28,7 +28,7 @@
 // ----------------------------------------------------------------------------
 //
 //
-// One vehicle turning way: a (near) minimal SteerTest PlugIn
+// One vehicle turning way: a (near) minimal OpenSteerDemo PlugIn
 //
 // 06-24-02 cwr: created 
 //
@@ -39,7 +39,7 @@
 #include <iomanip>
 #include <sstream>
 #include "OpenSteer/SimpleVehicle.h"
-#include "OpenSteer/SteerTest.h"
+#include "OpenSteer/OpenSteerDemo.h"
 
 
 // ----------------------------------------------------------------------------
@@ -80,7 +80,7 @@ public:
 
 
 // ----------------------------------------------------------------------------
-// PlugIn for SteerTest
+// PlugIn for OpenSteerDemo
 
 
 class OneTurningPlugIn : public PlugIn
@@ -97,13 +97,15 @@ public:
     void open (void)
     {
         gOneTurning = new OneTurning;
-        SteerTest::selectedVehicle = gOneTurning;
+        OpenSteerDemo::selectedVehicle = gOneTurning;
         theVehicle.push_back (gOneTurning);
 
         // initialize camera
-        SteerTest::init2dCamera (*gOneTurning);
-        SteerTest::camera.setPosition (10, SteerTest::camera2dElevation, 10);
-        SteerTest::camera.fixedPosition.set (40, 40, 40);
+        OpenSteerDemo::init2dCamera (*gOneTurning);
+        OpenSteerDemo::camera.setPosition (10,
+                                           OpenSteerDemo::camera2dElevation,
+                                           10);
+        OpenSteerDemo::camera.fixedPosition.set (40, 40, 40);
     }
 
     void update (const float currentTime, const float elapsedTime)
@@ -125,10 +127,10 @@ public:
         draw2dTextAt3dLocation (*"start", Vec3::zero, gGreen);
 
         // update camera, tracking test vehicle
-        SteerTest::updateCamera (currentTime, elapsedTime, *gOneTurning);
+        OpenSteerDemo::updateCamera (currentTime, elapsedTime, *gOneTurning);
 
         // draw "ground plane"
-        SteerTest::gridUtility (gOneTurning->position());
+        OpenSteerDemo::gridUtility (gOneTurning->position());
     }
 
     void close (void)

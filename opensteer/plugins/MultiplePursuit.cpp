@@ -37,7 +37,7 @@
 
 
 #include "OpenSteer/SimpleVehicle.h"
-#include "OpenSteer/SteerTest.h"
+#include "OpenSteer/OpenSteerDemo.h"
 
 
 // ----------------------------------------------------------------------------
@@ -153,7 +153,7 @@ public:
 
 
 // ----------------------------------------------------------------------------
-// PlugIn for SteerTest
+// PlugIn for OpenSteerDemo
 
 
 class MpPlugIn : public PlugIn
@@ -180,10 +180,10 @@ public:
         pEnd = allMP.end();          // iterator pointing to last pursuer
 
         // initialize camera
-        SteerTest::selectedVehicle = wanderer;
-        SteerTest::camera.mode = Camera::cmStraightDown;
-        SteerTest::camera.fixedDistDistance = SteerTest::cameraTargetDistance;
-        SteerTest::camera.fixedDistVOffset = SteerTest::camera2dElevation;
+        OpenSteerDemo::selectedVehicle = wanderer;
+        OpenSteerDemo::camera.mode = Camera::cmStraightDown;
+        OpenSteerDemo::camera.fixedDistDistance = OpenSteerDemo::cameraTargetDistance;
+        OpenSteerDemo::camera.fixedDistVOffset = OpenSteerDemo::camera2dElevation;
     }
 
     void update (const float currentTime, const float elapsedTime)
@@ -201,23 +201,23 @@ public:
     void redraw (const float currentTime, const float elapsedTime)
     {
         // selected vehicle (user can mouse click to select another)
-        AbstractVehicle& selected = *SteerTest::selectedVehicle;
+        AbstractVehicle& selected = *OpenSteerDemo::selectedVehicle;
 
         // vehicle nearest mouse (to be highlighted)
-        AbstractVehicle& nearMouse = *SteerTest::vehicleNearestToMouse ();
+        AbstractVehicle& nearMouse = *OpenSteerDemo::vehicleNearestToMouse ();
 
         // update camera
-        SteerTest::updateCamera (currentTime, elapsedTime, selected);
+        OpenSteerDemo::updateCamera (currentTime, elapsedTime, selected);
 
         // draw "ground plane"
-        SteerTest::gridUtility (selected.position());
+        OpenSteerDemo::gridUtility (selected.position());
 
         // draw each vehicles
         for (iterator i = allMP.begin(); i != pEnd; i++) (**i).draw ();
 
         // highlight vehicle nearest mouse
-        SteerTest::highlightVehicleUtility (nearMouse);
-        SteerTest::circleHighlightVehicleUtility (selected);
+        OpenSteerDemo::highlightVehicleUtility (nearMouse);
+        OpenSteerDemo::circleHighlightVehicleUtility (selected);
     }
 
     void close (void)
@@ -235,8 +235,8 @@ public:
         for (iterator i = pBegin; i != pEnd; i++) ((MpPursuer&)(**i)).reset ();
 
         // immediately jump to default camera position
-        SteerTest::camera.doNotSmoothNextMove ();
-        SteerTest::camera.resetLocalSpace ();
+        OpenSteerDemo::camera.doNotSmoothNextMove ();
+        OpenSteerDemo::camera.resetLocalSpace ();
     }
 
     const AVGroup& allVehicles (void) {return (const AVGroup&) allMP;}

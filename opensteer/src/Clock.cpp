@@ -28,7 +28,7 @@
 // ----------------------------------------------------------------------------
 //
 //
-// discrete time simulation clock for SteerTest
+// discrete time simulation clock for OpenSteerDemo
 //
 // Keeps track of real clock time and simulation time.  Encapsulates OS's
 // time API.  Can be put in either "as fast as possible" variable time step
@@ -48,7 +48,7 @@
 
 
 #include "OpenSteer/Clock.h"
-#include "OpenSteer/SteerTest.h"
+#include "OpenSteer/OpenSteerDemo.h"
 
 
 // ----------------------------------------------------------------------------
@@ -202,7 +202,7 @@ void Clock::frameRateSync (void)
         const int lastFrameCount = (int) (now / targetStepSize);
         const float nextFrameTime = (lastFrameCount + 1) * targetStepSize;
 
-        // record usage ("busy time", "non-wait time") for SteerTest app
+        // record usage ("busy time", "non-wait time") for OpenSteerDemo app
         elapsedNonWaitRealTime = now - totalRealTime;
 
         // wait until next frame time
@@ -213,7 +213,7 @@ void Clock::frameRateSync (void)
 
 // ----------------------------------------------------------------------------
 // force simulation time ahead, ignoring passage of real time.
-// Used for SteerTest's "single step forward" and animation mode
+// Used for OpenSteerDemo's "single step forward" and animation mode
 
 
 float Clock::advanceSimulationTimeOneFrame (void)
@@ -227,7 +227,7 @@ float Clock::advanceSimulationTimeOneFrame (void)
     // bump advance time
     advanceSimulationTime (frameTime);
 
-    // return the time value used (for SteerTest)
+    // return the time value used (for OpenSteerDemo)
     return frameTime; 
 }
 
@@ -235,7 +235,7 @@ float Clock::advanceSimulationTimeOneFrame (void)
 void Clock::advanceSimulationTime (const float seconds)
 {
     if (seconds < 0)
-        SteerTest::errorExit ("negative arg to advanceSimulationTime.");
+        OpenSteerDemo::errorExit ("negative arg to advanceSimulationTime.");
     else
         newAdvanceTime += seconds;
 }
@@ -251,7 +251,7 @@ void Clock::advanceSimulationTime (const float seconds)
 
 float clockErrorExit (void)
 {
-    SteerTest::errorExit ("Problem reading system clock.\n");
+    OpenSteerDemo::errorExit ("Problem reading system clock.\n");
     return 0.0f;
 }
 

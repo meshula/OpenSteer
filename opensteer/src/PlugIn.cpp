@@ -28,7 +28,7 @@
 // ----------------------------------------------------------------------------
 //
 //
-// SteerTest PlugIn class
+// OpenSteerDemo PlugIn class
 // 
 // 11-13-02 cwr: created 
 //

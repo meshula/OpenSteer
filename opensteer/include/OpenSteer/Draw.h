@@ -30,9 +30,9 @@
 //
 // Draw
 //
-// This is a first stab at a graphics module for SteerTest.  It is intended to
-// encapsulate all functionality related to 3d graphics as well as windows and
-// graphics input devices such as the mouse.
+// This is a first stab at a graphics module for OpenSteerDemo.  It is intended
+// to encapsulate all functionality related to 3d graphics as well as windows
+// and graphics input devices such as the mouse.
 //
 // However this is purely an OpenGL-based implementation.  No special effort
 // has been made to keep the "OpenGL way" from leaking through.  Attempting to
@@ -86,14 +86,14 @@ const Vec3 gGray90 = grayColor (0.9f);
 
 
 // ------------------------------------------------------------------------
-// warn when draw functions are called during SteerTest's update phase
+// warn when draw functions are called during OpenSteerDemo's update phase
 //
 // XXX perhaps this should be made to "melt away" when not in debug mode?
 
 
 inline void warnIfInUpdatePhase (const char* name)
 {
-    if (SteerTest::phaseIsUpdate())
+    if (OpenSteerDemo::phaseIsUpdate())
     {
         void warnIfInUpdatePhase2 (const char* name);
         warnIfInUpdatePhase2 (name);

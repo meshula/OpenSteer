@@ -28,7 +28,7 @@
 // ----------------------------------------------------------------------------
 //
 //
-// camera control for SteerTest
+// camera control for OpenSteerDemo
 //
 // a camera ("point of view") with various "aiming modes" to track a
 // moving vehicle
@@ -91,7 +91,7 @@ public:
     float smoothMoveSpeed;
 
     // adjust the offset vector of the current camera mode based on a
-    // "mouse adjustment vector" from SteerTest (xxx experiment 10-17-02)
+    // "mouse adjustment vector" from OpenSteerDemo (xxx experiment 10-17-02)
     void mouseAdjustOffset (const Vec3& adjustment);
     Vec3 mouseAdjust2 (const bool polar,
                        const Vec3& adjustment,
@@ -146,10 +146,10 @@ public:
     // current mode for this camera instance
     cameraMode mode;
 
-    // string naming current camera mode, used by SteerTest
+    // string naming current camera mode, used by OpenSteerDemo
     char* modeName (void);
 
-    // select next camera mode, used by SteerTest
+    // select next camera mode, used by OpenSteerDemo
     void selectNextMode (void);
 
     // the mode that comes after the given mode (used by selectNextMode)
