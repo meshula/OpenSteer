@@ -40,10 +40,10 @@
 
 #include <iomanip>
 #include <sstream>
-#include <SimpleVehicle.h>
-#include <SteerTest.h>
+#include "OpenSteer/SimpleVehicle.h"
+#include "OpenSteer/SteerTest.h"
 // #include <draw.h> XXX CWR
-#include <Draw.h>
+#include "OpenSteer/Draw.h"
 
 Vec3 playerPosition[9] = {
 	Vec3(4,0,0),
