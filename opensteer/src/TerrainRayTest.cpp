@@ -4,7 +4,7 @@
 	TerrainRayTest.cpp
 
 	Project(s):
-	HothTest Project
+	TerrainRayTest Project
 
 	Author:
 	Paul Edmondson

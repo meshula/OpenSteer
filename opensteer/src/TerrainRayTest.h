@@ -4,7 +4,7 @@
 	TerrainRayTest.h
 
 	Project(s):
-	HothTest Project
+	TerrainRayTest Project
 
 	Author:
 	Paul Edmondson
