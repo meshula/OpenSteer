@@ -51,7 +51,7 @@
 
 
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+#define M_PI 3.14159265358979323846f
 #endif
 
 
@@ -200,7 +200,7 @@ float inline MAX (float a, float b)
 // smoothing.  Useful values are "near zero".
 //
 // Usage:
-//         blendIntoAccumulator (dt * 0.4, currentFPS, smoothedFPS);
+//         blendIntoAccumulator (dt * 0.4f, currentFPS, smoothedFPS);
 
 
 template<class T>
@@ -291,9 +291,9 @@ inline float   cosXXX (float x) {return std::cos (x);}
 inline float round (float x)
 {
   if (x < 0)
-      return -floorXXX (0.5 - x);
+      return -floorXXX (0.5f - x);
   else
-      return  floorXXX (0.5 + x);
+      return  floorXXX (0.5f + x);
 }
 
 #endif

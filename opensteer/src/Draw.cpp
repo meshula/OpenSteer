@@ -95,10 +95,10 @@ int gMouseAdjustingCameraLastY;
 void initGL (void)
 {
     // background = dark gray
-    glClearColor (0.3, 0.3, 0.3, 0);
+    glClearColor (0.3f, 0.3f, 0.3f, 0);
 
     // enable depth buffer clears
-    glClearDepth (1.0);
+    glClearDepth (1.0f);
 
     // select smooth shading
     glShadeModel (GL_SMOOTH);
@@ -137,7 +137,7 @@ void reshapeFunc (int width, int height)
     const GLfloat h = height;
     const GLfloat aspectRatio = (height == 0) ? 1 : w/h;
     const GLfloat fieldOfViewY = 45;
-    const GLfloat hither = 0.1;
+    const GLfloat hither = 0.1f;
     const GLfloat yon = 1000;
     gluPerspective (fieldOfViewY, aspectRatio, hither, yon);
 
@@ -209,8 +209,8 @@ void mouseMotionFunc (int x, int y)
     if (gMouseAdjustingCameraAngle || gMouseAdjustingCameraRadius)
     {
         // speed factors to map from mouse movement in pixels to 3d motion
-        const float dSpeed = 0.005;
-        const float rSpeed = 0.01;
+        const float dSpeed = 0.005f;
+        const float rSpeed = 0.01f;
 
         // XY distance (in pixels) that mouse moved since last update
         const float dx = x - gMouseAdjustingCameraLastX;
@@ -307,7 +307,7 @@ void writePhaseTimerReportToStream (float phaseTimer,
     if (SteerTest::clock.targetFPS > 0)
     {
         // quantify time as a percentage of frame time
-        stream << ((100 * phaseTimer) / (1.0 / SteerTest::clock.targetFPS));
+        stream << ((100 * phaseTimer) / (1.0f / SteerTest::clock.targetFPS));
         stream << "% of 1/";
         stream << SteerTest::clock.targetFPS;
         stream << "sec)\n";
@@ -338,7 +338,7 @@ void drawDisplayFPS (void)
 {
     const float elapsedTime = SteerTest::clock.elapsedRealTime;
     const float fps = (elapsedTime > 0) ? 1 / elapsedTime : 0;
-    const float smoothRate = (gSmoothedFPS == 0) ? 1 : (elapsedTime * 0.4);
+    const float smoothRate = (gSmoothedFPS == 0) ? 1 : (elapsedTime * 0.4f);
 
     // skip several frames to allow frame rate to settle
     static int skipCount = 10;
@@ -372,7 +372,7 @@ void drawDisplayFPS (void)
             // run time per frame over target frame time (as a percentage)
             const float usage =
                 ((100 * SteerTest::clock.elapsedNonWaitRealTime) /
-                 (1.0 / SteerTest::clock.targetFPS));
+                 (1.0f / SteerTest::clock.targetFPS));
 
             // blend new usage value into running average
             blendIntoAccumulator (smoothRate, usage, gSmoothedUsage);
@@ -924,7 +924,7 @@ void drawBasic2dCircularVehicle (const AbstractVehicle& vehicle,
                                  const Vec3& color)
 {
     // "aspect ratio" of body (as seen from above)
-    const float x = 0.5;
+    const float x = 0.5f;
     const float y = sqrtXXX (1 - (x * x));
 
     // radius and position of vehicle
@@ -958,7 +958,7 @@ void drawBasic3dSphericalVehicle (const AbstractVehicle& vehicle,
                                   const Vec3& color)
 {
     // "aspect ratio" of body (as seen from above)
-    const float x = 0.5;
+    const float x = 0.5f;
     const float y = sqrtXXX (1 - (x * x));
 
     // radius and position of vehicle
@@ -968,7 +968,7 @@ void drawBasic3dSphericalVehicle (const AbstractVehicle& vehicle,
     // body shape parameters
     const Vec3 f = r * vehicle.forward();
     const Vec3 s = r * vehicle.side() * x;
-    const Vec3 u = r * vehicle.up() * x * 0.5;
+    const Vec3 u = r * vehicle.up() * x * 0.5f;
     const Vec3 b = r * vehicle.forward() * -y;
 
     // vertex positions
@@ -979,8 +979,8 @@ void drawBasic3dSphericalVehicle (const AbstractVehicle& vehicle,
     const Vec3 bottom = p + b - u;
 
     // colors
-    const float j = +0.05;
-    const float k = -0.05;
+    const float j = +0.05f;
+    const float k = -0.05f;
     const Vec3 color1 = color + Vec3 (j, j, k);
     const Vec3 color2 = color + Vec3 (j, k, j);
     const Vec3 color3 = color + Vec3 (k, j, j);
@@ -1122,7 +1122,7 @@ void drawBoxOutline  (const AbstractLocalSpace& localSpace,
                       const Vec3& size,
                       const Vec3& color)
 {
-    const Vec3 s = size / 2.0;  // half of main diagonal
+    const Vec3 s = size / 2.0f;  // half of main diagonal
 
     const Vec3 a (+s.x, +s.y, +s.z);
     const Vec3 b (+s.x, -s.y, +s.z);
@@ -1209,8 +1209,8 @@ void drawReticle (void)
 {
     const int a = 10;
     const int b = 30;
-    const float w = glutGet (GLUT_WINDOW_WIDTH)  * 0.5;
-    const float h = glutGet (GLUT_WINDOW_HEIGHT) * 0.5;
+    const float w = glutGet (GLUT_WINDOW_WIDTH)  * 0.5f;
+    const float h = glutGet (GLUT_WINDOW_HEIGHT) * 0.5f;
 
     draw2dLine (Vec3 (w+a, h,   0), Vec3 (w+b, h,   0), gWhite);
     draw2dLine (Vec3 (w,   h+a, 0), Vec3 (w,   h+b, 0), gWhite);
@@ -1233,7 +1233,7 @@ void drawReticle (void)
 //     {
 //         const Vec3 p = gSelectedVehicle->position;
 //         const Vec3 f = gSelectedVehicle->forward;
-//         const Vec3 s = gSelectedVehicle->side * 0.25;
+//         const Vec3 s = gSelectedVehicle->side * 0.25f;
 //         for (float i = 0; i <= 5; i++)
 //         {
 //             drawLine (p + (f * +i) + s, p + (f * +i) - s, gGray60);
@@ -1552,7 +1552,7 @@ void drawAllDeferredCirclesOrDisks (void)
 //     // set up orthogonal projection onto window's screen space
 //     const float w = glutGet (GLUT_WINDOW_WIDTH);
 //     const float h = glutGet (GLUT_WINDOW_HEIGHT);
-//     glOrtho (0.0, w, 0.0, h, -1.0, 1.0);
+//     glOrtho (0.0f, w, 0.0f, h, -1.0f, 1.0f);
 
 //     // clear model transform
 //     glMatrixMode (GL_MODELVIEW);
@@ -1597,7 +1597,7 @@ void drawAllDeferredCirclesOrDisks (void)
 //     // set up orthogonal projection onto window's screen space
 //     const float w = glutGet (GLUT_WINDOW_WIDTH);
 //     const float h = glutGet (GLUT_WINDOW_HEIGHT);
-//     glOrtho (0.0, w, 0.0, h, -1.0, 1.0);
+//     glOrtho (0.0f, w, 0.0f, h, -1.0f, 1.0f);
 
 //     // clear model transform
 //     glMatrixMode (GL_MODELVIEW);
@@ -1665,7 +1665,7 @@ void drawAllDeferredCirclesOrDisks (void)
 // //     // set up orthogonal projection onto window's screen space
 // //     const float w = glutGet (GLUT_WINDOW_WIDTH);
 // //     const float h = glutGet (GLUT_WINDOW_HEIGHT);
-// //     glOrtho (0.0, w, 0.0, h, -1.0, 1.0);
+// //     glOrtho (0.0f, w, 0.0f, h, -1.0f, 1.0f);
 
 // //     // clear model transform
 // //     glMatrixMode (GL_MODELVIEW);
@@ -1713,7 +1713,7 @@ void drawAllDeferredCirclesOrDisks (void)
 //     // set up orthogonal projection onto window's screen space
 //     const float w = glutGet (GLUT_WINDOW_WIDTH);
 //     const float h = glutGet (GLUT_WINDOW_HEIGHT);
-//     glOrtho (0.0, w, 0.0, h, -1.0, 1.0);
+//     glOrtho (0.0f, w, 0.0f, h, -1.0f, 1.0f);
 
 //     // clear model transform
 //     glMatrixMode (GL_MODELVIEW);
@@ -1806,7 +1806,7 @@ inline GLint begin2dDrawing (void)
     // set up orthogonal projection onto window's screen space
     const float w = glutGet (GLUT_WINDOW_WIDTH);
     const float h = glutGet (GLUT_WINDOW_HEIGHT);
-    glOrtho (0.0, w, 0.0, h, -1.0, 1.0);
+    glOrtho (0.0f, w, 0.0f, h, -1.0f, 1.0f);
 
     // clear model transform
     glMatrixMode (GL_MODELVIEW);

@@ -107,7 +107,7 @@ SimpleVehicle::~SimpleVehicle (void)
 Vec3 SimpleVehicle::adjustRawSteeringForce (const Vec3& force,
                                                 const float deltaTime)
 {
-    const float maxAdjustedSpeed = 0.2 * maxSpeed ();
+    const float maxAdjustedSpeed = 0.2f * maxSpeed ();
 
     if ((speed () > maxAdjustedSpeed) || (force == Vec3::zero))
     {
@@ -116,12 +116,12 @@ Vec3 SimpleVehicle::adjustRawSteeringForce (const Vec3& force,
     else
     {
         const float range = speed() / maxAdjustedSpeed;
-        // const float cosine = interpolate (pow (range, 6), 1.0, -1.0);
-        // const float cosine = interpolate (pow (range, 10), 1.0, -1.0);
-        // const float cosine = interpolate (pow (range, 20), 1.0, -1.0);
-        // const float cosine = interpolate (pow (range, 100), 1.0, -1.0);
-        // const float cosine = interpolate (pow (range, 50), 1.0, -1.0);
-        const float cosine = interpolate (pow (range, 20), 1.0, -1.0);
+        // const float cosine = interpolate (pow (range, 6), 1.0f, -1.0f);
+        // const float cosine = interpolate (pow (range, 10), 1.0f, -1.0f);
+        // const float cosine = interpolate (pow (range, 20), 1.0f, -1.0f);
+        // const float cosine = interpolate (pow (range, 100), 1.0f, -1.0f);
+        // const float cosine = interpolate (pow (range, 50), 1.0f, -1.0f);
+        const float cosine = interpolate (pow (range, 20), 1.0f, -1.0f);
         return limitMaxDeviationAngle (force, cosine, forward());
     }
 }

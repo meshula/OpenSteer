@@ -523,9 +523,9 @@ void SteerTest::gridUtility (const Vec3& gridTarget)
     // round off target to the nearest multiple of 2 (because the
     // checkboard grid with a pitch of 1 tiles with a period of 2)
     // then lower the grid a bit to put it under 2d annotation lines
-    const Vec3 gridCenter ((round (gridTarget.x * 0.5) * 2),
-                           (round (gridTarget.y * 0.5) * 2) - .05f,
-                           (round (gridTarget.z * 0.5) * 2));
+    const Vec3 gridCenter ((round (gridTarget.x * 0.5f) * 2),
+                           (round (gridTarget.y * 0.5f) * 2) - .05f,
+                           (round (gridTarget.z * 0.5f) * 2));
 
     // colors for checkboard
     const Vec3 gray1 = grayColor (0.27f);
@@ -556,8 +556,10 @@ void SteerTest::highlightVehicleUtility (const AbstractVehicle& vehicle)
 
 void SteerTest::circleHighlightVehicleUtility (const AbstractVehicle& vehicle)
 {
-    if (&vehicle != NULL)
-        drawXZCircle (vehicle.radius() * 1.1, vehicle.position(), gGray60, 20);
+    if (&vehicle != NULL) drawXZCircle (vehicle.radius () * 1.1f,
+                                        vehicle.position(),
+                                        gGray60,
+                                        20);
 }
 
 
@@ -630,7 +632,7 @@ void SteerTest::printWarning (const std::ostringstream& message)
 // ------------------------------------------------------------------------
 // print list of known commands
 //
-// XXX this list should be assembeled automatically,
+// XXX this list should be assembled automatically,
 // XXX perhaps from a list of "command" objects created at initialization
 
 
@@ -641,6 +643,7 @@ void SteerTest::keyboardMiniHelp (void)
     printMessage ("  r      restart current PlugIn.");
     printMessage ("  s      select next vehicle.");
     printMessage ("  c      select next camera mode.");
+    printMessage ("  f      select next preset frame rate");
     printMessage ("  Tab    select next PlugIn.");
     printMessage ("  Space  toggle between Run and Pause.");
     printMessage ("  ->     step forward one frame.");

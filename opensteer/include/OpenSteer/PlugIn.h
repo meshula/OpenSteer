@@ -130,7 +130,7 @@ public:
     void reset (void) {close (); open ();}
 
     // default sort key (after the "built ins")
-    float selectionOrderSortKey (void) {return 1.0;}
+    float selectionOrderSortKey (void) {return 1.0f;}
 
     // default is to NOT request to be initially selected
     bool requestInitialSelection (void) {return false;}

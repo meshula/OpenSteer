@@ -173,7 +173,7 @@ void Clock::frameRateSync (void)
     if (targetFPS > 0)
     {
         // find next (real time) frame start time
-        const float targetStepSize = 1.0 / targetFPS;
+        const float targetStepSize = 1.0f / targetFPS;
         const float now = realTimeSinceFirstClockUpdate ();
         const int lastFrameCount = (int) (now / targetStepSize);
         const float nextFrameTime = (lastFrameCount + 1) * targetStepSize;
@@ -235,7 +235,7 @@ void Clock::advanceSimulationTime (const float seconds)
 
 //         // real "wall clock" time since launch
 //         return (( t.tv_sec  - baseRealTimeSec) +
-//                 ((t.tv_usec - baseRealTimeUsec) / 1000000.0));
+//                 ((t.tv_usec - baseRealTimeUsec) / 1000000.0f));
 //     }
 // }
 
@@ -266,7 +266,7 @@ float Clock::realTimeSinceFirstClockUpdate (void)
             }
             // real "wall clock" time since launch
             return (( sec  - baseRealTimeSec) +
-                    ((usec - baseRealTimeUsec) / 1000000.0));
+                    ((usec - baseRealTimeUsec) / 1000000.0f));
         }
         clockErrorExit ();
         return 0.0f;
@@ -293,7 +293,7 @@ float Clock::realTimeSinceFirstClockUpdate (void)
 
         // real "wall clock" time since launch
         return (( t.tv_sec  - baseRealTimeSec) +
-                ((t.tv_usec - baseRealTimeUsec) / 1000000.0));
+                ((t.tv_usec - baseRealTimeUsec) / 1000000.0f));
     }
 }
 #endif

@@ -75,7 +75,7 @@ void Camera::reset (void)
     smoothNextMove = false;
 
     // relative rate at which camera transitions proceed
-    smoothMoveSpeed = 1.5;
+    smoothMoveSpeed = 1.5f;
 
     // select camera aiming mode
     mode = cmFixed;
@@ -337,7 +337,7 @@ void Camera::mouseAdjustOffset (const Vec3& adjustment)
 //             fixedDistDistance = adjusted.length();
 //             fixedDistVOffset = position.y - target.y;
             // XXX --------------------------------------------------
-//             const float s = smoothMoveSpeed * (1.0/40);
+//             const float s = smoothMoveSpeed * (1.0f/40f);
 //             const Vec3 newPosition = target + adjusted;
 //             position = interpolate (s, position, newPosition);
 //             fixedDistDistance = interpolate (s, fixedDistDistance, adjusted.length());

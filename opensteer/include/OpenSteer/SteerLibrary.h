@@ -1154,7 +1154,7 @@ annotationForAvoidCloseNeighbor (const AbstractVehicle& other,
     const Vec3 red (1, 0.1f, 0);
     const Vec3 color = headOn ? red : green;
     const char* string = headOn ? "OUCH!" : "pardon me";
-    const Vec3 location = position() + Vec3 (0, 0.5, 0);
+    const Vec3 location = position() + Vec3 (0, 0.5f, 0);
     draw2dTextAt3dLocation (*string, location, color);
 }
 

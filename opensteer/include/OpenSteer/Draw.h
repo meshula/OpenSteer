@@ -70,7 +70,7 @@ const Vec3 gCyan    (0, 1, 1);
 const Vec3 gBlue    (0, 0, 1);
 const Vec3 gMagenta (1, 0, 1);
 
-const Vec3 gOrange (1, 0.5, 0);
+const Vec3 gOrange (1, 0.5f, 0);
 
 inline Vec3 grayColor (const float g) {return Vec3 (g, g, g);}
 
