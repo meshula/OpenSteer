@@ -139,9 +139,14 @@ public:
     // ------------------------------------------------------------------------
     // global compile-time switch:
     // does LocalSpace use a left- or right-handed coordinate system?
+    //
+    // XXX grumble, grumble: MS VC6 apparently cannot handle initialized
+    // XXX static const member variables.  So I will replace this with a
+    // XXX member function
 
 
-    static const bool rightHanded = true;
+    //static const bool rightHanded = true;
+    static bool rightHanded (void) {return true;}
 
 
     // ------------------------------------------------------------------------
@@ -299,7 +304,7 @@ public:
 
     static Vec3 localRotateForwardToSide (const Vec3& v)
     {
-        return Vec3 (rightHanded ? -v.z : +v.z,
+        return Vec3 (rightHanded () ? -v.z : +v.z,
                      v.y,
                      v.x);
     }

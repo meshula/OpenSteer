@@ -40,9 +40,9 @@
 // ----------------------------------------------------------------------------
 
 
-#include "OpenSteer/SteerTest.h"
 #include <algorithm>
 #include <strstream>
+#include "OpenSteer/SteerTest.h"
 
 
 // ----------------------------------------------------------------------------
@@ -87,6 +87,16 @@ int SteerTest::phase = SteerTest::overheadPhase;
 
 
 bool SteerTest::enableAnnotation = true;
+
+
+// ----------------------------------------------------------------------------
+// XXX apparently MS VC6 cannot handle initialized static const members,
+// XXX so they have to be initialized not-inline.
+
+
+const int SteerTest::overheadPhase = 0;
+const int SteerTest::updatePhase = 1;
+const int SteerTest::drawPhase = 2;
 
 
 // ----------------------------------------------------------------------------
@@ -215,7 +225,7 @@ void SteerTest::openSelectedPlugIn (void)
     selectedPlugIn->open ();
     if (selectedVehicle == NULL)
     {
-        ostrstream message;
+        std::ostrstream message;
         message << "SteerTest::selectedVehicle was NULL after calling ";
         message << nameOfSelectedPlugIn ();
         message << "'s open method (in SteerTest::openSelectedPlugIn)";
@@ -340,7 +350,7 @@ void SteerTest::selectNextVehicle (void)
         const AVIterator last = all.end();
 
         // find selected vehicle in container
-        const AVIterator s = find (first, last, selectedVehicle);
+        const AVIterator s = std::find (first, last, selectedVehicle);
 
         // normally select the next vehicle in container
         selectedVehicle = *(s+1);
@@ -470,8 +480,13 @@ void SteerTest::position3dCamera (AbstractVehicle& selected)
 
 void SteerTest::position2dCamera (AbstractVehicle& selected)
 {
+    // position the camera as if in 3d:
     position3dCamera (selected);
-    camera.position().y += camera2dElevation;
+
+    // then adjust for 3d:
+    Vec3 position3d = camera.position();
+    position3d.y += camera2dElevation;
+    camera.setPosition (position3d);
 }
 
 
@@ -509,12 +524,12 @@ void SteerTest::gridUtility (const Vec3& gridTarget)
     // checkboard grid with a pitch of 1 tiles with a period of 2)
     // then lower the grid a bit to put it under 2d annotation lines
     const Vec3 gridCenter ((roundf (gridTarget.x * 0.5) * 2),
-                           (roundf (gridTarget.y * 0.5) * 2) - .05,
+                           (roundf (gridTarget.y * 0.5) * 2) - .05f,
                            (roundf (gridTarget.z * 0.5) * 2));
 
     // colors for checkboard
-    const Vec3 gray1 = grayColor (0.27);
-    const Vec3 gray2 = grayColor (0.30);
+    const Vec3 gray1 = grayColor (0.27f);
+    const Vec3 gray2 = grayColor (0.30f);
 
     // draw 50x50 checkerboard grid with 50 squares along each side
     drawXZCheckerboardGrid (50, 50, gridCenter, gray1, gray2);

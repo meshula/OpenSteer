@@ -174,7 +174,7 @@ void SimpleVehicle::applySteeringForce (const Vec3& force,
 
     // damp out abrupt changes and oscillations in steering acceleration
     // (rate is proportional to time step, then clipped into useful range)
-    const float smoothRate = clip (9 * elapsedTime, 0.15, 0.4);
+    const float smoothRate = clip (9 * elapsedTime, 0.15f, 0.4f);
     blendIntoAccumulator (smoothRate,
                           newAcceleration,
                           smoothedAcceleration);
@@ -200,7 +200,7 @@ void SimpleVehicle::applySteeringForce (const Vec3& force,
 // draw lines from vehicle's position showing its velocity and acceleration
 
 
-void SimpleVehicle::annotationVelocityAcceleration (float maxLength = 3)
+void SimpleVehicle::annotationVelocityAcceleration (float maxLength)
 {
     const float desat = 0.4;
     const float aScale = maxLength / maxForce ();

@@ -47,10 +47,10 @@
 // ----------------------------------------------------------------------------
 
 
-#include "OpenSteer/SteerTest.h"
-
 #include <iomanip>               // C++ stream IO (and their manipulation)
 #include <strstream>
+
+#include "OpenSteer/SteerTest.h"
 
 #include <GL/glut.h>             // GLUT Library 
 #include <GL/gl.h>               // OpenGL32 Library
@@ -272,7 +272,7 @@ void drawDisplayPlugInName (void)
 
 void drawDisplayCameraModeName (void)
 {
-    ostrstream message;
+    std::ostrstream message;
     message << "Camera: " << SteerTest::camera.modeName () << ends;
     const Vec3 screenLocation (10, 10, 0);
     draw2dTextAt2dLocation (*message.str(), screenLocation, gWhite);
@@ -283,14 +283,14 @@ void drawDisplayCameraModeName (void)
 // helper for drawDisplayFPS
 
 
-void writePhaseTimerReportToStream (float phaseTimer, ostrstream& stream)
+void writePhaseTimerReportToStream (float phaseTimer, std::ostrstream& stream)
 {
     // write the timer value in seconds in floating point
-    stream << setprecision (5) << setiosflags (ios::fixed);
+    stream << std::setprecision (5) << std::setiosflags (ios::fixed);
     stream << phaseTimer;
 
     // restate value in another form
-    stream << setprecision (0) << setiosflags (ios::fixed);
+    stream << std::setprecision (0) << std::setiosflags (ios::fixed);
     stream << " (";
 
     // is there a "fixed frame rate target"?
@@ -346,7 +346,7 @@ void drawDisplayFPS (void)
         blendIntoAccumulator (smoothRate, fps, gSmoothedFPS);
 
         // convert smoothed FPS value into labeled character string
-        ostrstream fpsStr;
+        std::ostrstream fpsStr;
         fpsStr << "fps: " << (int) roundf (gSmoothedFPS);
         if (SteerTest::clock.paused) fpsStr << " Paused";
         fpsStr << ends;
@@ -368,8 +368,8 @@ void drawDisplayFPS (void)
             blendIntoAccumulator (smoothRate, usage, gSmoothedUsage);
 
             // create usage description character string
-            ostrstream usageStr;
-            usageStr << setprecision (0) << setiosflags (ios::fixed);
+            std::ostrstream usageStr;
+            usageStr << std::setprecision (0) << std::setiosflags (ios::fixed);
             usageStr << gSmoothedUsage << "% usage of 1/";
             usageStr << SteerTest::clock.targetFPS << " time step" << ends;
 
@@ -389,7 +389,7 @@ void drawDisplayFPS (void)
         blendIntoAccumulator (smoothRate, pto, gSmoothedTimerOverhead);
 
         // display phase timer information
-        ostrstream timerStr;
+        std::ostrstream timerStr;
         timerStr << "update: ";
         writePhaseTimerReportToStream (gSmoothedTimerUpdate, timerStr);
         timerStr << "draw:   ";
@@ -427,7 +427,7 @@ int selectNextPresetFrameRate (void)
 
 void keyboardFunc (unsigned char key, int x, int y) 
 {
-    ostrstream message;
+    std::ostrstream message;
 
     // ascii codes
     const int tab = 9;
@@ -508,7 +508,7 @@ void keyboardFunc (unsigned char key, int x, int y)
 
 void specialFunc (int key, int x, int y)
 {
-    ostrstream message;
+    std::ostrstream message;
 
     switch (key)
     {
@@ -579,7 +579,7 @@ void displayFunc (void)
 
 //     // XXX display the total number of AbstractVehicles created
 //     {
-//         ostrstream s;
+//         std::ostrstream s;
 //         s << "vehicles: " << xxx::SerialNumberCounter << ends;
 
 //         // draw string s right-justified in the upper righthand corner
@@ -671,7 +671,7 @@ void glVertexVec3 (const Vec3& v)
 
 void warnIfInUpdatePhase2 (const char* name)
 {
-    ostrstream message;
+    std::ostrstream message;
     message << "use annotation (during simulation update, do not call ";
     message << name;
     message << ")";
@@ -1249,7 +1249,9 @@ void checkForGLError (const char* locationDescription)
     case GL_STACK_OVERFLOW:    cerr << "GL_STACK_OVERFLOW";    break;
     case GL_STACK_UNDERFLOW:   cerr << "GL_STACK_UNDERFLOW";   break;
     case GL_OUT_OF_MEMORY:     cerr << "GL_OUT_OF_MEMORY";     break;
+#ifndef _WIN32
     case GL_TABLE_TOO_LARGE:   cerr << "GL_TABLE_TOO_LARGE";   break;
+#endif
     }
     if (locationDescription) cerr << " in " << locationDescription;
     cerr << endl << endl << flush;
@@ -1308,6 +1310,8 @@ Vec3 directionFromCameraToScreenPosition (int x, int y)
 //
 // For use during simulation phase.
 // Stores description of lines to be drawn later.
+//
+// XXX This should be rewritten using STL container classes
 
 
 class DeferredLine
@@ -1351,12 +1355,13 @@ private:
     Vec3 color;
 
     static int index;
-    static const int size = 1000;
+    static const int size;
     static DeferredLine deferredLineArray [];
 };
 
 
 int DeferredLine::index = 0;
+const int DeferredLine::size = 1000;
 DeferredLine DeferredLine::deferredLineArray [DeferredLine::size];
 
 
@@ -1380,6 +1385,8 @@ void drawAllDeferredLines (void)
 //
 // For use during simulation phase.
 // Stores description of circles to be drawn later.
+//
+// XXX This should be rewritten using STL container classes
 
 
 class DeferredCircle
@@ -1436,12 +1443,13 @@ private:
     bool in3d;
 
     static int index;
-    static const int size = 500;
+    static const int size;
     static DeferredCircle deferredCircleArray [];
 };
 
 
 int DeferredCircle::index = 0;
+const int DeferredCircle::size = 500;
 DeferredCircle DeferredCircle::deferredCircleArray [DeferredCircle::size];
 
 

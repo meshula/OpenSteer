@@ -43,6 +43,16 @@
 #include <stdlib.h> // for rand
 
 
+
+// ----------------------------------------------------------------------------
+// For the sake of Windows, apparently this is a "Linux/Unix thing"
+
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+
 // ----------------------------------------------------------------------------
 // These are Gnu-sanctioned(?) post-ANSI-Standard(?) extension (as in
 // http://www.opengroup.org/onlinepubs/007904975/basedefs/math.h.html)

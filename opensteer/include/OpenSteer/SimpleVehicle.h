@@ -107,10 +107,10 @@ public:
         setMass (1);          // mass (defaults to 1 so acceleration=force)
         setSpeed (0);         // speed along Forward direction.
 
-        setRadius (0.5);      // size of bounding sphere
+        setRadius (0.5f);     // size of bounding sphere
 
-        setMaxForce (0.1);    // steering force is clipped to this magnitude
-        setMaxSpeed (1.0);    // velocity is clipped to this magnitude
+        setMaxForce (0.1f);   // steering force is clipped to this magnitude
+        setMaxSpeed (1.0f);   // velocity is clipped to this magnitude
 
         smoothedAcceleration = Vec3::zero;
     }
@@ -163,7 +163,11 @@ public:
     static int serialNumberCounter;
 
     // draw lines from vehicle's position showing its velocity and acceleration
-    void annotationVelocityAcceleration (float maxLength = 3);
+    void annotationVelocityAcceleration (float maxLength);
+    void annotationVelocityAcceleration (void)
+    {
+        annotationVelocityAcceleration (3);
+    }
 
     // set a random "2D" heading: set local Up to global Y, then effectively
     // rotate about it by a random angle (pick random forward, derive side).

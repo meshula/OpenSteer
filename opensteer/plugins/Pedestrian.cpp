@@ -37,11 +37,11 @@
 // ----------------------------------------------------------------------------
 
 
+#include <iomanip>
+#include <strstream>
 #include "OpenSteer/Pathway.h"
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/SteerTest.h"
-#include <iomanip>
-#include <strstream>
 
 
 // ----------------------------------------------------------------------------
@@ -65,7 +65,7 @@ class Pedestrian : public SimpleVehicle
 public:
 
     // type for a group of Pedestrians
-    typedef vector<Pedestrian*> groupType;
+    typedef std::vector<Pedestrian*> groupType;
 
     // per-instance reference to its group
     const groupType& others;
@@ -131,7 +131,7 @@ public:
         // probability that a lower priority behavior will be given a
         // chance to "drive" even if a higher priority behavior might
         // otherwise be triggered.
-        const float leakThrough = 0.1;
+        const float leakThrough = 0.1f;
 
         // determine if obstacle avoidance is required
         Vec3 obstacleAvoidance;
@@ -231,8 +231,8 @@ PolylinePathway* getTestPath (void)
              Vec3 (h,             0,  h+top),      // 5 f
              Vec3 (h+gap,         0,  h+top/2)};   // 6 g
 
-        gObstacle1.center = interpolate (0.2, pathPoints[0], pathPoints[1]);
-        gObstacle2.center = interpolate (0.5, pathPoints[2], pathPoints[3]);
+        gObstacle1.center = interpolate (0.2f, pathPoints[0], pathPoints[1]);
+        gObstacle2.center = interpolate (0.5f, pathPoints[2], pathPoints[3]);
         gObstacle1.radius = 3;
         gObstacle2.radius = 5;
 
@@ -255,15 +255,14 @@ public:
 
     const char* name (void) {return "Pedestrians";}
 
-    float selectionOrderSortKey (void) {return 0.02;}
+    float selectionOrderSortKey (void) {return 0.02f;}
 
     virtual ~PedestrianPlugIn() {}// be more "nice" to avoid a compiler warning
 
     void open (void)
     {
         // create the specified number of Pedestrians, save pointers to them
-        for (int i = 0; i < crowdSize; i++)
-            crowd.push_back (new Pedestrian (crowd));
+        for (int i = 0; i < 70; i++) crowd.push_back (new Pedestrian (crowd));
 
         // initialize camera and selectedVehicle
         Pedestrian& firstPedestrian = **crowd.begin();
@@ -309,15 +308,15 @@ public:
         serialNumberAnnotationUtility (selected, nearMouse);
 
         // textual annotation for selected Pedestrian
-        const Vec3 color (0.8, 0.8, 1.0);
-        const Vec3 textOffset (0, 0.25, 0);
+        const Vec3 color (0.8f, 0.8f, 1.0f);
+        const Vec3 textOffset (0, 0.25f, 0);
         const Vec3 textPosition = selected.position() + textOffset;
         const Vec3 camPosition = SteerTest::camera.position();
         const float camDistance = Vec3::distance (selected.position(),
                                                   camPosition);
         const char* spacer = "      ";
-        ostrstream annote;
-        annote << setprecision (2) << setiosflags (ios::fixed);
+        std::ostrstream annote;
+        annote << std::setprecision (2) << std::setiosflags (ios::fixed);
         annote << spacer << "1: speed: " << selected.speed() << endl;
         annote << setprecision (1);
         annote << spacer << "2: cam dist: " << camDistance << endl;
@@ -335,16 +334,17 @@ public:
             for (iterator i = crowd.begin(); i != crowd.end(); i++)
             {
                 AbstractVehicle* vehicle = *i;
-                const float near = 6;
+                const float nearDistance = 6;
                 const Vec3& vp = vehicle->position();
                 const Vec3& np = nearMouse.position();
-                if ((Vec3::distance (vp, selected.position()) < near) ||
-                    (&nearMouse && (Vec3::distance (vp, np) < near)))
+                if ((Vec3::distance (vp, selected.position()) < nearDistance)
+                    ||
+                    (&nearMouse && (Vec3::distance (vp, np) < nearDistance)))
                 {
-                    ostrstream sn;
+                    std::ostrstream sn;
                     sn << "#" << ((Pedestrian*)vehicle)->serialNumber << ends;
-                    const Vec3 textColor (0.8, 1.0, 0.8);
-                    const Vec3 textOffset (0, 0.25, 0);
+                    const Vec3 textColor (0.8f, 1, 0.8f);
+                    const Vec3 textOffset (0, 0.25f, 0);
                     const Vec3 textPos = vehicle->position() + textOffset;
                     draw2dTextAt3dLocation (*sn.str(), textPos, textColor);
                 }
@@ -393,7 +393,7 @@ public:
 
     void printMiniHelpForFunctionKeys (void)
     {
-        ostrstream message;
+        std::ostrstream message;
         message << "Function keys handled by ";
         message << '"' << name() << '"' << ':' << ends;
         SteerTest::printMessage (message.str());
@@ -405,7 +405,6 @@ public:
 
     // crowd: a group (STL vector) of all Pedestrians
     Pedestrian::groupType crowd;
-    const static int crowdSize = 70;
     typedef Pedestrian::groupType::const_iterator iterator;
 };
 

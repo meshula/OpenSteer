@@ -239,14 +239,21 @@ private:
     static float phaseTimers[];
     static float phaseTimerBase;
     static const int phaseStackSize;
-    static const int drawPhase = 2;
-    static const int updatePhase = 1;
-    static const int overheadPhase = 0;
     static void pushPhase (const int newPhase);
     static void popPhase (void);
     static void initPhaseTimers (void);
     static void updatePhaseTimers (void);
+
+    // XXX apparently MS VC6 cannot handle initialized static const members,
+    // XXX so they have to be initialized not-inline.
+    // static const int drawPhase = 2;
+    // static const int updatePhase = 1;
+    // static const int overheadPhase = 0;
+    static const int drawPhase;
+    static const int updatePhase;
+    static const int overheadPhase;
 };
+
 
 // ----------------------------------------------------------------------------
 

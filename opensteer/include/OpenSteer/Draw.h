@@ -74,15 +74,15 @@ const Vec3 gOrange (1, 0.5, 0);
 
 inline Vec3 grayColor (const float g) {return Vec3 (g, g, g);}
 
-const Vec3 gGray10 = grayColor (0.1);
-const Vec3 gGray20 = grayColor (0.2);
-const Vec3 gGray30 = grayColor (0.3);
-const Vec3 gGray40 = grayColor (0.4);
-const Vec3 gGray50 = grayColor (0.5);
-const Vec3 gGray60 = grayColor (0.6);
-const Vec3 gGray70 = grayColor (0.7);
-const Vec3 gGray80 = grayColor (0.8);
-const Vec3 gGray90 = grayColor (0.9);
+const Vec3 gGray10 = grayColor (0.1f);
+const Vec3 gGray20 = grayColor (0.2f);
+const Vec3 gGray30 = grayColor (0.3f);
+const Vec3 gGray40 = grayColor (0.4f);
+const Vec3 gGray50 = grayColor (0.5f);
+const Vec3 gGray60 = grayColor (0.6f);
+const Vec3 gGray70 = grayColor (0.7f);
+const Vec3 gGray80 = grayColor (0.8f);
+const Vec3 gGray90 = grayColor (0.9f);
 
 
 // ------------------------------------------------------------------------

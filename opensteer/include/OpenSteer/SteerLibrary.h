@@ -226,12 +226,9 @@ public:
     // XXX ("utility vehicle"?)
 
     // xxx cwr experimental 9-9-02 -- names OK?
-    bool isAhead (const Vec3& target) const
-    {return isAhead (target, 0.707);};
-    bool isAside (const Vec3& target) const
-    {return isAside (target, 0.707);};
-    bool isBehind (const Vec3& target) const
-    {return isBehind (target, -0.707);};
+    bool isAhead (const Vec3& target) const {return isAhead (target, 0.707f);};
+    bool isAside (const Vec3& target) const {return isAside (target, 0.707f);};
+    bool isBehind (const Vec3& target) const {return isBehind (target, -0.707f);};
 
     bool isAhead (const Vec3& target, float cosThreshold) const
     {
@@ -502,7 +499,7 @@ steerToAvoidNeighbors (const float minTimeToCollision,
     {
         // parallel: +1, perpendicular: 0, anti-parallel: -1
         float parallelness = forward().dot(threat->forward());
-        float angle = 0.707;
+        float angle = 0.707f;
 
         if (parallelness < -angle)
         {
@@ -894,11 +891,11 @@ steerForPursuit (const AbstractVehicle& quarry,
     const float forwardness = forward().dot (unitOffset);
 
     const float directTravelTime = distance / speed ();
-    const int f = intervalComparison (forwardness,  -0.707, 0.707);
-    const int p = intervalComparison (parallelness, -0.707, 0.707);
+    const int f = intervalComparison (forwardness,  -0.707f, 0.707f);
+    const int p = intervalComparison (parallelness, -0.707f, 0.707f);
 
     float timeFactor = 0; // to be filled in below
-    Vec3 color;       // to be filled in below (xxx just for debugging)
+    Vec3 color;           // to be filled in below (xxx just for debugging)
 
     // Break the pursuit into nine cases, the cross product of the
     // quarry being [ahead, aside, or behind] us and heading
@@ -913,11 +910,11 @@ steerForPursuit (const AbstractVehicle& quarry,
             color = gBlack;
             break;
         case 0:           // ahead, perpendicular
-            timeFactor = 1.8;
+            timeFactor = 1.8f;
             color = gGray50;
             break;
         case -1:          // ahead, anti-parallel
-            timeFactor = 0.85;
+            timeFactor = 0.85f;
             color = gWhite;
             break;
         }
@@ -930,7 +927,7 @@ steerForPursuit (const AbstractVehicle& quarry,
             color = gRed;
             break;
         case 0:           // aside, perpendicular
-            timeFactor = 0.8;
+            timeFactor = 0.8f;
             color = gYellow;
             break;
         case -1:          // aside, anti-parallel
@@ -943,7 +940,7 @@ steerForPursuit (const AbstractVehicle& quarry,
         switch (p)
         {
         case +1:          // behind, parallel
-            timeFactor = 0.5;
+            timeFactor = 0.5f;
             color= gCyan;
             break;
         case 0:           // behind, perpendicular
@@ -1085,8 +1082,8 @@ annotationForPathFollowing (const Vec3& futurePosition,
                             const bool withinPath)
 {
     const Vec3 yellow (1, 1, 0);
-    const Vec3 lightOrange (1.0, 0.5, 0.0);
-    const Vec3 darkOrange (0.5, 0.2, 0.0);
+    const Vec3 lightOrange (1.0f, 0.5f, 0.0f);
+    const Vec3 darkOrange  (0.5f, 0.2f, 0.0f);
     const Vec3 orange (withinPath ? darkOrange : lightOrange);
 
     annotationLine (futurePosition, position(), yellow);
@@ -1153,8 +1150,8 @@ annotationForAvoidCloseNeighbor (const AbstractVehicle& other,
 {
     // draw the word "Ouch!" above colliding vehicles
     const float headOn = forward().dot(other.forward()) < 0;
-    const Vec3 green (0.4, 0.8, 0.1);
-    const Vec3 red (1, 0.1, 0);
+    const Vec3 green (0.4f, 0.8f, 0.1f);
+    const Vec3 red (1, 0.1f, 0);
     const Vec3 color = headOn ? red : green;
     const char* string = headOn ? "OUCH!" : "pardon me";
     const Vec3 location = position() + Vec3 (0, 0.5, 0);

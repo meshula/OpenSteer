@@ -36,10 +36,10 @@
 // ----------------------------------------------------------------------------
 
 
-#include "OpenSteer/SimpleVehicle.h"
-#include "OpenSteer/SteerTest.h"
 #include <iomanip>
 #include <strstream>
+#include "OpenSteer/SimpleVehicle.h"
+#include "OpenSteer/SteerTest.h"
 
 
 // ----------------------------------------------------------------------------
@@ -56,9 +56,9 @@ public:
     void reset (void)
     {
         SimpleVehicle::reset (); // reset the vehicle 
-        setSpeed (1.5);          // speed along Forward direction.
-        setMaxForce (0.3);       // steering force is clipped to this magnitude
-        setMaxSpeed (5.0);       // velocity is clipped to this magnitude
+        setSpeed (1.5f);         // speed along Forward direction.
+        setMaxForce (0.3f);      // steering force is clipped to this magnitude
+        setMaxSpeed (5);         // velocity is clipped to this magnitude
         clearTrailHistory ();    // prevent long streaks due to teleportation 
     }
 
@@ -89,7 +89,7 @@ public:
     
     const char* name (void) {return "One Turning Away";}
 
-    float selectionOrderSortKey (void) {return 0.06;}
+    float selectionOrderSortKey (void) {return 0.06f;}
 
     // be more "nice" to avoid a compiler warning
     virtual ~OneTurningPlugIn() {}
@@ -118,8 +118,8 @@ public:
         gOneTurning->draw ();
 
         // textual annotation (following the test vehicle's screen position)
-        ostrstream annote;
-        annote << setprecision (2) << setiosflags (ios::fixed);
+        std::ostrstream annote;
+        annote << std::setprecision (2) << std::setiosflags (ios::fixed);
         annote << "      speed: " << gOneTurning->speed() << ends;
         draw2dTextAt3dLocation (*annote.str(), gOneTurning->position(), gRed);
         draw2dTextAt3dLocation (*"start", Vec3::zero, gGreen);
@@ -147,7 +147,7 @@ public:
     const AVGroup& allVehicles (void) {return (const AVGroup&) theVehicle;}
 
     OneTurning* gOneTurning;
-    vector<OneTurning*> theVehicle; // for allVehicles
+    std::vector<OneTurning*> theVehicle; // for allVehicles
 };
 
 

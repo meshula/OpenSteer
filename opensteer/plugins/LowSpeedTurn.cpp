@@ -39,10 +39,10 @@
 // ----------------------------------------------------------------------------
 
 
-#include "OpenSteer/SimpleVehicle.h"
-#include "OpenSteer/SteerTest.h"
 #include <iomanip>
 #include <strstream>
+#include "OpenSteer/SimpleVehicle.h"
+#include "OpenSteer/SteerTest.h"
 
 
 // ----------------------------------------------------------------------------
@@ -68,16 +68,16 @@ public:
         setPosition (startX, 0, 0);
 
         // steering force clip magnitude
-        setMaxForce (0.3);
+        setMaxForce (0.3f);
 
         // velocity  clip magnitude
-        setMaxSpeed (1.5);
+        setMaxSpeed (1.5f);
 
         // for next instance: step starting location
         startX += 2;
 
         // for next instance: step speed
-        startSpeed += 0.15;
+        startSpeed += 0.15f;
 
         // 15 seconds and 150 points along the trail
         setTrailParameters (15, 150);
@@ -136,7 +136,7 @@ public:
 
     const char* name (void) {return "Low Speed Turn";}
 
-    float selectionOrderSortKey (void) {return 0.05;}
+    float selectionOrderSortKey (void) {return 0.05f;}
 
     // be more "nice" to avoid a compiler warning
     virtual ~LowSpeedTurnPlugIn() {}
@@ -193,12 +193,12 @@ public:
             agent.draw ();
 
             // display speed near agent's screen position
-            const Vec3 textColor (0.8, 0.8, 1.0);
-            const Vec3 textOffset (0, 0.25, 0);
+            const Vec3 textColor (0.8f, 0.8f, 1.0f);
+            const Vec3 textOffset (0, 0.25f, 0);
             const Vec3 textPosition = agent.position() + textOffset;
-            ostrstream annote;
-            annote << setprecision (2)
-                   << setiosflags (ios::fixed)
+            std::ostrstream annote;
+            annote << std::setprecision (2)
+                   << std::setiosflags (ios::fixed)
                    << agent.speed()
                    << ends;
             draw2dTextAt3dLocation (*annote.str(), textPosition, textColor);
@@ -223,8 +223,8 @@ public:
 
     const AVGroup& allVehicles (void) {return (const AVGroup&) all;}
 
-    vector<LowSpeedTurn*> all; // for allVehicles
-    typedef vector<LowSpeedTurn*>::const_iterator iterator;
+    std::vector<LowSpeedTurn*> all; // for allVehicles
+    typedef std::vector<LowSpeedTurn*>::const_iterator iterator;
 };
 
 

@@ -305,7 +305,7 @@ void AnnotationMixin<Super>::recordTrailVertex (const float currentTime,
 template<class Super>
 void AnnotationMixin<Super>::drawTrail (void)
 {
-    const Vec3 trailColor = grayColor (0.7);
+    const Vec3 trailColor = grayColor (0.7f);
     const Vec3 tickColor = gWhite;
 
     int index = trailIndex;
@@ -333,7 +333,7 @@ void AnnotationMixin<Super>::drawTrail (void)
             else
             {
                 // draw trail segments with opacity decreasing with age
-                const float minO = 0.05; // minimum opacity
+                const float minO = 0.05f; // minimum opacity
                 const float fraction = (float) j / trailVertexCount;
                 const float opacity = (fraction * (1 - minO)) + minO;
                 drawLineAlpha (trailVertices [index],

@@ -51,10 +51,10 @@
 // ----------------------------------------------------------------------------
 
 
-#include "OpenSteer/SimpleVehicle.h"
-#include "OpenSteer/SteerTest.h"
 #include <iomanip>
 #include <strstream>
+#include "OpenSteer/SimpleVehicle.h"
+#include "OpenSteer/SteerTest.h"
 
 
 // ----------------------------------------------------------------------------
@@ -158,11 +158,11 @@ const float gMaxStartRadius = 40;
 
 const float gBrakingRate = 0.75;
 
-const Vec3 evadeColor     (0.6, 0.6, 0.3); // annotation
-const Vec3 seekColor      (0.3, 0.6, 0.6); // annotation
-const Vec3 clearPathColor (0.3, 0.6, 0.3); // annotation
+const Vec3 evadeColor     (0.6f, 0.6f, 0.3f); // annotation
+const Vec3 seekColor      (0.3f, 0.6f, 0.6f); // annotation
+const Vec3 clearPathColor (0.3f, 0.6f, 0.3f); // annotation
 
-const float gAvoidancePredictTimeMin  = 0.9;
+const float gAvoidancePredictTimeMin  = 0.9f;
 const float gAvoidancePredictTimeMax  = 2;
 float gAvoidancePredictTime = gAvoidancePredictTimeMin;
 
@@ -211,7 +211,7 @@ void CtfBase::reset (void)
 void CtfSeeker::reset (void)
 {
     CtfBase::reset ();
-    bodyColor.set (0.4, 0.4, 0.6); // blueish
+    bodyColor.set (0.4f, 0.4f, 0.6f); // blueish
     gSeeker = this;
     state = running;
     evading = false;
@@ -221,7 +221,7 @@ void CtfSeeker::reset (void)
 void CtfEnemy::reset (void)
 {
     CtfBase::reset ();
-    bodyColor.set (0.6, 0.4, 0.4); // redish
+    bodyColor.set (0.6f, 0.4f, 0.4f); // redish
 }
 
 
@@ -307,7 +307,7 @@ void CtfEnemy::update (const float currentTime, const float elapsedTime)
         // annotation:
         if (gSeeker->state == tagged)
         {
-            const Vec3 color (0.8, 0.5, 0.5);
+            const Vec3 color (0.8f, 0.5f, 0.5f);
             annotationXZDisk (sumOfRadii,
                         (position() + gSeeker->position()) / 2,
                         color,
@@ -366,9 +366,9 @@ bool CtfSeeker::clearPathToGoal (void)
                 //annotationLine (e.position, forward*eFront, gGreen); // xxx
 
                 // xxx
-                // ostrstream message;
-                // message << "eFront = " << setprecision(2)
-                //         << setiosflags(ios::fixed) << eFront << ends;
+                // std::ostrstream message;
+                // message << "eFront = " << std::setprecision(2)
+                //         << std::setiosflags(ios::fixed) << eFront << ends;
                 // draw2dTextAt3dLocation (*message.str(), eFuture, gWhite);
 
                 const bool eIsBehind = eFront < -behindThreshold;
@@ -575,9 +575,9 @@ Vec3 CtfSeeker::steeringForSeeker (void)
             // we have a clear path (defender-free corridor), use pure seek
 
             // xxx experiment 9-16-02
-            Vec3 s = limitMaxDeviationAngle (seek, 0.707, forward());
+            Vec3 s = limitMaxDeviationAngle (seek, 0.707f, forward());
 
-            annotationLine (position(), position() + (s * 0.2), seekColor);
+            annotationLine (position(), position() + (s * 0.2f), seekColor);
             return s;
         }
         else
@@ -586,9 +586,8 @@ Vec3 CtfSeeker::steeringForSeeker (void)
             {
                 // combine seek and (forward facing portion of) evasion
                 const Vec3 evade = steerToEvadeAllDefenders ();
-                const Vec3 steer = seek + limitMaxDeviationAngle (evade,
-                                                                  0.5,
-                                                                  forward());
+                const Vec3 steer = 
+                    seek + limitMaxDeviationAngle (evade, 0.5f, forward());
 
                 // annotation: show evasion steering force
                 annotationLine (position(),position()+(steer*0.2),evadeColor);
@@ -599,13 +598,13 @@ Vec3 CtfSeeker::steeringForSeeker (void)
             {
                 const Vec3 evade = XXXsteerToEvadeAllDefenders ();
                 const Vec3 steer = limitMaxDeviationAngle (seek + evade,
-                                                           0.707, forward());
+                                                           0.707f, forward());
 
                 annotationLine (position(),position()+seek, gRed);
                 annotationLine (position(),position()+evade, gGreen);
 
                 // annotation: show evasion steering force
-                annotationLine (position(),position()+(steer*0.2),evadeColor);
+                annotationLine (position(),position()+(steer*0.2f),evadeColor);
                 return steer;
             }
         }
@@ -624,9 +623,9 @@ void CtfSeeker::adjustObstacleAvoidanceLookAhead (const bool clearPath)
     {
         evading = false;
         const float goalDistance = Vec3::distance (gHomeBaseCenter,position());
-        const bool headingTowardGoal = isAhead (gHomeBaseCenter, 0.98);
-        const bool near = (goalDistance/speed()) < gAvoidancePredictTimeMax;
-        const bool useMax = headingTowardGoal && !near;
+        const bool headingTowardGoal = isAhead (gHomeBaseCenter, 0.98f);
+        const bool isNear = (goalDistance/speed()) < gAvoidancePredictTimeMax;
+        const bool useMax = headingTowardGoal && !isNear;
         gAvoidancePredictTime =
             (useMax ? gAvoidancePredictTimeMax : gAvoidancePredictTimeMin);
     }
@@ -694,13 +693,14 @@ void CtfSeeker::draw (void)
 
     // annote seeker with its state as text
     const Vec3 textOrigin = position() + Vec3 (0, 0.25, 0);
-    ostrstream annote;
+    std::ostrstream annote;
     annote << seekerStateString << endl;
-    annote << setprecision(2) << setiosflags(ios::fixed) << speed() << ends;
+    annote << std::setprecision(2) << std::setiosflags(ios::fixed)
+           << speed() << ends;
     draw2dTextAt3dLocation (*annote.str(), textOrigin, gWhite);
 
     // display status in the upper left corner of the window
-    ostrstream status;
+    std::ostrstream status;
     status << seekerStateString << endl;
     status << obstacleCount << " obstacles" << endl;
     status << resetCount << " restarts" << ends;
@@ -771,7 +771,7 @@ void CtfBase::addOneObstacle (void)
         do
         {
             r = frandom2 (1.5, 4);
-            c = randomVectorOnUnitRadiusXZDisk () * gMaxStartRadius * 1.1;
+            c = randomVectorOnUnitRadiusXZDisk () * gMaxStartRadius * 1.1f;
             minClearance = FLT_MAX;
 
             for (int i = 0; i < obstacleCount; i++)
@@ -822,7 +822,7 @@ public:
 
     const char* name (void) {return "Capture the Flag";}
 
-    float selectionOrderSortKey (void) {return 0.01;}
+    float selectionOrderSortKey (void) {return 0.01f;}
 
     virtual ~CtfPlugIn() {} // be more "nice" to avoid a compiler warning
 
@@ -875,8 +875,8 @@ public:
         const Vec3 goalDirection = goalOffset.normalize ();
         const Vec3 cameraForward = SteerTest::camera.xxxls().forward();
         const float goalDot = cameraForward.dot (goalDirection);
-        const float i = remapIntervalClip (goalDot, 1, 0, 0.5, 0);
-        const Vec3 gridCenter = interpolate (i,
+        const float blend = remapIntervalClip (goalDot, 1, 0, 0.5, 0);
+        const Vec3 gridCenter = interpolate (blend,
                                              selected.position(),
                                              gHomeBaseCenter);
         SteerTest::gridUtility (gridCenter);
@@ -937,7 +937,7 @@ public:
 
     void printMiniHelpForFunctionKeys (void)
     {
-        ostrstream message;
+        std::ostrstream message;
         message << "Function keys handled by ";
         message << '"' << name() << '"' << ':' << ends;
         SteerTest::printMessage (message.str());
@@ -950,8 +950,8 @@ public:
 
     void drawHomeBase (void)
     {
-        const Vec3 up (0, 0.01, 0);
-        const Vec3 atColor (0.3, 0.3, 0.5);
+        const Vec3 up (0, 0.01f, 0);
+        const Vec3 atColor (0.3f, 0.3f, 0.5f);
         const Vec3 noColor = gGray50;
         const bool reached = ctfSeeker->state == CtfSeeker::atGoal;
         const Vec3 baseColor = (reached ? atColor : noColor);
@@ -963,7 +963,7 @@ public:
     {
         for (int i = 0; i < CtfBase::obstacleCount; i++)
         {
-            const Vec3 color (0.8, 0.6, 0.4);
+            const Vec3 color (0.8f, 0.6f, 0.4f);
             drawXZCircle (CtfBase::obstacles[i].radius,
                           CtfBase::obstacles[i].center,
                           color,
@@ -972,7 +972,7 @@ public:
     }
 
     // a group (STL vector) of all vehicles in the PlugIn
-    vector<CtfBase*> all;
+    std::vector<CtfBase*> all;
 };
 
 

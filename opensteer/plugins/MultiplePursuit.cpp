@@ -86,7 +86,7 @@ public:
     void reset (void)
     {
         MpBase::reset ();
-        bodyColor.set (0.4, 0.6, 0.4); // greenish
+        bodyColor.set (0.4f, 0.6f, 0.4f); // greenish
     }
 
     // one simulation step
@@ -114,7 +114,7 @@ public:
     void reset (void)
     {
         MpBase::reset ();
-        bodyColor.set (0.6, 0.4, 0.4); // redish
+        bodyColor.set (0.6f, 0.4f, 0.4f); // redish
         randomizeStartingPositionAndHeading ();
     }
 
@@ -162,7 +162,7 @@ public:
 
     const char* name (void) {return "Multiple Pursuit";}
 
-    float selectionOrderSortKey (void) {return 0.04;}
+    float selectionOrderSortKey (void) {return 0.04f;}
 
     virtual ~MpPlugIn() {} // be more "nice" to avoid a compiler warning
 
@@ -173,6 +173,7 @@ public:
         allMP.push_back (wanderer);
 
         // create the specified number of pursuers, save pointers to them
+        const int pursuerCount = 30;
         for (int i = 0; i < pursuerCount; i++)
             allMP.push_back (new MpPursuer (wanderer));
         pBegin = allMP.begin() + 1;  // iterator pointing to first pursuer
@@ -241,12 +242,11 @@ public:
     const AVGroup& allVehicles (void) {return (const AVGroup&) allMP;}
 
     // a group (STL vector) of all vehicles
-    vector<MpBase*> allMP;
-    typedef vector<MpBase*>::const_iterator iterator;
+    std::vector<MpBase*> allMP;
+    typedef std::vector<MpBase*>::const_iterator iterator;
     iterator pBegin, pEnd;
 
     MpWanderer* wanderer;
-    const static int pursuerCount = 30;
 };
 
 

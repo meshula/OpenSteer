@@ -48,7 +48,7 @@ class Boid : public SimpleVehicle
 public:
 
     // type for a flock: an STL vector of Boid pointers
-    typedef vector<Boid*> groupType;
+    typedef std::vector<Boid*> groupType;
 
     // per-boid reference to its flock
     const groupType& flock;
@@ -96,7 +96,7 @@ public:
         // when near sphere boundary, gently seek toward the center
         const Vec3 combined = (steerToFlock () +
                                ((position().length() > 50) ?
-                                steerForSeek (Vec3::zero) * 0.1 :
+                                steerForSeek (Vec3::zero) * 0.1f :
                                 Vec3::zero));
 
         // apply force
@@ -106,17 +106,17 @@ public:
     // basic flocking
     Vec3 steerToFlock (void)
     {
-        const float separationRadius = 9.5;
-        const float separationAngle = -0.707;
-        const float separationWeight = 9.2;
+        const float separationRadius =  9.5f;
+        const float separationAngle  = -0.707f;
+        const float separationWeight =  9.2f;
 
-        const float alignmentRadius = 7.5;
-        const float alignmentAngle = 0.2;
-        const float alignmentWeight = 7.0;
+        const float alignmentRadius = 7.5f;
+        const float alignmentAngle  = 0.2f;
+        const float alignmentWeight = 7.0f;
 
-        const float cohesionRadius = 13.00;
-        const float cohesionAngle = -0.15;
-        const float cohesionWeight = 10.0;
+        const float cohesionRadius = 13.00f;
+        const float cohesionAngle  = -0.15f;
+        const float cohesionWeight = 10.0f;
 
         const AVGroup& avflock = (AVGroup&)flock;
 
@@ -155,13 +155,13 @@ public:
     
     const char* name (void) {return "Boids";}
 
-    float selectionOrderSortKey (void) {return 0.03;}
+    float selectionOrderSortKey (void) {return 0.03f;}
 
     virtual ~BoidsPlugIn() {} // be more "nice" to avoid a compiler warning
 
     void open (void)
     {
-        makeFlock (flockSize);
+        makeFlock (200);
 
         // initialize camera
         Boid& firstBoid = **flock.begin();
@@ -241,7 +241,6 @@ public:
 
     // flock: a group (STL vector) of pointers to all boids
     Boid::groupType flock;
-    const static int flockSize = 200;
     typedef Boid::groupType::const_iterator iterator;
 };
 

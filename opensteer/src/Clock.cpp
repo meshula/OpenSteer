@@ -49,7 +49,20 @@
 
 #include "OpenSteer/Clock.h"
 #include "OpenSteer/SteerTest.h"
+
+
+// ----------------------------------------------------------------------------
+// XXX This is a bit ad hoc.  Need to revisit conditionalization on operating
+// XXX system.  As of 5-5-03, this module knows about Win32 (code thanks to
+// XXX Leaf Garland and Bruce Mitchener) and Linux/Unix (Craig's original
+// XXX version).  It tests for Win32 and assumes Linux/Unix otherwise.
+
+
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <sys/time.h> 
+#endif
 
 
 // ----------------------------------------------------------------------------
@@ -64,8 +77,8 @@ Clock::Clock (void)
     // the desired rate of frames per second,
     // or zero to mean "as fast as possible"
     targetFPS = 0;
-//  targetFPS = 30;
-//  targetFPS = 24;
+    // targetFPS = 30;
+    // targetFPS = 24;
 
     // real "wall clock" time since launch
     totalRealTime = 0;
@@ -189,17 +202,85 @@ void Clock::advanceSimulationTime (const float seconds)
 
 
 // ----------------------------------------------------------------------------
-// Returns the number of seconds of real time (represented as a float)
-// since the clock was first updated.
+// Returns the number of seconds of real time (represented as a float) since
+// the clock was first updated.
+//
+// XXX Need to revisit conditionalization on operating system.
+//
+// XXX as of 5-5-03: two versions, one for Linux/Unix (by Craig Reynolds) and
+// XXX one for Windows (by Leaf Garland).  As Leaf's comment suggests, the
+// XXX original version of this function mirrored the Linux/Unix clock model.
+// XXX This should be redesigned to be more agnostic to operating system.
+
+
+
+// original version:
+//
+// float Clock::realTimeSinceFirstClockUpdate (void)
+// {
+//     timeval t;
+//     if (gettimeofday (&t, 0) != 0)
+//     {
+//         SteerTest::errorExit ("Problem reading system clock.\n");
+//         return (0);  // won't be reached, but prevents compiler warning
+//     }
+//     else
+//     {
+//         // ensure the base time is recorded once after launch
+//         if (baseRealTimeSec == 0)
+//         {
+//             baseRealTimeSec = t.tv_sec;
+//             baseRealTimeUsec = t.tv_usec;
+//         }
+
+//         // real "wall clock" time since launch
+//         return (( t.tv_sec  - baseRealTimeSec) +
+//                 ((t.tv_usec - baseRealTimeUsec) / 1000000.0));
+//     }
+// }
+
+void clockErrorExit (void)
+{
+    SteerTest::errorExit ("Problem reading system clock.\n");
+}
 
 
 float Clock::realTimeSinceFirstClockUpdate (void)
+#ifdef _WIN32
+{
+    LONGLONG time, freq;
+    if (QueryPerformanceCounter((LARGE_INTEGER *)&time))
+    {
+        if (QueryPerformanceFrequency((LARGE_INTEGER *)&freq))
+        {
+            // This is complicated by trying to stick with the original
+            // method of storing time as two integers instead of a float.
+            double dtime = (double)time / (double)freq;
+            int sec = (int)dtime;
+            int usec = (dtime - sec) * 1000000;
+			
+            if (baseRealTimeSec == 0)
+            {
+                baseRealTimeSec = sec;
+                baseRealTimeUsec = usec;
+            }
+            // real "wall clock" time since launch
+            return (( sec  - baseRealTimeSec) +
+                    ((usec - baseRealTimeUsec) / 1000000.0));
+        }
+        clockErrorExit ();
+        return 0.0f;
+    }
+    clockErrorExit ();
+    return 0.0f;
+}
+#else
 {
     timeval t;
     if (gettimeofday (&t, 0) != 0)
     {
-        SteerTest::errorExit ("Problem reading system clock.\n");
-        return (0);  // won't be reached, but prevents compiler warning
+        clockErrorExit ();
+        return (0);  // won't be reached, but avoids compiler warning
     }
     else
     {
@@ -215,6 +296,7 @@ float Clock::realTimeSinceFirstClockUpdate (void)
                 ((t.tv_usec - baseRealTimeUsec) / 1000000.0));
     }
 }
+#endif
 
 
 // ----------------------------------------------------------------------------
