@@ -239,9 +239,10 @@ void Clock::advanceSimulationTime (const float seconds)
 //     }
 // }
 
-void clockErrorExit (void)
+float clockErrorExit (void)
 {
     SteerTest::errorExit ("Problem reading system clock.\n");
+    return 0.0f;
 }
 
 
@@ -255,7 +256,7 @@ float Clock::realTimeSinceFirstClockUpdate (void)
         {
             // This is complicated by trying to stick with the original
             // method of storing time as two integers instead of a float.
-			float dtime = (float)time / (float)freq;
+            float dtime = (float)time / (float)freq;
             int sec = (int)dtime;
             int usec = (int)((dtime - sec) * 1000000);
 
@@ -264,23 +265,21 @@ float Clock::realTimeSinceFirstClockUpdate (void)
                 baseRealTimeSec = sec;
                 baseRealTimeUsec = usec;
             }
+
             // real "wall clock" time since launch
             return (( sec  - baseRealTimeSec) +
                     ((usec - baseRealTimeUsec) / 1000000.0f));
         }
-        clockErrorExit ();
-        return 0.0f;
+        return clockErrorExit ();
     }
-    clockErrorExit ();
-    return 0.0f;
+    return clockErrorExit ();
 }
 #else
 {
     timeval t;
     if (gettimeofday (&t, 0) != 0)
     {
-        clockErrorExit ();
-        return (0);  // won't be reached, but avoids compiler warning
+        return clockErrorExit ();
     }
     else
     {
