@@ -224,8 +224,8 @@ AnnotationMixin<Super>::AnnotationMixin (void)
 template<class Super>
 AnnotationMixin<Super>::~AnnotationMixin (void)
 {
-    if (trailVertices != NULL) free (trailVertices);
-    if (trailFlags != NULL) free (trailFlags);
+    delete[] trailVertices;
+    delete[] trailFlags;
 }
 
 
@@ -249,12 +249,12 @@ void AnnotationMixin<Super>::setTrailParameters (const float duration,
     trailDottedPhase = 1;
 
     // prepare trailVertices array: free old one if needed, allocate new one
-    if (trailVertices != NULL) free (trailVertices);
-    trailVertices = (Vec3*) malloc (trailVertexCount * sizeof (Vec3));
+    delete[] trailVertices;
+    trailVertices = new Vec3[trailVertexCount];
 
     // prepare trailFlags array: free old one if needed, allocate new one
-    if (trailFlags != NULL) free (trailFlags);
-    trailFlags = (char*) malloc (trailVertexCount * sizeof (char));
+    delete[] trailFlags;
+    trailFlags = new char[trailVertexCount];
 
     // initializing all flags to zero means "do not draw this segment"
     for (int i = 0; i < trailVertexCount; i++) trailFlags[i] = 0;
