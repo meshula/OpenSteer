@@ -53,7 +53,8 @@ public:
     // per-boid reference to its flock
     const groupType& flock;
 
-    // constructor: takes flock as argument
+    // constructor: argument is a reference to a flock container which is 
+    // still being filled with the newly constructed member of the flock
     Boid (const groupType& FLOCK) : flock (FLOCK) {reset ();}
 
     // reset state
@@ -94,29 +95,33 @@ public:
     {
         // combined steering force: boids are always flocking, plus
         // when near sphere boundary, gently seek toward the center
-        const Vec3 combined = (steerToFlock () +
-                               ((position().length() > 50) ?
-                                steerForSeek (Vec3::zero) * 0.1f :
-                                Vec3::zero));
-
-        // apply force
-        applySteeringForce (combined, elapsedTime);
+        const Vec3 flocking = steerToFlock ();
+        if (position().length() < 50)
+        {
+            applySteeringForce (flocking, elapsedTime);
+        }
+        else
+        {
+            const Vec3 seek = xxxsteerForSeek (Vec3::zero);
+            const Vec3 lateral = seek.perpendicularComponent (forward ());
+            applySteeringForce (flocking + lateral, elapsedTime);
+        }
     }
 
     // basic flocking
     Vec3 steerToFlock (void)
     {
-        const float separationRadius =  9.5f;
+        const float separationRadius =  5.0f;
         const float separationAngle  = -0.707f;
-        const float separationWeight =  9.2f;
+        const float separationWeight =  12.0f;
 
         const float alignmentRadius = 7.5f;
-        const float alignmentAngle  = 0.2f;
-        const float alignmentWeight = 7.0f;
+        const float alignmentAngle  = 0.7f;
+        const float alignmentWeight = 8.0f;
 
-        const float cohesionRadius = 13.00f;
+        const float cohesionRadius = 9.0f;
         const float cohesionAngle  = -0.15f;
-        const float cohesionWeight = 10.0f;
+        const float cohesionWeight = 8.0f;
 
         const AVGroup& avflock = (AVGroup&)flock;
 
@@ -159,6 +164,9 @@ public:
 class BoidsPlugIn : public PlugIn
 {
 public:
+// -------------------------------------------------- xxxBasicProximity
+//     bool requestInitialSelection (void) {return true;}
+// -------------------------------------------------- xxxBasicProximity
     
     const char* name (void) {return "Boids";}
 

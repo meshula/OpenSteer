@@ -187,7 +187,7 @@ void mouseButtonFunc (int button, int state, int x, int y)
         // (on Mac OS X control-mouse maps to mouse-right for "context menu",
         // this makes SteerTest's control-mouse work work the same on OS X as 
         // on Linux and Windows, but it precludes using a mouseR context menu)
-       if ((modCtrl && mouseL) ||
+        if ((modCtrl && mouseL) ||
            (modNone && mouseR && macosx))
         {
             gMouseAdjustingCameraLastX = x;
