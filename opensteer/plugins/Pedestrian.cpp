@@ -60,6 +60,7 @@ PolylinePathway* getTestPath (void);
 PolylinePathway* gTestPath = NULL;
 SphericalObstacle gObstacle1;
 SphericalObstacle gObstacle2;
+ObstacleGroup gObstacles;
 Vec3 gEndpoint0;
 Vec3 gEndpoint1;
 bool gUseDirectedPathFollowing = true;
@@ -183,9 +184,8 @@ public:
         Vec3 obstacleAvoidance;
         if (leakThrough < frandom01())
         {
-            const float oTime = 6;
-            obstacleAvoidance = (steerToAvoidObstacle (gObstacle1, oTime) +
-                                 steerToAvoidObstacle (gObstacle2, oTime));
+            const float oTime = 6; // minTimeToCollision = 6 seconds
+            obstacleAvoidance = steerToAvoidObstacles (oTime, gObstacles);
         }
 
         // if obstacle avoidance is needed, do it
@@ -400,6 +400,8 @@ PolylinePathway* getTestPath (void)
         gObstacle2.center = interpolate (0.5f, pathPoints[2], pathPoints[3]);
         gObstacle1.radius = 3;
         gObstacle2.radius = 5;
+        gObstacles.push_back (&gObstacle1);
+        gObstacles.push_back (&gObstacle2);
 
         gEndpoint0 = pathPoints[0];
         gEndpoint1 = pathPoints[pathPointCount-1];

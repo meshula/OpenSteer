@@ -113,8 +113,8 @@ public:
     // when no avoidance is required.
 
 
-    Vec3 steerToAvoidObstacle (const Obstacle& obstacle,
-                               const float minTimeToCollision);
+    Vec3 steerToAvoidObstacle (const float minTimeToCollision,
+                               const Obstacle& obstacle);
 
 
     // avoids all obstacles in an ObstacleGroup
@@ -497,8 +497,8 @@ steerToFollowPath (const int direction,
 template<class Super>
 Vec3
 SteerLibraryMixin<Super>::
-steerToAvoidObstacle (const Obstacle& obstacle,
-                      const float minTimeToCollision)
+steerToAvoidObstacle (const float minTimeToCollision,
+                      const Obstacle& obstacle)
 {
     const Vec3 avoidance = obstacle.steerToAvoid (*this, minTimeToCollision);
 
