@@ -348,21 +348,19 @@ namespace {
     }
 
 
+    // ----------------------------------------------------------------------------
+    // draw text showing (smoothed, rounded) "frames per second" rate
+    // (and later a bunch of related stuff was dumped here, a reorg would be nice)
+    //
+    // XXX note: drawDisplayFPS has morphed considerably and should be called
+    // something like displayClockStatus, and that it should be part of
+    // OpenSteerDemo instead of Draw  (cwr 11-23-04)
 
+    float gSmoothedTimerDraw = 0;
+    float gSmoothedTimerUpdate = 0;
+    float gSmoothedTimerOverhead = 0;
 
-
-
-        // ----------------------------------------------------------------------------
-        // draw text showing (smoothed, rounded) "frames per second" rate
-        // (and later a bunch of related stuff was dumped here, a reorg would be nice)
-        
-        float gSmoothedTimerDraw = 0;
-        float gSmoothedTimerUpdate = 0;
-        float gSmoothedTimerOverhead = 0;
-
-
-
-    void 
+    void
     drawDisplayFPS (void)
     {
         // skip several frames to allow frame rate to settle
@@ -384,32 +382,32 @@ namespace {
 
             // describe clock mode and frame rate statistics
             screenLocation.y += lh;
-            std::ostringstream fooStr;
-            fooStr << "Clock: ";
+            std::ostringstream clockStr;
+            clockStr << "Clock: ";
             if (OpenSteer::OpenSteerDemo::clock.getAnimationMode ())
             {
-                fooStr << "animation mode (";
-                fooStr << targetFPS << " fps,";
-                fooStr << " display "<< OpenSteer::round(smoothedFPS) << " fps, ";
+                clockStr << "animation mode (";
+                clockStr << targetFPS << " fps,";
+                clockStr << " display "<< OpenSteer::round(smoothedFPS) << " fps, ";
                 const float ratio = smoothedFPS / targetFPS;
-                fooStr << (int) (100 * ratio) << "% of nominal speed)";
+                clockStr << (int) (100 * ratio) << "% of nominal speed)";
             }
             else
             {
-                fooStr << "real-time mode, ";
+                clockStr << "real-time mode, ";
                 if (OpenSteer::OpenSteerDemo::clock.getVariableFrameRateMode ())
                 {
-                    fooStr << "variable frame rate (";
-                    fooStr << OpenSteer::round(smoothedFPS) << " fps)";
+                    clockStr << "variable frame rate (";
+                    clockStr << OpenSteer::round(smoothedFPS) << " fps)";
                 }
                 else
                 {
-                    fooStr << "fixed frame rate (target: " << targetFPS;
-                    fooStr << " actual: " << OpenSteer::round(smoothedFPS) << ", ";
+                    clockStr << "fixed frame rate (target: " << targetFPS;
+                    clockStr << " actual: " << OpenSteer::round(smoothedFPS) << ", ";
 
                     OpenSteer::Vec3 sp;
                     sp = screenLocation;
-                    sp.x += cw * (int) fooStr.tellp ();
+                    sp.x += cw * (int) clockStr.tellp ();
 
                     // create usage description character string
                     std::ostringstream xxxStr;
@@ -420,8 +418,8 @@ namespace {
                            << std::ends;
 
                     const int usageLength = ((int) xxxStr.tellp ()) - 1;
-                    for (int i = 0; i < usageLength; i++) fooStr << " ";
-                    fooStr << ")";
+                    for (int i = 0; i < usageLength; i++) clockStr << " ";
+                    clockStr << ")";
 
                     // display message in lower left corner of window
                     // (draw in red if the instantaneous usage is 100% or more)
@@ -430,9 +428,10 @@ namespace {
                     draw2dTextAt2dLocation (xxxStr, sp, color);
                 }
             }
-            fooStr << std::ends;
-            draw2dTextAt2dLocation (fooStr, screenLocation, OpenSteer::gWhite);
-
+            if (OpenSteer::OpenSteerDemo::clock.getPausedState ())
+                clockStr << " [paused]";
+            clockStr << std::ends;
+            draw2dTextAt2dLocation (clockStr, screenLocation, OpenSteer::gWhite);
 
             // get smoothed phase timer information
             const float ptd = OpenSteer::OpenSteerDemo::phaseTimerDraw();
