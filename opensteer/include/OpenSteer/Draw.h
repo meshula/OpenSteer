@@ -47,8 +47,8 @@
 // ----------------------------------------------------------------------------
 
 
-#ifndef _OPENSTEER_DRAW_H_
-#define _OPENSTEER_DRAW_H_
+#ifndef OPENSTEER_DRAW_H
+#define OPENSTEER_DRAW_H
 
 
 #include "Vec3.h"
@@ -378,4 +378,4 @@ Vec3 directionFromCameraToScreenPosition (int x, int y);
 
 
 // ----------------------------------------------------------------------------
-#endif // _OPENSTEER_DRAW_H_
+#endif // OPENSTEER_DRAW_H

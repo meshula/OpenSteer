@@ -59,8 +59,8 @@
 // ----------------------------------------------------------------------------
 
 
-#ifndef _OPENSTEER_LOCALSPACE_H_
-#define _OPENSTEER_LOCALSPACE_H_
+#ifndef OPENSTEER_LOCALSPACE_H
+#define OPENSTEER_LOCALSPACE_H
 
 
 #include "Vec3.h"
@@ -354,4 +354,4 @@ const LocalSpace gGlobalSpace;
 
 
 // ----------------------------------------------------------------------------
-#endif // _OPENSTEER_LOCALSPACE_H_
+#endif // OPENSTEER_LOCALSPACE_H

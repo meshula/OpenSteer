@@ -68,8 +68,8 @@ FooPlugIn gFooPlugIn;
 // ----------------------------------------------------------------------------
 
 
-#ifndef _OPENSTEER_PLUGIN_H_
-#define _OPENSTEER_PLUGIN_H_
+#ifndef OPENSTEER_PLUGIN_H
+#define OPENSTEER_PLUGIN_H
 
 #include <iostream>
 #include "AbstractVehicle.h"
@@ -179,4 +179,4 @@ private:
 
 
 // ----------------------------------------------------------------------------
-#endif // _OPENSTEER_PLUGIN_H_
+#endif // OPENSTEER_PLUGIN_H

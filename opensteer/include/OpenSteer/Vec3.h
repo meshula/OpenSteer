@@ -46,8 +46,8 @@
 // ----------------------------------------------------------------------------
 
 
-#ifndef _OPENSTEER_VEC3_H_
-#define _OPENSTEER_VEC3_H_
+#ifndef OPENSTEER_VEC3_H
+#define OPENSTEER_VEC3_H
 
 
 #include "Utilities.h"  // for interpolate, etc.
@@ -336,4 +336,4 @@ Vec3 findPerpendicularIn3d (const Vec3& direction);
 
 
 // ----------------------------------------------------------------------------
-#endif // _OPENSTEER_VEC3_H_
+#endif // OPENSTEER_VEC3_H

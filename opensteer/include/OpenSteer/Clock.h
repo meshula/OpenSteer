@@ -48,8 +48,8 @@
 // ----------------------------------------------------------------------------
 
 
-#ifndef _OPENSTEER_CLOCK_H_
-#define _OPENSTEER_CLOCK_H_
+#ifndef OPENSTEER_CLOCK_H
+#define OPENSTEER_CLOCK_H
 
 
 class Clock
@@ -124,4 +124,4 @@ public:
 
 
 // ----------------------------------------------------------------------------
-#endif // _OPENSTEER_CLOCK_H_
+#endif // OPENSTEER_CLOCK_H

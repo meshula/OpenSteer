@@ -45,8 +45,8 @@
 // ----------------------------------------------------------------------------
 
 
-#ifndef _OPENSTEER_OBSTACLE_H_
-#define _OPENSTEER_OBSTACLE_H_
+#ifndef OPENSTEER_OBSTACLE_H
+#define OPENSTEER_OBSTACLE_H
 
 
 #include "Vec3.h"
@@ -144,4 +144,4 @@ private:
 
 
 // ----------------------------------------------------------------------------
-#endif // _OPENSTEER_OBSTACLE_H_
+#endif // OPENSTEER_OBSTACLE_H

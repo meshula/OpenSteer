@@ -39,8 +39,8 @@
 // ----------------------------------------------------------------------------
 
 
-#ifndef _OPENSTEER_CAMERA_H_
-#define _OPENSTEER_CAMERA_H_
+#ifndef OPENSTEER_CAMERA_H
+#define OPENSTEER_CAMERA_H
 
 
 #include "LocalSpace.h"
@@ -176,4 +176,4 @@ public:
 
 
 // ----------------------------------------------------------------------------
-#endif // _OPENSTEER_CAMERA_H_
+#endif // OPENSTEER_CAMERA_H

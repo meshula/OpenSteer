@@ -40,8 +40,8 @@
 // ----------------------------------------------------------------------------
 
 
-#ifndef _OPENSTEER_STEERTEST_H_
-#define _OPENSTEER_STEERTEST_H_
+#ifndef OPENSTEER_STEERTEST_H
+#define OPENSTEER_STEERTEST_H
 
 
 #include "OpenSteer/Vec3.h"
@@ -263,4 +263,4 @@ private:
 
 
 // ----------------------------------------------------------------------------
-#endif // _OPENSTEER_STEERTEST_H_
+#endif // OPENSTEER_STEERTEST_H

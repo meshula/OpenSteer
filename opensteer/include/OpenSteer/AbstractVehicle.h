@@ -35,8 +35,8 @@
 //
 // ----------------------------------------------------------------------------
 
-#ifndef _OPENSTEER_ABSTRACTVEHICLE_H_
-#define _OPENSTEER_ABSTRACTVEHICLE_H_
+#ifndef OPENSTEER_ABSTRACTVEHICLE_H
+#define OPENSTEER_ABSTRACTVEHICLE_H
 
 
 #include "LocalSpace.h"
@@ -96,4 +96,4 @@ typedef AbstractVehicle::iterator AVIterator;
 
 
 // ----------------------------------------------------------------------------
-#endif // _OPENSTEER_ABSTRACTVEHICLE_H_
+#endif // OPENSTEER_ABSTRACTVEHICLE_H

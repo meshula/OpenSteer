@@ -59,8 +59,8 @@
 // ----------------------------------------------------------------------------
 
 
-#ifndef _OPENSTEER_SIMPLEVEHICLE_H_
-#define _OPENSTEER_SIMPLEVEHICLE_H_
+#ifndef OPENSTEER_SIMPLEVEHICLE_H
+#define OPENSTEER_SIMPLEVEHICLE_H
 
 
 #include "AbstractVehicle.h"
@@ -199,4 +199,4 @@ private:
 
 
 // ----------------------------------------------------------------------------
-#endif // _OPENSTEER_SIMPLEVEHICLE_H_
+#endif // OPENSTEER_SIMPLEVEHICLE_H

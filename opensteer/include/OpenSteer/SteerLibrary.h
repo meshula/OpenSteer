@@ -42,8 +42,8 @@
 // ----------------------------------------------------------------------------
 
 
-#ifndef _OPENSTEER_STEERLIBRARY_H_
-#define _OPENSTEER_STEERLIBRARY_H_
+#ifndef OPENSTEER_STEERLIBRARY_H
+#define OPENSTEER_STEERLIBRARY_H
 
 
 #include "AbstractVehicle.h"
@@ -1165,4 +1165,4 @@ annotationForAvoidCloseNeighbor (const AbstractVehicle& other,
 
 
 // ----------------------------------------------------------------------------
-#endif // _OPENSTEER_STEERLIBRARY_H_
+#endif // OPENSTEER_STEERLIBRARY_H

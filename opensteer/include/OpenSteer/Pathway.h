@@ -36,8 +36,8 @@
 // ----------------------------------------------------------------------------
 
 
-#ifndef _OPENSTEER_PATHWAY_H_
-#define _OPENSTEER_PATHWAY_H_
+#ifndef OPENSTEER_PATHWAY_H
+#define OPENSTEER_PATHWAY_H
 
 
 #include "Vec3.h"
@@ -130,4 +130,4 @@ private:
 
 
 // ----------------------------------------------------------------------------
-#endif // _OPENSTEER_PATHWAY_H_
+#endif // OPENSTEER_PATHWAY_H

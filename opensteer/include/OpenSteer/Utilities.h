@@ -36,8 +36,8 @@
 // ----------------------------------------------------------------------------
 
 
-#ifndef _OPENSTEER_UTILITIES_H_
-#define _OPENSTEER_UTILITIES_H_
+#ifndef OPENSTEER_UTILITIES_H
+#define OPENSTEER_UTILITIES_H
 
 
 #include <iostream>  // for ostream, <<, etc.
@@ -293,4 +293,4 @@ inline float round (float x)
 
 
 // ----------------------------------------------------------------------------
-#endif // _OPENSTEER_UTILITIES_H_
+#endif // OPENSTEER_UTILITIES_H

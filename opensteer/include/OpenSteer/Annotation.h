@@ -41,8 +41,8 @@
 // ----------------------------------------------------------------------------
 
 
-#ifndef _OPENSTEER_ANNOTATION_H_
-#define _OPENSTEER_ANNOTATION_H_
+#ifndef OPENSTEER_ANNOTATION_H
+#define OPENSTEER_ANNOTATION_H
 
 
 #include "SteerTest.h"
@@ -409,4 +409,4 @@ void AnnotationMixin<Super>::annotationCircleOrDisk (const float radius,
 
 
 // ----------------------------------------------------------------------------
-#endif // _OPENSTEER_ANNOTATION_H_
+#endif // OPENSTEER_ANNOTATION_H
