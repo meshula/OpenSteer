@@ -56,11 +56,11 @@
 //
 // XXX In Mac OS X these headers are located in a different directory.
 // XXX Need to revisit conditionalization on operating system.
-#if defined(__APPLE__)
-#include <GLUT/glut.h>
-#else // !defined(__APPLE__)
-#include <GL/glut.h>
-#endif // !defined(__APPLE__)
+#if __APPLE__ && __MACH__
+#include <GLUT/glut.h>   // for Mac OS X
+#else
+#include <GL/glut.h>     // for Linux and Windows
+#endif
 
 
 #include "OpenSteer/SteerTest.h"
@@ -165,9 +165,17 @@ void mouseButtonFunc (int button, int state, int x, int y)
         const int  mods       = glutGetModifiers ();
         const bool modNone    = (mods == 0);
         const bool modCtrl    = (mods == GLUT_ACTIVE_CTRL);
+        const bool modAlt     = (mods == GLUT_ACTIVE_ALT);
         const bool modCtrlAlt = (mods == (GLUT_ACTIVE_CTRL | GLUT_ACTIVE_ALT));
         const bool mouseL     = (button == GLUT_LEFT_BUTTON);
         const bool mouseM     = (button == GLUT_MIDDLE_BUTTON);
+        const bool mouseR     = (button == GLUT_RIGHT_BUTTON);
+
+#if __APPLE__ && __MACH__
+        const bool macosx = true;
+#else
+        const bool macosx = false;
+#endif
 
         // mouse-left (with no modifiers): select vehicle
         if (modNone && mouseL)
@@ -176,7 +184,11 @@ void mouseButtonFunc (int button, int state, int x, int y)
         }
 
         // control-mouse-left: begin adjusting camera angle
-        if (modCtrl && mouseL)
+        // (on Mac OS X control-mouse maps to mouse-right for "context menu",
+        // this makes SteerTest's control-mouse work work the same on OS X as 
+        // on Linux and Windows, but it precludes using a mouseR context menu)
+       if ((modCtrl && mouseL) ||
+           (modNone && mouseR && macosx))
         {
             gMouseAdjustingCameraLastX = x;
             gMouseAdjustingCameraLastY = y;
@@ -184,10 +196,12 @@ void mouseButtonFunc (int button, int state, int x, int y)
         }
 
         // control-mouse-middle: begin adjusting camera radius
-        // (same for: control-alt-mouse-left and control-alt-mouse-middle)
+        // (same for: control-alt-mouse-left and control-alt-mouse-middle,
+        // and on Mac OS X it is alt-mouse-right)
         if ((modCtrl    && mouseM) ||
             (modCtrlAlt && mouseL) ||
-            (modCtrlAlt && mouseM))
+            (modCtrlAlt && mouseM) ||
+            (modAlt     && mouseR && macosx))
         {
             gMouseAdjustingCameraLastX = x;
             gMouseAdjustingCameraLastY = y;
