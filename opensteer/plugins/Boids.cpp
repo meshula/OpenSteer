@@ -591,7 +591,7 @@ public:
         switch (Boid::constraint)
         {
         case Boid::none:
-            Boid::obstacles.clear (); // this is only one with no big sphere
+            Boid::obstacles.clear (); // no big sphere
             break;
         case Boid::insideSphere:
             break;
@@ -613,6 +613,7 @@ public:
             Boid::obstacles.push_back (&outsideBigBox);
             break;
         case Boid::insideBox:
+            Boid::obstacles.clear (); // no big sphere
             Boid::obstacles.push_back (&insideBigBox);
             break;
         }
@@ -663,7 +664,6 @@ public:
             tempDrawBox (outsideBigBox, dark);
             break;
         case Boid::insideBox:
-            tempDrawSphere (insideBigSphere, light);
             tempDrawBox (insideBigBox, dark);
             break;
         }
