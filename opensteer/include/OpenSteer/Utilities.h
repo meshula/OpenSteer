@@ -259,6 +259,8 @@ inline float floorXXX (float x)          {return floor (x);}
 inline float  sqrtXXX (float x)          {return sqrt (x);}
 inline float   sinXXX (float x)          {return sin (x);}
 inline float   cosXXX (float x)          {return cos (x);}
+inline float   absXXX (float x)          {return abs (x);}
+inline int     absXXX (int x)            {return abs (x);}
 inline float   maxXXX (float x, float y) {if (x > y) return x; else return y;}
 inline float   minXXX (float x, float y) {if (x < y) return x; else return y;}
 
@@ -268,6 +270,8 @@ inline float floorXXX (float x)          {return std::floor (x);}
 inline float  sqrtXXX (float x)          {return std::sqrt (x);}
 inline float   sinXXX (float x)          {return std::sin (x);}
 inline float   cosXXX (float x)          {return std::cos (x);}
+inline float   absXXX (float x)          {return std::abs (x);}
+inline int     absXXX (int x)            {return std::abs (x);}
 inline float   maxXXX (float x, float y) {return std::max (x, y);}
 inline float   minXXX (float x, float y) {return std::min (x, y);}
 
