@@ -74,7 +74,7 @@
 
 namespace {
 
-    char* appVersionName = "OpenSteerDemo 0.8";
+    char* appVersionName = "OpenSteerDemo 0.8.2";
 
     // The number of our GLUT window
     int windowID;
