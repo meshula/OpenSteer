@@ -189,7 +189,7 @@ namespace OpenSteer {
         // return the number of tokens currently in the database
         int getPopulation (void)
         {
-            return group.size();
+            return (int) group.size();
         }
         
     private:
