@@ -40,8 +40,10 @@
 #define _OPENSTEER_UTILITIES_H_
 
 
-#include <stdlib.h> // for rand
-
+#include <iostream>  // for ostream, <<, etc.
+#include <cstdlib>   // for rand, etc.
+#include <cfloat>    // for FLT_MAX, etc.
+#include <cmath>     // for sqrt, etc.
 
 
 // ----------------------------------------------------------------------------
@@ -51,35 +53,6 @@
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-
-
-// ----------------------------------------------------------------------------
-// These are Gnu-sanctioned(?) post-ANSI-Standard(?) extension (as in
-// http://www.opengroup.org/onlinepubs/007904975/basedefs/math.h.html)
-// which is not in the math.h I'm using.  Feel free to replace this
-// local definition with a better solution.
-
-
-inline float roundfPositive (float x)
-{
-    return (float)(int)(x+0.5);
-}
-
-inline float roundf (float x)
-{
-    if (x<0) return -roundfPositive(-x); else return roundfPositive(x);
-}
-
-
-inline float truncfPositive (float x)
-{
-    return (float)(int)(x+0.5);
-}
-
-inline float truncf (float x)
-{
-    if (x<0) return -truncfPositive(-x); else return truncfPositive(x);
-}
 
 
 // ----------------------------------------------------------------------------

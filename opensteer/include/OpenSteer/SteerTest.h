@@ -44,7 +44,6 @@
 #define _OPENSTEER_STEERTEST_H_
 
 
-#include <float.h>
 #include "OpenSteer/Vec3.h"
 #include "OpenSteer/Clock.h"
 #include "OpenSteer/PlugIn.h"
@@ -221,9 +220,11 @@ public:
 
     // print a line on the console with "SteerTest: " then the given ending
     static void printMessage (const char* message);
+    static void printMessage (const std::ostringstream& message);
 
     // like printMessage but prefix is "SteerTest: Warning: "
     static void printWarning (const char* message);
+    static void printWarning (const std::ostringstream& message);
 
     // print list of known commands
     static void keyboardMiniHelp (void);

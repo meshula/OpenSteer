@@ -168,7 +168,9 @@ DEFINES		= USEOpenGL
 # OPTFLAGS	= -Wall -Winline 
 # xxx cwr 3-27-03 removing -Winline
 # (got warnings about the compiler giving up, not about def order problems)
-OPTFLAGS	= -Wall
+# OPTFLAGS	= -Wall
+# use -pedantic for more strict warnings
+OPTFLAGS	= -Wall -pedantic
 
 # Compiler debug options
 

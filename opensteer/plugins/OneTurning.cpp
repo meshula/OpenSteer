@@ -37,7 +37,7 @@
 
 
 #include <iomanip>
-#include <strstream>
+#include <sstream>
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/SteerTest.h"
 
@@ -118,10 +118,10 @@ public:
         gOneTurning->draw ();
 
         // textual annotation (following the test vehicle's screen position)
-        std::ostrstream annote;
+        std::ostringstream annote;
         annote << std::setprecision (2) << std::setiosflags (std::ios::fixed);
         annote << "      speed: " << gOneTurning->speed() << std::ends;
-        draw2dTextAt3dLocation (*annote.str(), gOneTurning->position(), gRed);
+        draw2dTextAt3dLocation (annote, gOneTurning->position(), gRed);
         draw2dTextAt3dLocation (*"start", Vec3::zero, gGreen);
 
         // update camera, tracking test vehicle

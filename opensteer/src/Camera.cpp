@@ -158,14 +158,18 @@ void Camera::update (const float currentTime,
         break;
 
     case cmOffsetPOV:
-        if (noVehicle) break;
-        newUp = v.up();
-        const Vec3 futurePosition = v.predictFuturePosition (antiLagTime);
-        const Vec3 globalOffset = v.globalizeDirection (povOffset);
-        newPosition = futurePosition + globalOffset;
-        // XXX hack to improve smoothing between modes (no effect on aim)
-        const float L = 10;
-        newTarget = newPosition + (v.forward() * L);
+        {
+            if (noVehicle) break;
+            newUp = v.up();
+            const Vec3 futurePosition = v.predictFuturePosition (antiLagTime);
+            const Vec3 globalOffset = v.globalizeDirection (povOffset);
+            newPosition = futurePosition + globalOffset;
+            // XXX hack to improve smoothing between modes (no effect on aim)
+            const float L = 10;
+            newTarget = newPosition + (v.forward() * L);
+            break;
+        }
+    default:
         break;
     }
 
@@ -253,8 +257,8 @@ Vec3 Camera::constDistHelper (const float elapsedTime)
         const Vec3 unitOffset = offset / distance;
 
         // new offset of length XXX
-        const float xxxDistance = sqrtf (SQ (fixedDistDistance) -
-                                         SQ (fixedDistVOffset));
+        const float xxxDistance = sqrt (SQ (fixedDistDistance) -
+                                        SQ (fixedDistVOffset));
         const Vec3 newOffset = unitOffset * xxxDistance;
 
         // return new camera position: adjust distance to target
@@ -371,6 +375,8 @@ void Camera::mouseAdjustOffset (const Vec3& adjustment)
             povOffset = v.localizeDirection (adjusted);
             break;
         }
+    default:
+        break;
     }
 }
 

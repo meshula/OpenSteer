@@ -52,7 +52,7 @@
 
 
 #include <iomanip>
-#include <strstream>
+#include <sstream>
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/SteerTest.h"
 
@@ -366,7 +366,7 @@ bool CtfSeeker::clearPathToGoal (void)
                 //annotationLine (e.position, forward*eFront, gGreen); // xxx
 
                 // xxx
-                // std::ostrstream message;
+                // std::ostringstream message;
                 // message << "eFront = " << std::setprecision(2)
                 //         << std::setiosflags(std::ios::fixed) << eFront << std::ends;
                 // draw2dTextAt3dLocation (*message.str(), eFuture, gWhite);
@@ -693,20 +693,20 @@ void CtfSeeker::draw (void)
 
     // annote seeker with its state as text
     const Vec3 textOrigin = position() + Vec3 (0, 0.25, 0);
-    std::ostrstream annote;
+    std::ostringstream annote;
     annote << seekerStateString << std::endl;
     annote << std::setprecision(2) << std::setiosflags(std::ios::fixed)
            << speed() << std::ends;
-    draw2dTextAt3dLocation (*annote.str(), textOrigin, gWhite);
+    draw2dTextAt3dLocation (annote, textOrigin, gWhite);
 
     // display status in the upper left corner of the window
-    std::ostrstream status;
+    std::ostringstream status;
     status << seekerStateString << std::endl;
     status << obstacleCount << " obstacles" << std::endl;
     status << resetCount << " restarts" << std::ends;
     const float h = drawGetWindowHeight ();
     const Vec3 screenLocation (10, h-50, 0);
-    draw2dTextAt2dLocation (*status.str(), screenLocation, gGray80);
+    draw2dTextAt2dLocation (status, screenLocation, gGray80);
 }
 
 
@@ -937,10 +937,10 @@ public:
 
     void printMiniHelpForFunctionKeys (void)
     {
-        std::ostrstream message;
+        std::ostringstream message;
         message << "Function keys handled by ";
         message << '"' << name() << '"' << ':' << std::ends;
-        SteerTest::printMessage (message.str());
+        SteerTest::printMessage (message);
         SteerTest::printMessage ("  F1     add one obstacle.");
         SteerTest::printMessage ("  F2     remove one obstacle.");
         SteerTest::printMessage ("");

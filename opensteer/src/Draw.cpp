@@ -47,14 +47,23 @@
 // ----------------------------------------------------------------------------
 
 
-#include <iomanip>               // C++ stream IO (and their manipulation)
-#include <strstream>
+#include <iomanip>
+#include <sstream>
+
+
+// Include headers for OpenGL (gl.h), OpenGL Utility Library (glu.h) and
+// OpenGL Utility Toolkit (glut.h).
+//
+// XXX In Mac OS X these headers are located in a different directory.
+// XXX Need to revisit conditionalization on operating system.
+#if defined(__APPLE__)
+#include <GLUT/glut.h>
+#else // !defined(__APPLE__)
+#include <GL/glut.h>
+#endif // !defined(__APPLE__)
+
 
 #include "OpenSteer/SteerTest.h"
-
-#include <GL/glut.h>             // GLUT Library 
-#include <GL/gl.h>               // OpenGL32 Library
-#include <GL/glu.h>              // GLu32 Library
 
 
 // ----------------------------------------------------------------------------
@@ -272,10 +281,10 @@ void drawDisplayPlugInName (void)
 
 void drawDisplayCameraModeName (void)
 {
-    std::ostrstream message;
+    std::ostringstream message;
     message << "Camera: " << SteerTest::camera.modeName () << std::ends;
     const Vec3 screenLocation (10, 10, 0);
-    draw2dTextAt2dLocation (*message.str(), screenLocation, gWhite);
+    draw2dTextAt2dLocation (message, screenLocation, gWhite);
 }
 
 
@@ -283,7 +292,8 @@ void drawDisplayCameraModeName (void)
 // helper for drawDisplayFPS
 
 
-void writePhaseTimerReportToStream (float phaseTimer, std::ostrstream& stream)
+void writePhaseTimerReportToStream (float phaseTimer,
+                                    std::ostringstream& stream)
 {
     // write the timer value in seconds in floating point
     stream << std::setprecision (5) << std::setiosflags (std::ios::fixed);
@@ -346,15 +356,15 @@ void drawDisplayFPS (void)
         blendIntoAccumulator (smoothRate, fps, gSmoothedFPS);
 
         // convert smoothed FPS value into labeled character string
-        std::ostrstream fpsStr;
-        fpsStr << "fps: " << (int) roundf (gSmoothedFPS);
+        std::ostringstream fpsStr;
+        fpsStr << "fps: " << (int) round (gSmoothedFPS);
         if (SteerTest::clock.paused) fpsStr << " Paused";
         fpsStr << std::ends;
 
         // draw the string in white at the lower left corner of the window
         const int lh = 16; // xxx
         const Vec3 screenLocation1 (10, 10 + lh, 0);
-        draw2dTextAt2dLocation (*fpsStr.str(), screenLocation1, gWhite);
+        draw2dTextAt2dLocation (fpsStr, screenLocation1, gWhite);
 
         // add "usage" message if fixed target frame rate is specified
         if (targetFrameRate)
@@ -368,7 +378,7 @@ void drawDisplayFPS (void)
             blendIntoAccumulator (smoothRate, usage, gSmoothedUsage);
 
             // create usage description character string
-            std::ostrstream usageStr;
+            std::ostringstream usageStr;
             usageStr << std::setprecision (0);
             usageStr << std::setiosflags (std::ios::fixed);
             usageStr << gSmoothedUsage << "% usage of 1/";
@@ -379,7 +389,7 @@ void drawDisplayFPS (void)
             // (draw in red if the instantaneous usage is 100% or more)
             const Vec3 screenLocation2 (10, 10 + 2*lh, 0);
             const Vec3 color = (usage >= 100) ? gRed : gGray60;
-            draw2dTextAt2dLocation (*usageStr.str(), screenLocation2, color);
+            draw2dTextAt2dLocation (usageStr, screenLocation2, color);
         }
 
         // get smoothed phase timer information
@@ -391,7 +401,7 @@ void drawDisplayFPS (void)
         blendIntoAccumulator (smoothRate, pto, gSmoothedTimerOverhead);
 
         // display phase timer information
-        std::ostrstream timerStr;
+        std::ostringstream timerStr;
         timerStr << "update: ";
         writePhaseTimerReportToStream (gSmoothedTimerUpdate, timerStr);
         timerStr << "draw:   ";
@@ -400,7 +410,7 @@ void drawDisplayFPS (void)
         writePhaseTimerReportToStream (gSmoothedTimerOverhead, timerStr);
         timerStr << std::ends;
         const Vec3 screenLocation3 (10, lh * 7, 0);
-        draw2dTextAt2dLocation (*timerStr.str(), screenLocation3, gGreen);
+        draw2dTextAt2dLocation (timerStr, screenLocation3, gGreen);
     }
 }
 
@@ -429,7 +439,7 @@ int selectNextPresetFrameRate (void)
 
 void keyboardFunc (unsigned char key, int x, int y) 
 {
-    std::ostrstream message;
+    std::ostringstream message;
 
     // ascii codes
     const int tab = 9;
@@ -444,7 +454,7 @@ void keyboardFunc (unsigned char key, int x, int y)
         message << "reset PlugIn "
                 << '"' << SteerTest::nameOfSelectedPlugIn () << '"'
                 << std::ends;
-        SteerTest::printMessage (message.str());
+        SteerTest::printMessage (message);
         break;
 
     // cycle selection to next vehicle
@@ -458,7 +468,7 @@ void keyboardFunc (unsigned char key, int x, int y)
         SteerTest::camera.selectNextMode ();
         message << "select camera mode "
                 << '"' << SteerTest::camera.modeName () << '"' << std::ends;
-        SteerTest::printMessage (message.str());
+        SteerTest::printMessage (message);
         break;
 
     // select next PlugIn
@@ -467,7 +477,7 @@ void keyboardFunc (unsigned char key, int x, int y)
         message << "select next PlugIn: "
                 << '"' << SteerTest::nameOfSelectedPlugIn () << '"'
                 << std::ends;
-        SteerTest::printMessage (message.str());
+        SteerTest::printMessage (message);
         break;
 
     // toggle run/pause state
@@ -480,7 +490,7 @@ void keyboardFunc (unsigned char key, int x, int y)
     case 'f':
         message << "set frame rate to "
                 << selectNextPresetFrameRate () << std::ends;
-        SteerTest::printMessage (message.str());
+        SteerTest::printMessage (message);
         break;
 
     // print minimal help for single key commands
@@ -499,7 +509,7 @@ void keyboardFunc (unsigned char key, int x, int y)
         message << " (" << (int)key << ")";//xxx perhaps only for debugging?
         message << std::ends;
         SteerTest::printMessage ("");
-        SteerTest::printMessage (message.str());
+        SteerTest::printMessage (message);
         SteerTest::keyboardMiniHelp ();
     }
 }
@@ -512,7 +522,7 @@ void keyboardFunc (unsigned char key, int x, int y)
 
 void specialFunc (int key, int x, int y)
 {
-    std::ostrstream message;
+    std::ostringstream message;
 
     switch (key)
     {
@@ -537,7 +547,7 @@ void specialFunc (int key, int x, int y)
         SteerTest::clock.advanceSimulationTime (frameTime);
         message << "single step forward (frame time: "
                 << frameTime << ")" << std::endl;
-        SteerTest::printMessage (message.str());
+        SteerTest::printMessage (message);
         break;
     }
 }
@@ -583,7 +593,7 @@ void displayFunc (void)
 
 //     // XXX display the total number of AbstractVehicles created
 //     {
-//         std::ostrstream s;
+//         std::ostringstream s;
 //         s << "vehicles: " << xxx::SerialNumberCounter << std::ends;
 
 //         // draw string s right-justified in the upper righthand corner
@@ -594,7 +604,7 @@ void displayFunc (void)
 //         const int x = w - (fontWidth * s.pcount());
 //         const int y = h - (fontHeight + 5);
 //         const Vec3 screenLocation (x, y, 0);
-//         draw2dTextAt2dLocation (*s.str(), screenLocation, gWhite);
+//         draw2dTextAt2dLocation (s, screenLocation, gWhite);
 //     }
 
 
@@ -675,12 +685,12 @@ void glVertexVec3 (const Vec3& v)
 
 void warnIfInUpdatePhase2 (const char* name)
 {
-    std::ostrstream message;
+    std::ostringstream message;
     message << "use annotation (during simulation update, do not call ";
     message << name;
     message << ")";
     message << std::ends;
-    SteerTest::printWarning (message.str());
+    SteerTest::printWarning (message);
 }
 
 
@@ -915,7 +925,7 @@ void drawBasic2dCircularVehicle (const AbstractVehicle& vehicle,
 {
     // "aspect ratio" of body (as seen from above)
     const float x = 0.5;
-    const float y = sqrtf (1 - (x * x));
+    const float y = sqrt (1 - (x * x));
 
     // radius and position of vehicle
     const float r = vehicle.radius();
@@ -949,7 +959,7 @@ void drawBasic3dSphericalVehicle (const AbstractVehicle& vehicle,
 {
     // "aspect ratio" of body (as seen from above)
     const float x = 0.5;
-    const float y = sqrtf (1 - (x * x));
+    const float y = sqrt (1 - (x * x));
 
     // radius and position of vehicle
     const float r = vehicle.radius();
@@ -1244,21 +1254,21 @@ void checkForGLError (const char* locationDescription)
     if (lastGlError == GL_NO_ERROR) return;
 
     // otherwise print vaguely descriptive error message, then exit
-    cerr << std::endl << "SteerTest: OpenGL error ";
+    std::cerr << std::endl << "SteerTest: OpenGL error ";
     switch (lastGlError)
     {
-    case GL_INVALID_ENUM:      cerr << "GL_INVALID_ENUM";      break;
-    case GL_INVALID_VALUE:     cerr << "GL_INVALID_VALUE";     break;
-    case GL_INVALID_OPERATION: cerr << "GL_INVALID_OPERATION"; break;
-    case GL_STACK_OVERFLOW:    cerr << "GL_STACK_OVERFLOW";    break;
-    case GL_STACK_UNDERFLOW:   cerr << "GL_STACK_UNDERFLOW";   break;
-    case GL_OUT_OF_MEMORY:     cerr << "GL_OUT_OF_MEMORY";     break;
+    case GL_INVALID_ENUM:      std::cerr << "GL_INVALID_ENUM";      break;
+    case GL_INVALID_VALUE:     std::cerr << "GL_INVALID_VALUE";     break;
+    case GL_INVALID_OPERATION: std::cerr << "GL_INVALID_OPERATION"; break;
+    case GL_STACK_OVERFLOW:    std::cerr << "GL_STACK_OVERFLOW";    break;
+    case GL_STACK_UNDERFLOW:   std::cerr << "GL_STACK_UNDERFLOW";   break;
+    case GL_OUT_OF_MEMORY:     std::cerr << "GL_OUT_OF_MEMORY";     break;
 #ifndef _WIN32
-    case GL_TABLE_TOO_LARGE:   cerr << "GL_TABLE_TOO_LARGE";   break;
+    case GL_TABLE_TOO_LARGE:   std::cerr << "GL_TABLE_TOO_LARGE";   break;
 #endif
     }
-    if (locationDescription) cerr << " in " << locationDescription;
-    cerr << std::endl << std::endl << flush;
+    if (locationDescription) std::cerr << " in " << locationDescription;
+    std::cerr << std::endl << std::endl << std::flush;
     SteerTest::exit (1);
 }
 
@@ -1876,7 +1886,7 @@ inline void end2dDrawing (GLint originalMatrixMode)
 // }
 
 
-void draw2dTextAt3dLocation (const char& s,
+void draw2dTextAt3dLocation (const char& text,
                              const Vec3& location,
                              const Vec3& color)
 {
@@ -1899,7 +1909,7 @@ void draw2dTextAt3dLocation (const char& s,
 
     // loop over each character in string (until null terminator)
     int lines = 0;
-    for (const char* p = &s; *p; p++)
+    for (const char* p = &text; *p; p++)
     {
         if (*p == '\n')
         {
@@ -1920,8 +1930,15 @@ void draw2dTextAt3dLocation (const char& s,
     end2dDrawing (originalMatrixMode);
 }
 
+void draw2dTextAt3dLocation (const std::ostringstream& text,
+                             const Vec3& location,
+                             const Vec3& color)
+{
+    draw2dTextAt3dLocation (*text.str().c_str(), location, color);
+}
 
-void draw2dTextAt2dLocation (const char& s,
+
+void draw2dTextAt2dLocation (const char& text,
                              const Vec3 location,
                              const Vec3 color)
 {
@@ -1929,9 +1946,17 @@ void draw2dTextAt2dLocation (const char& s,
 
     // draw text at specified location (which is now interpreted as
     // relative to screen space) and color
-    draw2dTextAt3dLocation (s, location, color);
+    draw2dTextAt3dLocation (text, location, color);
 
     end2dDrawing (originalMatrixMode);
+}
+
+
+void draw2dTextAt2dLocation (const std::ostringstream& text,
+                             const Vec3 location,
+                             const Vec3 color)
+{
+    draw2dTextAt2dLocation (*text.str().c_str(), location, color);
 }
 
 

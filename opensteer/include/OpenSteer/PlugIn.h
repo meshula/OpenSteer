@@ -145,7 +145,7 @@ public:
     PlugIn* next (void);
 
     // format instance to characters for printing to stream
-    friend ostream& operator<< (ostream& os, PlugIn& pi)
+    friend std::ostream& operator<< (std::ostream& os, PlugIn& pi)
     {
         os << "<PlugIn " << '"' << pi.name() << '"' << ">";
         return os;

@@ -40,7 +40,7 @@
 
 
 #include <iomanip>
-#include <strstream>
+#include <sstream>
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/SteerTest.h"
 
@@ -196,12 +196,12 @@ public:
             const Vec3 textColor (0.8f, 0.8f, 1.0f);
             const Vec3 textOffset (0, 0.25f, 0);
             const Vec3 textPosition = agent.position() + textOffset;
-            std::ostrstream annote;
+            std::ostringstream annote;
             annote << std::setprecision (2)
                    << std::setiosflags (std::ios::fixed)
                    << agent.speed()
                    << std::ends;
-            draw2dTextAt3dLocation (*annote.str(), textPosition, textColor);
+            draw2dTextAt3dLocation (annote, textPosition, textColor);
         }
 
         // highlight vehicle nearest mouse

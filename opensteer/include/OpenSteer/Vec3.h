@@ -50,8 +50,6 @@
 #define _OPENSTEER_VEC3_H_
 
 
-#include <math.h>       // for sqrtf, etc.
-#include <iostream>     // for ostream (for <<)
 #include "Utilities.h"  // for interpolate, etc.
 
 
@@ -90,7 +88,7 @@ public:
     float dot (const Vec3& v) const {return (x * v.x) + (y * v.y) + (z * v.z);}
 
     // length
-    float length (void) const {return sqrtf (lengthSquared ());}
+    float length (void) const {return sqrt (lengthSquared ());}
 
     // length squared
     float lengthSquared (void) const {return this->dot (*this);}
@@ -167,7 +165,7 @@ public:
         if (vecLengthSquared <= maxLengthSquared)
             return *this;
         else
-            return (*this) * (maxLength / sqrtf(vecLengthSquared));
+            return (*this) * (maxLength / sqrt (vecLengthSquared));
     }
 
     // forces a 3d position onto the XZ (aka y=0) plane
@@ -178,8 +176,8 @@ public:
 
     Vec3 rotateAboutGlobalY (float angle) const 
     {
-        const float s = sinf (angle);
-        const float c = cosf (angle);
+        const float s = sin (angle);
+        const float c = cos (angle);
         return Vec3 ((this->x * c) + (this->z * s),
                      (this->y),
                      (this->z * c) - (this->x * s));
@@ -204,7 +202,7 @@ Vec3 inline operator* (float s, const Vec3& v) {return v*s;}
 // default character stream output method
 
 
-inline ostream& operator<<(ostream& o, const Vec3& v)
+inline std::ostream& operator<< (std::ostream& o, const Vec3& v)
 {
     return o << "(" << v.x << "," << v.y << "," << v.z << ")";
 }

@@ -237,14 +237,25 @@ void drawBasic2dCircularVehicle (const AbstractVehicle& bv,
 void drawBasic3dSphericalVehicle (const AbstractVehicle& bv,
                                   const Vec3& color);
 
-void draw2dTextAt3dLocation (const char& s,
+
+// ------------------------------------------------------------------------
+
+
+void draw2dTextAt3dLocation (const char& text,
                              const Vec3& location,
                              const Vec3& color);
 
-void draw2dTextAt2dLocation (const char& s,
+void draw2dTextAt3dLocation (const std::ostringstream& text,
+                             const Vec3& location,
+                             const Vec3& color);
+
+void draw2dTextAt2dLocation (const char& text,
                              const Vec3 location,
                              const Vec3 color);
 
+void draw2dTextAt2dLocation (const std::ostringstream& text,
+                             const Vec3 location,
+                             const Vec3 color);
 
 // ------------------------------------------------------------------------
 // emit an OpenGL vertex based on a Vec3

@@ -41,7 +41,7 @@
 
 
 #include <algorithm>
-#include <strstream>
+#include <sstream>
 #include "OpenSteer/SteerTest.h"
 
 
@@ -103,7 +103,7 @@ const int SteerTest::drawPhase = 2;
 // initialize SteerTest application
 
 
-void printPlugIn (PlugIn& pi) {cout << " " << pi << std::endl;} // XXX
+void printPlugIn (PlugIn& pi) {std::cout << " " << pi << std::endl;} // XXX
 
 
 void SteerTest::initialize (void)
@@ -115,15 +115,15 @@ void SteerTest::initialize (void)
         // XXX this block is for debugging purposes,
         // XXX should it be replaced with something permanent?
 
-        cout << std::endl << "Known plugins:" << std::endl;   // xxx?
-        PlugIn::applyToAll (printPlugIn);                     // xxx?
-        cout << std::endl;                                    // xxx?
+        std::cout << std::endl << "Known plugins:" << std::endl;   // xxx?
+        PlugIn::applyToAll (printPlugIn);                          // xxx?
+        std::cout << std::endl;                                    // xxx?
 
         // identify default PlugIn
         if (!selectedPlugIn) errorExit ("no default PlugIn");
-        cout << std::endl << "Default plugin:" << std::endl;  // xxx?
-        cout << " " << *selectedPlugIn << std::endl;          // xxx?
-        cout << std::endl;                                    // xxx?
+        std::cout << std::endl << "Default plugin:" << std::endl;  // xxx?
+        std::cout << " " << *selectedPlugIn << std::endl;          // xxx?
+        std::cout << std::endl;                                    // xxx?
     }
 
     // initialize the default PlugIn
@@ -225,11 +225,11 @@ void SteerTest::openSelectedPlugIn (void)
     selectedPlugIn->open ();
     if (selectedVehicle == NULL)
     {
-        std::ostrstream message;
+        std::ostringstream message;
         message << "SteerTest::selectedVehicle was NULL after calling ";
         message << nameOfSelectedPlugIn ();
         message << "'s open method (in SteerTest::openSelectedPlugIn)";
-        printWarning (message.str());
+        printWarning (message);
     }
 }
 
@@ -523,9 +523,9 @@ void SteerTest::gridUtility (const Vec3& gridTarget)
     // round off target to the nearest multiple of 2 (because the
     // checkboard grid with a pitch of 1 tiles with a period of 2)
     // then lower the grid a bit to put it under 2d annotation lines
-    const Vec3 gridCenter ((roundf (gridTarget.x * 0.5) * 2),
-                           (roundf (gridTarget.y * 0.5) * 2) - .05f,
-                           (roundf (gridTarget.z * 0.5) * 2));
+    const Vec3 gridCenter ((round (gridTarget.x * 0.5) * 2),
+                           (round (gridTarget.y * 0.5) * 2) - .05f,
+                           (round (gridTarget.z * 0.5) * 2));
 
     // colors for checkboard
     const Vec3 gray1 = grayColor (0.27f);
@@ -605,13 +605,25 @@ void SteerTest::drawCircleHighlightOnVehicle (const AbstractVehicle& v,
 
 void SteerTest::printMessage (const char* message)
 {
-    cout << "SteerTest: " <<  message << std::endl << flush;
+    std::cout << "SteerTest: " <<  message << std::endl << std::flush;
+}
+
+
+void SteerTest::printMessage (const std::ostringstream& message)
+{
+    printMessage (message.str().c_str());
 }
 
 
 void SteerTest::printWarning (const char* message)
 {
-    cout << "SteerTest: Warning: " <<  message << std::endl << flush;
+    std::cout << "SteerTest: Warning: " <<  message << std::endl << std::flush;
+}
+
+
+void SteerTest::printWarning (const std::ostringstream& message)
+{
+    printWarning (message.str().c_str());
 }
 
 
