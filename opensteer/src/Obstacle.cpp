@@ -37,8 +37,6 @@
 
 
 #include "OpenSteer/Obstacle.h"
-// XXXQQQ debug annotation
-#include <OpenSteer/SimpleVehicle.h>
 
 
 // ----------------------------------------------------------------------------
@@ -50,9 +48,11 @@ OpenSteer::Vec3
 OpenSteer::Obstacle::steerToAvoid (const AbstractVehicle& vehicle,
                                    const float minTimeToCollision) const
 {
-    // if nearby intersection found, steer away from it, otherwise no steering
+    // find nearest intersection with this obstacle along vehicle's path
     PathIntersection pi;
     findIntersectionWithVehiclePath (vehicle, pi);
+
+    // return steering for vehicle to avoid intersection, or zero if non found
     return pi.steerToAvoidIfNeeded (vehicle, minTimeToCollision);
 }
 
@@ -82,6 +82,9 @@ steerToAvoidObstacles (const AbstractVehicle& vehicle,
 // ----------------------------------------------------------------------------
 // Obstacle
 // static method to find first vehicle path intersection in an ObstacleGroup
+//
+// returns its results in the PathIntersection argument "nearest",
+// "next" is used to store internal state.
 
 
 void
@@ -201,6 +204,7 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
         vehicle.position() + (vehicle.forward() * pi.distance);
     pi.surfaceNormal = (pi.surfacePoint-center).normalize();
     pi.steerHint = pi.surfaceNormal;
+    pi.vehicleOutside = lc.length () > radius;
 }
 
 
@@ -249,10 +253,13 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
     PathIntersection next;
     firstPathIntersectionWithObstacleGroup (vehicle, faces, pi, next);
 
-    // adjust PathIntersection for the box case
-    pi.obstacle = this;
-    pi.steerHint = ((pi.surfacePoint - position ()).normalize () *
-                    (pi.vehicleOutside ? 1.0f : -1.0f));
+    // when intersection found, adjust PathIntersection for the box case
+    if (pi.intersect)
+    {
+        pi.obstacle = this;
+        pi.steerHint = ((pi.surfacePoint - position ()).normalize () *
+                        (pi.vehicleOutside ? 1.0f : -1.0f));
+    }
 }
 
 
@@ -303,6 +310,7 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
     pi.steerHint = opposingNormal + radial; // should have "toward edge" term?
     pi.surfacePoint = globalizePosition (planeIntersection);
     pi.surfaceNormal = opposingNormal;
+    pi.vehicleOutside = lp.z > 0.0f;
 }
 
 
