@@ -627,27 +627,27 @@ public:
         case none:
             break;
         case insideSphere:
-            drawSphereObstacle (insideBigSphere, max, vp, fill, light);
+            drawSphereObstacle (insideBigSphere, max, fill, light, vp);
             break;
         case outsideSphere:
-            drawSphereObstacle (insideBigSphere, max, vp, fill, light);
-            drawSphereObstacle (outsideSphere0,  max, vp, fill, dark);
+            drawSphereObstacle (insideBigSphere, max, fill, light, vp);
+            drawSphereObstacle (outsideSphere0,  max, fill, dark, vp);
             break;
         case outsideSpheres:
-            drawSphereObstacle (insideBigSphere, max, vp, fill, light);
-            drawSphereObstacle (outsideSphere1,  max, vp, fill, dark);
-            drawSphereObstacle (outsideSphere2,  max, vp, fill, dark);
-            drawSphereObstacle (outsideSphere3,  max, vp, fill, dark);
-            drawSphereObstacle (outsideSphere4,  max, vp, fill, dark);
-            drawSphereObstacle (outsideSphere5,  max, vp, fill, dark);
-            drawSphereObstacle (outsideSphere6,  max, vp, fill, dark);
+            drawSphereObstacle (insideBigSphere, max, fill, light, vp);
+            drawSphereObstacle (outsideSphere1,  max, fill, dark, vp);
+            drawSphereObstacle (outsideSphere2,  max, fill, dark, vp);
+            drawSphereObstacle (outsideSphere3,  max, fill, dark, vp);
+            drawSphereObstacle (outsideSphere4,  max, fill, dark, vp);
+            drawSphereObstacle (outsideSphere5,  max, fill, dark, vp);
+            drawSphereObstacle (outsideSphere6,  max, fill, dark, vp);
             break;
         case rectangle:
-            drawSphereObstacle (insideBigSphere, max, vp, fill, light);
+            drawSphereObstacle (insideBigSphere, max, fill, light, vp);
             tempDrawRectangle (bigRectangle, dark);
             break;
         case outsideBox:
-            drawSphereObstacle (insideBigSphere, max, vp, fill, light);
+            drawSphereObstacle (insideBigSphere, max, fill, light, vp);
             tempDrawBox (outsideBigBox, dark);
             break;
         case insideBox:
@@ -655,225 +655,6 @@ public:
             break;
         }
     }
-
-
-    // utility to draw a SphereObstacle (culling via seenFrom)
-    void drawSphereObstacle (const SphereObstacle& so,
-                             const float maxEdgeLength,
-                             const Vec3& viewpoint,
-                             const bool filled,
-                             const Vec3& color)
-    {
-        const DrawSphereHelper s (so, maxEdgeLength, viewpoint, filled, color);
-        s.draw ();
-    }
-
-
-    class DrawSphereHelper
-    {
-    public:
-        Vec3 center;
-        float radius;
-        Vec3 color;
-        float maxEdgeLength;
-        bool filled;
-        bool drawFrontFacing;
-        bool drawBackFacing;
-        Vec3 viewpoint;
-
-        // default constructor (at origin, radius=1, white, wireframe, nocull)
-        DrawSphereHelper () : center (Vec3::zero), radius (1.0f),
-                              color (gWhite), maxEdgeLength (1.0f),
-                              filled (false),
-                              drawFrontFacing (true), drawBackFacing (true),
-                              viewpoint (Vec3::zero)
-        {}
-
-        // utility constructor for drawing SphereObstacles
-        DrawSphereHelper (const SphereObstacle& so,
-                          const float mel,
-                          const Vec3& vp,
-                          const bool f,
-                          const Vec3& c) : center (so.center),
-                                           radius (so.radius),
-                                           color (c),
-                                           maxEdgeLength (mel),
-                                           filled (f),
-                                           drawFrontFacing (true),
-                                           drawBackFacing (true),
-                                           viewpoint (vp)
-        {
-            switch (so.seenFrom ())
-            {
-            case Obstacle::both:                            break;
-            case Obstacle::inside: drawFrontFacing = false; break;
-            case Obstacle::outside: drawBackFacing = false; break;
-            }
-        }
-
-        // draw as an icosahedral geodesic sphere
-        void draw (void) const
-        {
-            // Geometry based on Paul Bourke's excellent article:
-            //   Platonic Solids (Regular polytopes in 3D)
-            //   http://astronomy.swin.edu.au/~pbourke/polyhedra/platonic/
-            const float sqrt5 = sqrtXXX (5.0f);
-            const float phi = (1.0f + sqrt5) * 0.5f; // "golden ratio"
-            // ratio of edge length to radius
-            const float ratio = sqrtXXX (10.0f + (2.0f * sqrt5)) / (4.0f * phi);
-            const float a = (radius / ratio) * 0.5;
-            const float b = (radius / ratio) / (2.0f * phi);
-
-            // define the icosahedron's 12 vertices:
-            const Vec3 v1  = center + Vec3 ( 0,  b, -a);
-            const Vec3 v2  = center + Vec3 ( b,  a,  0);
-            const Vec3 v3  = center + Vec3 (-b,  a,  0);
-            const Vec3 v4  = center + Vec3 ( 0,  b,  a);
-            const Vec3 v5  = center + Vec3 ( 0, -b,  a);
-            const Vec3 v6  = center + Vec3 (-a,  0,  b);
-            const Vec3 v7  = center + Vec3 ( 0, -b, -a);
-            const Vec3 v8  = center + Vec3 ( a,  0, -b);
-            const Vec3 v9  = center + Vec3 ( a,  0,  b);
-            const Vec3 v10 = center + Vec3 (-a,  0, -b);
-            const Vec3 v11 = center + Vec3 ( b, -a,  0);
-            const Vec3 v12 = center + Vec3 (-b, -a,  0);
-
-            // draw the icosahedron's 20 triangular faces:
-            drawMeshedTriangleOnSphere (v1, v2, v3);
-            drawMeshedTriangleOnSphere (v4, v3, v2);
-            drawMeshedTriangleOnSphere (v4, v5, v6);
-            drawMeshedTriangleOnSphere (v4, v9, v5);
-            drawMeshedTriangleOnSphere (v1, v7, v8);
-            drawMeshedTriangleOnSphere (v1, v10, v7);
-            drawMeshedTriangleOnSphere (v5, v11, v12);
-            drawMeshedTriangleOnSphere (v7, v12, v11);
-            drawMeshedTriangleOnSphere (v3, v6, v10);
-            drawMeshedTriangleOnSphere (v12, v10, v6);
-            drawMeshedTriangleOnSphere (v2, v8, v9);
-            drawMeshedTriangleOnSphere (v11, v9, v8);
-            drawMeshedTriangleOnSphere (v4, v6, v3);
-            drawMeshedTriangleOnSphere (v4, v2, v9);
-            drawMeshedTriangleOnSphere (v1, v3, v10);
-            drawMeshedTriangleOnSphere (v1, v8, v2);
-            drawMeshedTriangleOnSphere (v7, v10, v12);
-            drawMeshedTriangleOnSphere (v7, v11, v8);
-            drawMeshedTriangleOnSphere (v5, v12, v6);
-            drawMeshedTriangleOnSphere (v5, v9, v11);
-        }
-
-
-        // given two points, take midpoint and project onto this sphere
-        inline Vec3 midpointOnSphere (const Vec3& a, const Vec3& b) const
-        {
-            const Vec3 midpoint = (a + b) * 0.5f;
-            const Vec3 unitRadial = (midpoint - center).normalize ();
-            return center + (unitRadial * radius);
-        }
-
-
-        // given three points on the surface of this sphere, if the triangle
-        // is "small enough" draw it, otherwise subdivide it into four smaller
-        // triangles and recursively draw each of them.
-        void drawMeshedTriangleOnSphere (const Vec3& a, 
-                                         const Vec3& b,
-                                         const Vec3& c) const
-        {
-            // if all edges are short enough
-            if ((((a - b).length ()) < maxEdgeLength) &&
-                (((b - c).length ()) < maxEdgeLength) &&
-                (((c - a).length ()) < maxEdgeLength))
-            {
-                // draw triangle
-                drawTriangleOnSphere (a, b, c);
-            }
-            else // otherwise subdivide and recurse
-            {
-                // find edge midpoints
-                const Vec3 ab = midpointOnSphere (a, b);
-                const Vec3 bc = midpointOnSphere (b, c);
-                const Vec3 ca = midpointOnSphere (c, a);
-
-                // recurse on four sub-triangles
-                drawMeshedTriangleOnSphere ( a, ab, ca);
-                drawMeshedTriangleOnSphere (ab,  b, bc);
-                drawMeshedTriangleOnSphere (ca, bc,  c);
-                drawMeshedTriangleOnSphere (ab, bc, ca);
-            }
-        }
-
-
-        // draw one mesh element for drawMeshedTriangleOnSphere
-        void drawTriangleOnSphere (const Vec3& a, 
-                                   const Vec3& b,
-                                   const Vec3& c) const
-        {
-            // draw triangle, subject to the camera orientation criteria
-            // (according to drawBackFacing and drawFrontFacing)
-            const Vec3 triCenter = (a + b + c) / 3.0f;
-            const Vec3 triNormal = triCenter - center; // not unit length
-            const Vec3 view = triCenter - viewpoint;
-            const float dot = view.dot (triNormal); // project normal on view
-            const bool seen = ((dot>0.0f) ? drawBackFacing : drawFrontFacing);
-            if (seen)
-            {
-                if (filled)
-                {
-                    // draw filled triangle
-                    if (drawFrontFacing)
-                        drawTriangle (c, b, a, color);
-                    else
-                        drawTriangle (a, b, c, color);
-                }
-                else
-                {
-                    // draw triangle edges (use trick to avoid drawing each
-                    // edge twice (for each adjacent triangle) unless we are
-                    // culling and this tri is near the sphere's silhouette)
-                    const float unitDot = view.dot (triNormal.normalize ());
-                    const float t = 0.05f; // near threshold
-                    const bool nearSilhouette = (unitDot<t) || (unitDot>-t);
-                    if (nearSilhouette && !(drawBackFacing&&drawFrontFacing))
-                    {
-                        drawLine (a, b, color);
-                        drawLine (b, c, color);
-                        drawLine (c, a, color);
-                    }
-                    else
-                    {
-                        drawMeshedTriangleLine (a, b, color);
-                        drawMeshedTriangleLine (b, c, color);
-                        drawMeshedTriangleLine (c, a, color);
-                    }
-                }
-            }
-        }
-
-
-        // Draws line from A to B but not from B to A: assumes each edge
-        // will be drawn in both directions, picks just one direction for
-        // drawing according to an arbitary but reproducable criterion.
-        void drawMeshedTriangleLine (const Vec3& a, 
-                                     const Vec3& b,
-                                     const Vec3& color) const
-        {
-            if (a.x != b.x)
-            {
-                if (a.x > b.x) drawLine (a, b, color);
-            }
-            else
-            {
-                if (a.y != b.y)
-                {
-                    if (a.y > b.y) drawLine (a, b, color); 
-                }
-                else
-                {
-                    if (a.z > b.z) drawLine (a, b, color); 
-                }
-            }
-        }
-
-    };
 
 
     void tempDrawRectangle (const RectangleObstacle& rect, const Vec3 color)

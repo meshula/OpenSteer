@@ -54,6 +54,7 @@
 
 #include "OpenSteer/Vec3.h"
 #include "OpenSteer/AbstractVehicle.h"
+#include "OpenSteer/Obstacle.h"
 
 
 // ------------------------------------------------------------------------
@@ -100,7 +101,6 @@ namespace OpenSteer {
     {
         if (OpenSteerDemo::phaseIsUpdate())
         {
-            // void warnIfInUpdatePhase2 (const char* name); // moved declaration of function outside
             warnIfInUpdatePhase2 (name);
         }
     }
@@ -234,6 +234,28 @@ namespace OpenSteer {
                     const float arcLength,
                     const int segments,
                     const Vec3& color);
+
+
+    // ------------------------------------------------------------------------
+    // Sphere drawing utilities
+
+
+    // draw a sphere (wireframe or opaque, with front/back/both culling)
+    void drawSphere (const Vec3 center,
+                     const float radius,
+                     const float maxEdgeLength,
+                     const bool filled,
+                     const Vec3& color,
+                     const bool drawFrontFacing = true,
+                     const bool drawBackFacing = true,
+                     const Vec3& viewpoint = Vec3::zero);
+
+    // draw a SphereObstacle
+    void drawSphereObstacle (const SphereObstacle& so,
+                             const float maxEdgeLength,
+                             const bool filled,
+                             const Vec3& color,
+                             const Vec3& viewpoint);
 
 
     // ------------------------------------------------------------------------
