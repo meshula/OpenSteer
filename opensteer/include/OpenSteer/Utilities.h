@@ -249,6 +249,11 @@ void inline blendIntoAccumulator (const float smoothRate,
 
 
 // ----------------------------------------------------------------------------
+// round (x)  "round off" x to the nearest integer (as a float value)
+//
+// trunc (x)  truncate the fractional part of x:
+//            round down (toward zero) to the next integer (aka "floor")
+//
 // These are Gnu-sanctioned(?) post-ANSI-Standard(?) extensions (as in
 // http://www.opengroup.org/onlinepubs/007904975/basedefs/math.h.html)
 // which may not be present in all C++ environments.  They are defined
