@@ -260,20 +260,6 @@ namespace OpenSteer {
         };
 
 
-        // xxx cwr 9-6-02 temporary to support old code
-        typedef struct {
-            int intersect;
-            float distance;
-            Vec3 surfacePoint;
-            Vec3 surfaceNormal;
-            SphericalObstacle* obstacle;
-        } PathIntersection;
-
-        // xxx experiment cwr 9-6-02
-        void findNextIntersectionWithSphere (SphericalObstacle& obs,
-                                             PathIntersection& intersection);
-
-
         // ------------------------------------------------ graphical annotation
         // (parameter names commented out to prevent compiler warning from "-W")
 
@@ -519,9 +505,6 @@ steerToAvoidObstacle (const float minTimeToCollision,
 
 
 // this version avoids all of the obstacles in an ObstacleGroup
-//
-// XXX 9-12-03: note this does NOT use the Obstacle::steerToAvoid protocol
-// XXX like the older steerToAvoidObstacle does/did.  It needs to be fixed
 
 template<class Super>
 OpenSteer::Vec3
@@ -529,44 +512,13 @@ OpenSteer::SteerLibraryMixin<Super>::
 steerToAvoidObstacles (const float minTimeToCollision,
                        const ObstacleGroup& obstacles)
 {
-    Vec3 avoidance;
-    PathIntersection nearest, next;
-    const float minDistanceToCollision = minTimeToCollision * speed();
+    const Vec3 avoidance = Obstacle::steerToAvoidObstacles (*this,
+                                                            minTimeToCollision,
+                                                            obstacles);
 
-    next.intersect = false;
-    nearest.intersect = false;
-
-    // test all obstacles for intersection with my forward axis,
-    // select the one whose point of intersection is nearest
-    for (ObstacleIterator o = obstacles.begin(); o != obstacles.end(); o++)
-    {
-        // xxx this should be a generic call on Obstacle, rather than
-        // xxx this code which presumes the obstacle is spherical
-        findNextIntersectionWithSphere ((SphericalObstacle&)**o, next);
-
-        if ((nearest.intersect == false) ||
-            ((next.intersect != false) &&
-             (next.distance < nearest.distance)))
-            nearest = next;
-    }
-
-    // when a nearest intersection was found
-    if ((nearest.intersect != false) &&
-        (nearest.distance < minDistanceToCollision))
-    {
-        // show the corridor that was checked for collisions
-        annotateAvoidObstacle (minDistanceToCollision);
-
-        // compute avoidance steering force: take offset from obstacle to me,
-        // take the component of that which is lateral (perpendicular to my
-        // forward direction), set length to maxForce, add a bit of forward
-        // component (in capture the flag, we never want to slow down)
-        const Vec3 offset = position() - nearest.obstacle->center;
-        avoidance = offset.perpendicularComponent (forward());
-        avoidance = avoidance.normalize ();
-        avoidance *= maxForce ();
-        avoidance += forward() * maxForce () * 0.75;
-    }
+    // XXX more annotation modularity problems (assumes spherical obstacle)
+    if (avoidance != Vec3::zero)
+        annotateAvoidObstacle (minTimeToCollision * speed());
 
     return avoidance;
 }
@@ -1094,71 +1046,6 @@ steerForTargetSpeed (const float targetSpeed)
     const float mf = maxForce ();
     const float speedError = targetSpeed - speed ();
     return forward () * clip (speedError, -mf, +mf);
-}
-
-
-// ----------------------------------------------------------------------------
-// Given a SphericalObstacle, calculate whether our vehicle's forward axis
-// intersects the sphere.  If so calculate the distances to the two points of
-// intersection.  If either are in front of us, return the minimum distance to
-// the obstacle along the forward axis.  Results of these tests are returned in
-// a PathIntersection object.
-
-
-template<class Super>
-void
-OpenSteer::SteerLibraryMixin<Super>::
-findNextIntersectionWithSphere (SphericalObstacle& obs,
-                                PathIntersection& intersection)
-{
-    // xxx"SphericalObstacle& obs" should be "const SphericalObstacle&
-    // obs" but then it won't let me store a pointer to in inside the
-    // PathIntersection
-
-    // This routine is based on the Paul Bourke's derivation in:
-    //   Intersection of a Line and a Sphere (or circle)
-    //   http://www.swin.edu.au/astronomy/pbourke/geometry/sphereline/
-
-    float b, c, d, p, q, s;
-    Vec3 lc;
-
-    // initialize pathIntersection object
-    intersection.intersect = false;
-    intersection.obstacle = &obs;
-
-    // find "local center" (lc) of sphere in boid's coordinate space
-    lc = localizePosition (obs.center);
-
-    // compute line-sphere intersection parameters
-    b = -2 * lc.z;
-    c = square (lc.x) + square (lc.y) + square (lc.z) - 
-        square (obs.radius + radius());
-    d = (b * b) - (4 * c);
-
-    // when the path does not intersect the sphere
-    if (d < 0) return;
-
-    // otherwise, the path intersects the sphere in two points with
-    // parametric coordinates of "p" and "q".
-    // (If "d" is zero the two points are coincident, the path is tangent)
-    s = sqrtXXX (d);
-    p = (-b + s) / 2;
-    q = (-b - s) / 2;
-
-    // both intersections are behind us, so no potential collisions
-    if ((p < 0) && (q < 0)) return; 
-
-    // at least one intersection is in front, so intersects our forward path
-    intersection.intersect = true;
-    intersection.distance =
-        ((p > 0) && (q > 0)) ?
-        // both intersections are in front of us, find nearest one
-        ((p < q) ? p : q) :
-        // otherwise one is ahead and one is behind, so we are INSIDE the
-        // obstacle, the distance to the intersection is 0 (assuming the sphere
-        // is solid, if it were hollow this should be ((p > 0) ? p : q)).
-        0.0f;
-    return;
 }
 
 
