@@ -61,8 +61,8 @@
 // short names for STL vectors (iterators) of SphericalObstacle pointers
 
 
-typedef std::vector<SphericalObstacle*> SOG;
-typedef SOG::const_iterator SOI;
+typedef std::vector<SphericalObstacle*> SOG;  // spherical obstacle group
+typedef SOG::const_iterator SOI;              // spherical obstacle iterator
 
 
 // ----------------------------------------------------------------------------
@@ -97,6 +97,7 @@ public:
     bool avoiding;
 
     // dynamic obstacle registry
+    static void initializeObstacles (void);
     static void addOneObstacle (void);
     static void removeOneObstacle (void);
     float minDistanceToObstacle (const Vec3 point);
@@ -716,7 +717,6 @@ void CtfSeeker::update (const float currentTime, const float elapsedTime)
     }
     applySteeringForce (steer, elapsedTime);
 
-
     // annotation
     annotationVelocityAcceleration ();
     recordTrailVertex (currentTime, position());
@@ -732,7 +732,7 @@ void CtfSeeker::update (const float currentTime, const float elapsedTime)
 // xxx (but remember: obstacles a not necessarilty spheres!)
 
 
-int CtfBase::obstacleCount = 0;
+int CtfBase::obstacleCount = -1; // this value means "uninitialized"
 SOG CtfBase::allObstacles;
 
 
@@ -741,6 +741,17 @@ SOG CtfBase::allObstacles;
     float d = Vec3::distance (c, center);                    \
     float clearance = d - (r + (radius));                    \
     if (minClearance > clearance) minClearance = clearance;  \
+}
+
+
+void CtfBase::initializeObstacles (void)
+{
+    // start with 40% of possible obstacles
+    if (obstacleCount == -1)
+    {
+        obstacleCount = 0;
+        for (int i = 0; i < (maxObstacleCount * 0.4); i++) addOneObstacle ();
+    }
 }
 
 
@@ -834,9 +845,7 @@ public:
         SteerTest::camera.fixedTarget.set (15, 0, 0);
         SteerTest::camera.fixedPosition.set (80, 60, 0);
 
-        // start with 40% of possible obstacles
-        for (int i = 0; i<(CtfBase::maxObstacleCount * 0.4); i++)
-            CtfBase::addOneObstacle ();
+        CtfBase::initializeObstacles ();
     }
 
     void update (const float currentTime, const float elapsedTime)
