@@ -88,7 +88,7 @@ public:
     float dot (const Vec3& v) const {return (x * v.x) + (y * v.y) + (z * v.z);}
 
     // length
-    float length (void) const {return sqrt (lengthSquared ());}
+    float length (void) const {return std::sqrt (lengthSquared ());}
 
     // length squared
     float lengthSquared (void) const {return this->dot (*this);}
@@ -165,7 +165,7 @@ public:
         if (vecLengthSquared <= maxLengthSquared)
             return *this;
         else
-            return (*this) * (maxLength / sqrt (vecLengthSquared));
+            return (*this) * (maxLength / std::sqrt (vecLengthSquared));
     }
 
     // forces a 3d position onto the XZ (aka y=0) plane
@@ -176,8 +176,8 @@ public:
 
     Vec3 rotateAboutGlobalY (float angle) const 
     {
-        const float s = sin (angle);
-        const float c = cos (angle);
+        const float s = std::sin (angle);
+        const float c = std::cos (angle);
         return Vec3 ((this->x * c) + (this->z * s),
                      (this->y),
                      (this->z * c) - (this->x * s));

@@ -247,5 +247,41 @@ void inline blendIntoAccumulator (const float smoothRate,
   }
 */
 
+
+// ----------------------------------------------------------------------------
+// These are Gnu-sanctioned(?) post-ANSI-Standard(?) extensions (as in
+// http://www.opengroup.org/onlinepubs/007904975/basedefs/math.h.html)
+// which may not be present in all C++ environments.  They are defined
+// in math.h headers in Linux and Mac OS X, but apparently not in Win32:
+
+
+#ifdef _WIN32
+
+
+inline float roundPositive (float x)
+{
+    return (float)(int)(x+0.5);
+}
+
+inline float round (float x)
+{
+    if (x<0) return -roundPositive(-x); else return roundPositive(x);
+}
+
+
+inline float truncPositive (float x)
+{
+    return (float)(int)(x+0.5);
+}
+
+inline float trunc (float x)
+{
+    if (x<0) return -truncPositive(-x); else return truncPositive(x);
+}
+
+
+#endif
+
+
 // ----------------------------------------------------------------------------
 #endif // _OPENSTEER_UTILITIES_H_

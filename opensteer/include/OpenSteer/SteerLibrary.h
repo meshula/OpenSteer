@@ -1052,7 +1052,7 @@ findNextIntersectionWithSphere (SphericalObstacle& obs,
     // otherwise, the path intersects the sphere in two points with
     // parametric coordinates of "p" and "q".
     // (If "d" is zero the two points are coincident, the path is tangent)
-    s = sqrt (d);
+    s = std::sqrt (d);
     p = (-b + s) / 2;
     q = (-b - s) / 2;
 

@@ -925,7 +925,7 @@ void drawBasic2dCircularVehicle (const AbstractVehicle& vehicle,
 {
     // "aspect ratio" of body (as seen from above)
     const float x = 0.5;
-    const float y = sqrt (1 - (x * x));
+    const float y = std::sqrt (1 - (x * x));
 
     // radius and position of vehicle
     const float r = vehicle.radius();
@@ -959,7 +959,7 @@ void drawBasic3dSphericalVehicle (const AbstractVehicle& vehicle,
 {
     // "aspect ratio" of body (as seen from above)
     const float x = 0.5;
-    const float y = sqrt (1 - (x * x));
+    const float y = std::sqrt (1 - (x * x));
 
     // radius and position of vehicle
     const float r = vehicle.radius();
