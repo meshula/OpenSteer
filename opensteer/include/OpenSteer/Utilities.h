@@ -71,7 +71,7 @@ template<class T> inline T interpolate (float alpha, const T& x0, const T& x1)
 
 // Returns a float randomly distributed between 0 and 1
 
-float inline frandom01 (void)
+inline float frandom01 (void)
 {
     return (((float) rand ()) / ((float) RAND_MAX));
 }
@@ -79,7 +79,7 @@ float inline frandom01 (void)
 
 // Returns a float randomly distributed between lowerBound and upperBound
 
-float inline frandom2 (float lowerBound, float upperBound)
+inline float frandom2 (float lowerBound, float upperBound)
 {
     return lowerBound + (frandom01 () * (upperBound - lowerBound));
 }
@@ -91,7 +91,7 @@ float inline frandom2 (float lowerBound, float upperBound)
 // the nearer bound.
 
 
-float inline clip (const float x, const float min, const float max)
+inline float clip (const float x, const float min, const float max)
 {
     if (x < min) return min;
     if (x > max) return max;
@@ -105,7 +105,7 @@ float inline clip (const float x, const float min, const float max)
 // Inspired by (dyna:remap-interval y y0 y1 z0 z1)
 
 
-float inline remapInterval (float x,
+inline float remapInterval (float x,
                             float in0, float in1,
                             float out0, float out1)
 {
@@ -121,7 +121,7 @@ float inline remapInterval (float x,
 // out0 and out1
 
 
-float inline remapIntervalClip (float x,
+inline float remapIntervalClip (float x,
                                 float in0, float in1,
                                 float out0, float out1)
 {
@@ -140,7 +140,7 @@ float inline remapIntervalClip (float x,
 //     returns +1 when above the upper bound
 
 
-int inline intervalComparison (float x, float lowerBound, float upperBound)
+inline int intervalComparison (float x, float lowerBound, float upperBound)
 {
     if (x < lowerBound) return -1;
     if (x > upperBound) return +1;
@@ -152,7 +152,7 @@ int inline intervalComparison (float x, float lowerBound, float upperBound)
 // ----------------------------------------------------------------------------
 
 
-float inline scalarRandomWalk (const float initial, 
+inline float scalarRandomWalk (const float initial, 
                                const float walkspeed,
                                const float min,
                                const float max)
@@ -167,7 +167,7 @@ float inline scalarRandomWalk (const float initial,
 // ----------------------------------------------------------------------------
 
 
-float inline square (float x)
+inline float square (float x)
 {
     return x * x;
 }
@@ -197,7 +197,7 @@ float inline square (float x)
 
 
 template<class T>
-void inline blendIntoAccumulator (const float smoothRate,
+inline void blendIntoAccumulator (const float smoothRate,
                                   const T& newValue,
                                   T& smoothedAccumulator)
 {

@@ -168,7 +168,8 @@ public:
     }
 
     // per frame simulation update
-    void update (const float currentTime, const float elapsedTime)
+    // (parameter names commented out to prevent compiler warning from "-W")
+    void update (const float /*currentTime*/, const float elapsedTime)
     {
 		// if I hit the ball, kick it.
 

@@ -480,9 +480,11 @@ void selectNextPresetFrameRate (void)
 // This function is called (by GLUT) each time a key is pressed.
 //
 // XXX the bulk of this should be moved to SteerTest
+//
+// parameter names commented out to prevent compiler warning from "-W"
 
 
-void keyboardFunc (unsigned char key, int x, int y) 
+void keyboardFunc (unsigned char key, int /*x*/, int /*y*/) 
 {
     std::ostringstream message;
 
@@ -582,9 +584,10 @@ void keyboardFunc (unsigned char key, int x, int y)
 // ------------------------------------------------------------------------
 // handles "special" keys,
 // function keys are handled by the PlugIn
+//
+// parameter names commented out to prevent compiler warning from "-W"
 
-
-void specialFunc (int key, int x, int y)
+void specialFunc (int key, int /*x*/, int /*y*/)
 {
     std::ostringstream message;
 

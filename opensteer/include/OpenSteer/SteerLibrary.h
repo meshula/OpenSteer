@@ -271,35 +271,37 @@ public:
 
 
     // ------------------------------------------------ graphical annotation
+    // (parameter names commented out to prevent compiler warning from "-W")
+
 
     // called when steerToAvoidObstacles decides steering is required
     // (default action is to do nothing, layered classes can overload it)
-    virtual void annotateAvoidObstacle (const float minDistanceToCollision)
+    virtual void annotateAvoidObstacle (const float /*minDistanceToCollision*/)
     {
     }
 
     // called when steerToFollowPath decides steering is required
     // (default action is to do nothing, layered classes can overload it)
-    virtual void annotatePathFollowing (const Vec3& future,
-                                        const Vec3& onPath,
-                                        const Vec3& target,
-                                        const float outside)
+    virtual void annotatePathFollowing (const Vec3& /*future*/,
+                                        const Vec3& /*onPath*/,
+                                        const Vec3& /*target*/,
+                                        const float /*outside*/)
     {
     }
 
     // called when steerToAvoidCloseNeighbors decides steering is required
     // (default action is to do nothing, layered classes can overload it)
-    virtual void annotateAvoidCloseNeighbor (const AbstractVehicle& other,
-                                             const float additionalDistance)
+    virtual void annotateAvoidCloseNeighbor (const AbstractVehicle& /*other*/,
+                                             const float /*additionalDistance*/)
     {
     }
 
     // called when steerToAvoidNeighbors decides steering is required
     // (default action is to do nothing, layered classes can overload it)
-    virtual void annotateAvoidNeighbor (const AbstractVehicle& threat,
-                                        const float steer,
-                                        const Vec3& ourFuture,
-                                        const Vec3& threatFuture)
+    virtual void annotateAvoidNeighbor (const AbstractVehicle& /*threat*/,
+                                        const float /*steer*/,
+                                        const Vec3& /*ourFuture*/,
+                                        const Vec3& /*threatFuture*/)
     {
     }
 };

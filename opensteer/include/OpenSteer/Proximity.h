@@ -264,8 +264,9 @@ public:
         // called by LQ for each clientObject in the specified neighborhood:
         // push that clientObject onto the ContentType vector in void*
         // clientQueryState
+        // (parameter names commented out to prevent compiler warning from "-W")
         static void perNeighborCallBackFunction  (void* clientObject,
-                                                  float distanceSquared,
+                                                  float /*distanceSquared*/,
                                                   void* clientQueryState)
         {
             typedef std::vector<ContentType> ctv;
@@ -293,8 +294,9 @@ public:
         return count;
     }
     
-    static void counterCallBackFunction  (void* clientObject,
-                                          float distanceSquared,
+    // (parameter names commented out to prevent compiler warning from "-W")
+    static void counterCallBackFunction  (void* /*clientObject*/,
+                                          float /*distanceSquared*/,
                                           void* clientQueryState)
     {
         int& counter = *(int*)clientQueryState;

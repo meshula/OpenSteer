@@ -272,10 +272,10 @@ public:
         annotationLine (onPathBoundary, future, lightOrange);
     }
 
-
     // called when steerToAvoidCloseNeighbors decides steering is required
+    // (parameter names commented out to prevent compiler warning from "-W")
     void annotateAvoidCloseNeighbor (const AbstractVehicle& other,
-                                     const float additionalDistance)
+                                     const float /*additionalDistance*/)
     {
         // draw the word "Ouch!" above colliding vehicles
         const float headOn = forward().dot(other.forward()) < 0;
@@ -289,8 +289,9 @@ public:
     }
 
 
+    // (parameter names commented out to prevent compiler warning from "-W")
     void annotateAvoidNeighbor (const AbstractVehicle& threat,
-                                const float steer,
+                                const float /*steer*/,
                                 const Vec3& ourFuture,
                                 const Vec3& threatFuture)
     {

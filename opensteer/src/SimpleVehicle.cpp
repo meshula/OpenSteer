@@ -102,10 +102,12 @@ SimpleVehicle::~SimpleVehicle (void)
 //
 // xxx should the default be this ad-hocery, or no adjustment?
 // xxx experimental 8-20-02
+//
+// parameter names commented out to prevent compiler warning from "-W"
 
 
 Vec3 SimpleVehicle::adjustRawSteeringForce (const Vec3& force,
-                                                const float deltaTime)
+                                            const float /* deltaTime */)
 {
     const float maxAdjustedSpeed = 0.2f * maxSpeed ();
 
@@ -210,10 +212,12 @@ void SimpleVehicle::applySteeringForce (const Vec3& force,
 // ----------------------------------------------------------------------------
 // the default version: keep FORWARD parallel to velocity, change UP as
 // little as possible.
+//
+// parameter names commented out to prevent compiler warning from "-W"
 
 
 void SimpleVehicle::regenerateLocalSpace (const Vec3& newVelocity,
-                                          const float elapsedTime)
+                                          const float /* elapsedTime */)
 {
     // adjust orthonormal basis vectors to be aligned with new velocity
     if (speed() > 0) regenerateOrthonormalBasisUF (newVelocity / speed());

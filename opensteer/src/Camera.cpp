@@ -104,9 +104,11 @@ void Camera::reset (void)
 // called once per frame to update camera state according to currently
 // selected mode and per-mode parameters.  Works in position/target/up
 // ("look at") space.
+//
+// parameter names commented out to prevent compiler warning from "-W"
 
 
-void Camera::update (const float currentTime,
+void Camera::update (const float /*currentTime*/,
                      const float elapsedTime,
                      const bool simulationPaused)
 {
@@ -228,9 +230,11 @@ void Camera::smoothCameraMove (const Vec3& newPosition,
 // ----------------------------------------------------------------------------
 // computes a new camera position which follows "target" at distant of
 // "dragTargetDistance"
+//
+// parameter names commented out to prevent compiler warning from "-W"
 
 
-Vec3 Camera::constDistHelper (const float elapsedTime)
+Vec3 Camera::constDistHelper (const float /*elapsedTime*/)
 {
     // is the "global up"/"vertical" offset constraint enabled?  (it forces
     // the camera's global-up (Y) cordinate to be a above/below the target

@@ -149,15 +149,15 @@ INCDIRS		+= /usr/include
 LIBDIRS		+= /usr/lib /usr/openwin/lib /usr/X11R6/lib
 
 # Additional preprocessor definitions
-DEFINES		= USEOpenGL
+DEFINES		= OPENSTEER USEOpenGL
 
 # Compiler optimization options
-OPTFLAGS	= -Wall -pedantic -Winline
+OPTFLAGS	= -Wall -pedantic -W
 
 # Compiler debug options
 
 # enable all warnings
-DEBUGFLAGS	= -Wall
+DEBUGFLAGS	= -Wall -pedantic -W
 
 # Command-line arguments to be passed to the target when we run it
 RUNARGS		= 

@@ -221,7 +221,7 @@ public:
 // scalar times vector product ("float * Vec3")
 
 
-Vec3 inline operator* (float s, const Vec3& v) {return v*s;}
+inline Vec3 operator* (float s, const Vec3& v) {return v*s;}
 
 
 // ----------------------------------------------------------------------------
@@ -258,7 +258,7 @@ Vec3 randomVectorOnUnitRadiusXZDisk (void);
 // and length will be 1
 
 
-Vec3 inline RandomUnitVector (void)
+inline Vec3 RandomUnitVector (void)
 {
     return RandomVectorInUnitRadiusSphere().normalize();
 }
@@ -270,7 +270,7 @@ Vec3 inline RandomUnitVector (void)
 // random and length will be 1
 
 
-Vec3 inline RandomUnitVectorOnXZPlane (void)
+inline Vec3 RandomUnitVectorOnXZPlane (void)
 {
     return RandomVectorInUnitRadiusSphere().setYtoZero().normalize();
 }
@@ -293,7 +293,7 @@ Vec3 vecLimitDeviationAngleUtility (const bool insideOrOutside,
 // defined by the basis and an angle.
 
 
-Vec3 inline limitMaxDeviationAngle (const Vec3& source,
+inline Vec3 limitMaxDeviationAngle (const Vec3& source,
                                     const float cosineOfConeAngle,
                                     const Vec3& basis)
 {
@@ -311,7 +311,7 @@ Vec3 inline limitMaxDeviationAngle (const Vec3& source,
 // defined by the basis and an angle.
 
 
-Vec3 inline limitMinDeviationAngle (const Vec3& source,
+inline Vec3 limitMinDeviationAngle (const Vec3& source,
                                     const float cosineOfConeAngle,
                                     const Vec3& basis)
 {    
@@ -328,7 +328,7 @@ Vec3 inline limitMinDeviationAngle (const Vec3& source,
 // the line ("lineUnitTangent")
 
 
-float inline distanceFromLine (const Vec3& point,
+inline float distanceFromLine (const Vec3& point,
                                const Vec3& lineOrigin,
                                const Vec3& lineUnitTangent)
 {

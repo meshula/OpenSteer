@@ -488,7 +488,7 @@ void SteerTest::position3dCamera (AbstractVehicle& selected)
 
 void SteerTest::position3dCamera (AbstractVehicle& selected,
                                   float distance,
-                                  float elevation)
+                                  float /*elevation*/)
 {
     selectedVehicle = &selected;
     if (&selected)

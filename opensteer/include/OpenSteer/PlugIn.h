@@ -136,7 +136,8 @@ public:
     bool requestInitialSelection (void) {return false;}
 
     // default function key handler: ignore all
-    void handleFunctionKeys (int keyNumber) {}
+    // (parameter names commented out to prevent compiler warning from "-W")
+    void handleFunctionKeys (int /*keyNumber*/) {}
 
     // default "mini help": print nothing
     void printMiniHelpForFunctionKeys (void) {}
