@@ -71,6 +71,11 @@ namespace OpenSteer {
                                     const float radius,
                                     std::vector<ContentType>& results) = 0;
 
+#ifndef NO_LQ_BIN_STATS
+        // only meaningful for LQProximityDatabase, provide dummy default
+        virtual void getBinPopulationStats (int& min, int& max, float& average)
+        {min=max=0; average=0.0;}
+#endif // NO_LQ_BIN_STATS
     };
 
 
@@ -278,6 +283,15 @@ namespace OpenSteer {
                 results.push_back ((ContentType) clientObject);
             }
 
+#ifndef NO_LQ_BIN_STATS
+            // Get statistics about bin populations: min, max and
+            // average of non-empty bins.
+            void getBinPopulationStats (int& min, int& max, float& average)
+            {
+                lqGetBinPopulationStats (lq, &min, &max, &average);
+            }
+#endif // NO_LQ_BIN_STATS
+
         private:
             lqClientProxy proxy;
             lqDB* lq;
@@ -306,6 +320,7 @@ namespace OpenSteer {
             int& counter = *(int*)clientQueryState;
             counter++;
         }
+
 
     private:
         lqDB* lq;

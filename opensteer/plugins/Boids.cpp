@@ -37,6 +37,7 @@
 
 
 #include <sstream>
+#include <limits> // for numeric_limits::max()
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/OpenSteerDemo.h"
 #include "OpenSteer/Proximity.h"
@@ -160,6 +161,14 @@ public:
         // find all flockmates within maxRadius using proximity database
         neighbors.clear();
         proximityToken->findNeighbors (position(), maxRadius, neighbors);
+
+#ifndef NO_LQ_BIN_STATS
+        // maintain stats on max/min/ave neighbors per boids
+        int count = neighbors.size();
+        if (maxNeighbors < count) maxNeighbors = count;
+        if (minNeighbors > count) minNeighbors = count;
+        totalNeighbors += count;
+#endif // NO_LQ_BIN_STATS
 
         // determine each of the three component behaviors of flocking
         const Vec3 separation = steerForSeparation (separationRadius,
@@ -285,12 +294,19 @@ public:
         annotationLine (BL, BR, white);
         annotationLine (BR, FR, white);
     }
+
+#ifndef NO_LQ_BIN_STATS
+        static int minNeighbors, maxNeighbors, totalNeighbors;
+#endif // NO_LQ_BIN_STATS
 };
 
 
 AVGroup Boid::neighbors;
 float Boid::worldRadius = 50.0f;
 ObstacleGroup Boid::obstacles;
+#ifndef NO_LQ_BIN_STATS
+int Boid::minNeighbors, Boid::maxNeighbors, Boid::totalNeighbors;
+#endif // NO_LQ_BIN_STATS
 
 
 // ----------------------------------------------------------------------------
@@ -332,6 +348,11 @@ public:
 
     void update (const float currentTime, const float elapsedTime)
     {
+#ifndef NO_LQ_BIN_STATS
+        Boid::maxNeighbors = Boid::totalNeighbors = 0;
+        Boid::minNeighbors = std::numeric_limits<int>::max();
+#endif // NO_LQ_BIN_STATS
+
         // update flock simulation for each boid
         for (iterator i = flock.begin(); i != flock.end(); i++)
         {
@@ -465,9 +486,25 @@ public:
         case 2:  removeBoidFromFlock ();    break;
         case 3:  nextPD ();                 break;
         case 4:  nextBoundaryCondition ();  break;
+        case 5:  printLQbinStats ();        break;
         }
     }
 
+    void printLQbinStats (void)
+    {
+#ifndef NO_LQ_BIN_STATS
+        int min, max; float average;
+        (**(flock.begin())).proximityToken->getBinPopulationStats(min,max,average);
+        std::cout << "Bin populations: min, max, average pop of non-empty bins: "
+                  << min << ", " << max << ", " << average << std::endl; 
+        std::cout << "Boid neighbors: min, max, average: "
+                  << Boid::minNeighbors << ", "
+                  << Boid::maxNeighbors << ", "
+                  << ((float)Boid::totalNeighbors) / ((float)population)
+                  << std::endl;
+#endif // NO_LQ_BIN_STATS
+    }
+ 
     void printMiniHelpForFunctionKeys (void)
     {
         std::ostringstream message;

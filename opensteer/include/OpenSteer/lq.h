@@ -295,6 +295,18 @@ void lqRemoveAllObjects (lqDB* lq);
 
 
 /* ------------------------------------------------------------------ */
+/* Get statistics about bin populations: min, max and average of
+   non-empty bins. */
+
+
+#ifndef NO_LQ_BIN_STATS
+void lqGetBinPopulationStats (lqDB* lq,
+                              int* min,
+                              int* max,
+                              float* average);
+#endif /* NO_LQ_BIN_STATS */
+
+/* ------------------------------------------------------------------ */
 
 
 #ifndef	NULL

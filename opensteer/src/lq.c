@@ -65,6 +65,7 @@
 
 #include <stdlib.h>
 #include <float.h>
+#include <limits.h> /* for INT_MAX */
 #include "OpenSteer/lq.h"
 
 /* for debugging and graphical annotation (normally unused) */
@@ -597,6 +598,56 @@ void lqMapOverAllObjects (lqInternalDB* lq,
     }
     lqMapOverAllObjectsInBin (lq->other, func, clientQueryState);
 }
+
+/* ------------------------------------------------------------------ */
+/* looks at all bins (except "other") finding the min and max bin
+   populations and the average of NON-EMPTY bin populations.  (The
+   average over all bins is a constant (population/bincount))  */
+
+#ifndef NO_LQ_BIN_STATS
+
+int lqgbpsPerBinCount;
+
+void lqgbpsCounter (void* clientObject __attribute__ ((unused)),
+                    float distanceSquared __attribute__ ((unused)),
+                    void* clientQueryState __attribute__ ((unused)))
+{
+    lqgbpsPerBinCount++;
+}
+
+void lqGetBinPopulationStats (lqInternalDB* lq,
+                              int* min,
+                              int* max,
+                              float* average)
+{
+    int minPop = INT_MAX;
+    int maxPop = 0;
+    int totalCount = 0;
+    int nonEmptyBinCount = 0;
+    int bincount = lq->divx * lq->divy * lq->divz;
+    int i;
+    for (i=0; i<bincount; i++)
+    {
+        // clear the counter
+        lqgbpsPerBinCount = 0;
+
+        // apply counting function to each object in bin[i]
+	lqMapOverAllObjectsInBin (lq->bins[i], lqgbpsCounter, NULL);
+
+        // collect data: max and min population, count objects and non-empty bins
+        if (maxPop < lqgbpsPerBinCount) maxPop = lqgbpsPerBinCount;
+        if (minPop > lqgbpsPerBinCount) minPop = lqgbpsPerBinCount;
+        totalCount += lqgbpsPerBinCount;
+        if (lqgbpsPerBinCount > 0) nonEmptyBinCount++;
+    }
+
+    // set return values
+    *min = minPop;
+    *max = maxPop;
+    *average = ((float) totalCount) / ((float) nonEmptyBinCount);
+}
+
+#endif /* NO_LQ_BIN_STATS */
 
 
 /* ------------------------------------------------------------------ */
