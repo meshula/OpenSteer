@@ -271,6 +271,23 @@ public:
         annotationXZCircle (radius(), threatFuture, green, 12);
     }
 
+    // xxx perhaps this should be a call to a general purpose annotation for
+    // xxx "local xxx axis aligned box in XZ plane" -- same code in in
+    // xxx CaptureTheFlag.cpp
+    void annotateAvoidObstacle (const float minDistanceToCollision)
+    {
+        const Vec3 boxSide = side() * radius();
+        const Vec3 boxFront = forward() * minDistanceToCollision;
+        const Vec3 FR = position() + boxFront - boxSide;
+        const Vec3 FL = position() + boxFront + boxSide;
+        const Vec3 BR = position()            - boxSide;
+        const Vec3 BL = position()            + boxSide;
+        const Vec3 white (1,1,1);
+        annotationLine (FR, FL, white);
+        annotationLine (FL, BL, white);
+        annotationLine (BL, BR, white);
+        annotationLine (BR, FR, white);
+    }
 
     // path to be followed by this pedestrian
     // XXX Ideally this should be a generic Pathway, but we use the

@@ -116,6 +116,13 @@ public:
     Vec3 steerToAvoidObstacle (const Obstacle& obstacle,
                                const float minTimeToCollision);
 
+
+    // avoids all obstacles in an ObstacleGroup
+
+    Vec3 steerToAvoidObstacles (const float minTimeToCollision,
+                                const ObstacleGroup& obstacles);
+
+
     // ------------------------------------------------------------------------
     // Unaligned collision avoidance behavior: avoid colliding with other
     // nearby vehicles moving in unconstrained directions.  Determine which
@@ -265,8 +272,11 @@ public:
 
     // ------------------------------------------------ graphical annotation
 
-    void annotationForAvoidSphere (const float minDistanceToCollision);
-
+    // called when steerToAvoidObstacles decides steering is required
+    // (default action is to do nothing, layered classes can overload it)
+    virtual void annotateAvoidObstacle (const float minDistanceToCollision)
+    {
+    }
 
     // called when steerToFollowPath decides steering is required
     // (default action is to do nothing, layered classes can overload it)
@@ -277,14 +287,12 @@ public:
     {
     }
 
-
     // called when steerToAvoidCloseNeighbors decides steering is required
     // (default action is to do nothing, layered classes can overload it)
     virtual void annotateAvoidCloseNeighbor (const AbstractVehicle& other,
                                              const float additionalDistance)
     {
     }
-
 
     // called when steerToAvoidNeighbors decides steering is required
     // (default action is to do nothing, layered classes can overload it)
@@ -479,7 +487,12 @@ steerToFollowPath (const int direction,
 // XXX The current (4-23-03) scheme is to dump all the work on the various
 // XXX Obstacle classes, making them provide a "steer vehicle to avoid me"
 // XXX method.  This may well change.
-
+//
+// XXX 9-12-03: this routine is probably obsolete: its name is too close to
+// XXX the new steerToAvoidObstacles and the arguments are reversed
+// XXX (perhaps there should be another version of steerToAvoidObstacles
+// XXX whose second arg is "const Obstacle& obstacle" just in case we want
+// XXX to avoid a non-grouped obstacle)
 
 template<class Super>
 Vec3
@@ -491,7 +504,61 @@ steerToAvoidObstacle (const Obstacle& obstacle,
 
     // XXX more annotation modularity problems (assumes spherical obstacle)
     if (avoidance != Vec3::zero)
-        annotationForAvoidSphere (minTimeToCollision * speed());
+        annotateAvoidObstacle (minTimeToCollision * speed());
+
+    return avoidance;
+}
+
+
+// this version avoids all of the obstacles in an ObstacleGroup
+//
+// XXX 9-12-03: note this does NOT use the Obstacle::steerToAvoid protocol
+// XXX like the older steerToAvoidObstacle does/did.  It needs to be fixed
+
+template<class Super>
+Vec3
+SteerLibraryMixin<Super>::
+steerToAvoidObstacles (const float minTimeToCollision,
+                       const ObstacleGroup& obstacles)
+{
+    Vec3 avoidance;
+    PathIntersection nearest, next;
+    const float minDistanceToCollision = minTimeToCollision * speed();
+
+    next.intersect = false;
+    nearest.intersect = false;
+
+    // test all obstacles for intersection with my forward axis,
+    // select the one whose point of intersection is nearest
+    for (ObstacleIterator o = obstacles.begin(); o != obstacles.end(); o++)
+    {
+        // xxx this should be a generic call on Obstacle, rather than
+        // xxx this code which presumes the obstacle is spherical
+        findNextIntersectionWithSphere ((SphericalObstacle&)**o, next);
+
+        if ((nearest.intersect == false) ||
+            ((next.intersect != false) &&
+             (next.distance < nearest.distance)))
+            nearest = next;
+    }
+
+    // when a nearest intersection was found
+    if ((nearest.intersect != false) &&
+        (nearest.distance < minDistanceToCollision))
+    {
+        // show the corridor that was checked for collisions
+        annotateAvoidObstacle (minDistanceToCollision);
+
+        // compute avoidance steering force: take offset from obstacle to me,
+        // take the component of that which is lateral (perpendicular to my
+        // forward direction), set length to maxForce, add a bit of forward
+        // component (in capture the flag, we never want to slow down)
+        const Vec3 offset = position() - nearest.obstacle->center;
+        avoidance = offset.perpendicularComponent (forward());
+        avoidance = avoidance.normalize ();
+        avoidance *= maxForce ();
+        avoidance += forward() * maxForce () * 0.75;
+    }
 
     return avoidance;
 }
@@ -1016,14 +1083,10 @@ Vec3
 SteerLibraryMixin<Super>::
 steerForTargetSpeed (const float targetSpeed)
 {
-    float speedError = targetSpeed - speed ();
-
-    if (speedError > +maxForce ()) speedError = +maxForce ();
-    if (speedError < -maxForce ()) speedError = -maxForce ();
-
-    return forward () * speedError;
+    const float mf = maxForce ();
+    const float speedError = targetSpeed - speed ();
+    return forward () * clip (speedError, -mf, +mf);
 }
-
 
 
 // ----------------------------------------------------------------------------
@@ -1082,28 +1145,6 @@ findNextIntersectionWithSphere (SphericalObstacle& obs,
         // otherwise only one intersections is in front, select it
         ((p > 0) ? p : q);
     return;
-}
-
-
-// ----------------------------------------------------------------------------
-
-
-template<class Super>
-void
-SteerLibraryMixin<Super>::
-annotationForAvoidSphere (const float minDistanceToCollision)
-{
-    const Vec3 boxSide = side() * radius();
-    const Vec3 boxFront = forward() * minDistanceToCollision;
-    const Vec3 FR = position() + boxFront - boxSide;
-    const Vec3 FL = position() + boxFront + boxSide;
-    const Vec3 BR = position()            - boxSide;
-    const Vec3 BL = position()            + boxSide;
-    const Vec3 white (1,1,1);
-    annotationLine (FR, FL, white);
-    annotationLine (FL, BL, white);
-    annotationLine (BL, BR, white);
-    annotationLine (BR, FR, white);
 }
 
 

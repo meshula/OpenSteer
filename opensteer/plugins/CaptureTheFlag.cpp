@@ -58,6 +58,14 @@
 
 
 // ----------------------------------------------------------------------------
+// short names for STL vectors (iterators) of SphericalObstacle pointers
+
+
+typedef std::vector<SphericalObstacle*> SOG;
+typedef SOG::const_iterator SOI;
+
+
+// ----------------------------------------------------------------------------
 // This PlugIn uses two vehicle types: CtfSeeker and CtfEnemy.  They have a
 // common base class: CtfBase which is a specialization of SimpleVehicle.
 
@@ -74,15 +82,19 @@ public:
     // draw this character/vehicle into the scene
     void draw (void);
 
+    // annotate when actively avoiding obstacles
+    void annotateAvoidObstacle (const float minDistanceToCollision);
+
+    void drawHomeBase (void);
+
     void randomizeStartingPositionAndHeading (void);
     enum seekerState {running, tagged, atGoal};
 
-    Vec3 steerToAvoidAllObstacles (const float minTimeToCollision,
-                                   bool& potentialCollision);
+    // for draw method
+    Vec3 bodyColor;
 
-    Vec3 bodyColor;    // for draw method
-
-    bool avoiding; // xxx store steer sub-state for anotation
+    // xxx store steer sub-state for anotation
+    bool avoiding;
 
     // dynamic obstacle registry
     static void addOneObstacle (void);
@@ -90,9 +102,7 @@ public:
     float minDistanceToObstacle (const Vec3 point);
     static int obstacleCount;
     static const int maxObstacleCount;
-    static SphericalObstacle obstacles [];
-
-    void drawHomeBase (void);
+    static SOG allObstacles;
 };
 
 
@@ -280,12 +290,17 @@ void CtfEnemy::update (const float currentTime, const float elapsedTime)
     Vec3 steer (0, 0, 0);
     if (gSeeker->state == running)
     {
-        bool needToAvoid;
-        Vec3 avoidance =
-            steerToAvoidAllObstacles (gAvoidancePredictTimeMin, needToAvoid);
-        steer = (needToAvoid ?
-                 avoidance :
-                 steerForPursuit (*gSeeker, maxPredictionTime));
+        const Vec3 avoidance =
+            steerToAvoidObstacles (gAvoidancePredictTimeMin,
+                                   (ObstacleGroup&) allObstacles);
+
+        // saved for annotation
+        avoiding = (avoidance == Vec3::zero);
+
+        if (avoiding)
+            steer = steerForPursuit (*gSeeker, maxPredictionTime);
+        else
+            steer = avoidance;
     }
     else
     {
@@ -419,59 +434,24 @@ void CtfSeeker::clearPathAnnotation (const float sideThreshold,
 
 
 // ----------------------------------------------------------------------------
+// xxx perhaps this should be a call to a general purpose annotation
+// xxx for "local xxx axis aligned box in XZ plane" -- same code in in
+// xxx Pedestrian.cpp
 
 
-Vec3 CtfBase::steerToAvoidAllObstacles (const float minTimeToCollision,
-                                        bool& potentialCollision)
+void CtfBase::annotateAvoidObstacle (const float minDistanceToCollision)
 {
-    Vec3 avoidance (0, 0, 0);
-    PathIntersection nearest, next;
-    const float minDistanceToCollision = minTimeToCollision * speed();
-
-    avoiding = false;
-    next.intersect = false;
-    nearest.intersect = false;
-    potentialCollision = false;
-
-    // test all obstacles for intersection with my forward axis,
-    // select the one whose point of intersection is nearest
-    for (int i = 0; i < obstacleCount; i++)
-    {
-        // xxx this should be a generic call on Obstacle, rather than this
-        // xxx code which presumes the obstacle is spherical
-        findNextIntersectionWithSphere (obstacles[i], next);
-
-        if ((nearest.intersect == false) ||
-            ((next.intersect != false) &&
-             (next.distance < nearest.distance)))
-            nearest = next;
-    }
-
-    // when a nearest intersection was found
-    if ((nearest.intersect != false) &&
-        (nearest.distance < minDistanceToCollision))
-    {
-        // set the return argument to indicate collision avoidance is needed
-        potentialCollision = true;
-
-        // save state for annotation
-        avoiding = true;
-
-        // show the corridor being checked for collisions
-        annotationForAvoidSphere (minDistanceToCollision);
-
-        // compute avoidance steering force: take offset from obstacle to me,
-        // take the component of that which is lateral (perpendicular to my
-        // forward direction), set length to maxForce, add a bit of forward
-        // component (in capture the flag, we never want to slow down)
-        const Vec3 offset = position() - nearest.obstacle->center;
-        avoidance = offset.perpendicularComponent (forward());
-        avoidance = avoidance.normalize ();
-        avoidance *= maxForce ();
-        avoidance += forward() * maxForce () * 0.75;
-    }
-
-    return avoidance;
+    const Vec3 boxSide = side() * radius();
+    const Vec3 boxFront = forward() * minDistanceToCollision;
+    const Vec3 FR = position() + boxFront - boxSide;
+    const Vec3 FL = position() + boxFront + boxSide;
+    const Vec3 BR = position()            - boxSide;
+    const Vec3 BL = position()            + boxSide;
+    const Vec3 white (1,1,1);
+    annotationLine (FR, FL, white);
+    annotationLine (FL, BL, white);
+    annotationLine (BL, BR, white);
+    annotationLine (BR, FR, white);
 }
 
 
@@ -557,13 +537,16 @@ Vec3 CtfSeeker::XXXsteerToEvadeAllDefenders (void)
 Vec3 CtfSeeker::steeringForSeeker (void)
 {
     // determine if obstacle avodiance is needed
-    bool needed;
-    const float pt = gAvoidancePredictTime;
     const bool clearPath = clearPathToGoal ();
     adjustObstacleAvoidanceLookAhead (clearPath);
-    const Vec3 obstacleAvoidance = steerToAvoidAllObstacles (pt, needed);
+    const Vec3 obstacleAvoidance =
+        steerToAvoidObstacles (gAvoidancePredictTime,
+                               (ObstacleGroup&) allObstacles);
 
-    if (needed)
+    // saved for annotation
+    avoiding = (obstacleAvoidance != Vec3::zero);
+
+    if (avoiding)
     {
         // use pure obstacle avoidance if needed
         return obstacleAvoidance;
@@ -704,7 +687,7 @@ void CtfSeeker::draw (void)
     // display status in the upper left corner of the window
     std::ostringstream status;
     status << seekerStateString << std::endl;
-    status << obstacleCount << " obstacles" << std::endl;
+    status << obstacleCount << " obstacles [F1/F2]" << std::endl;
     status << resetCount << " restarts" << std::ends;
     const float h = drawGetWindowHeight ();
     const Vec3 screenLocation (10, h-50, 0);
@@ -750,7 +733,8 @@ void CtfSeeker::update (const float currentTime, const float elapsedTime)
 
 
 int CtfBase::obstacleCount = 0;
-SphericalObstacle CtfBase::obstacles [maxObstacleCount];
+SOG CtfBase::allObstacles;
+
 
 #define testOneObstacleOverlap(radius, center)               \
 {                                                            \
@@ -776,19 +760,18 @@ void CtfBase::addOneObstacle (void)
             c = randomVectorOnUnitRadiusXZDisk () * gMaxStartRadius * 1.1f;
             minClearance = FLT_MAX;
 
-            for (int i = 0; i < obstacleCount; i++)
+            for (SOI so = allObstacles.begin(); so != allObstacles.end(); so++)
             {
-                testOneObstacleOverlap (obstacles[i].radius,
-                                        obstacles[i].center);
+                testOneObstacleOverlap ((**so).radius, (**so).center);
             }
+
             testOneObstacleOverlap (gHomeBaseRadius - requiredClearance,
                                     gHomeBaseCenter);
         }
         while (minClearance < requiredClearance);
 
         // add new non-overlapping obstacle to registry
-        obstacles[obstacleCount].radius = r;
-        obstacles[obstacleCount].center = c;
+        allObstacles.push_back (new SphericalObstacle (r, c));
         obstacleCount++;
     }
 }
@@ -799,10 +782,9 @@ float CtfBase::minDistanceToObstacle (const Vec3 point)
     float r = 0;
     Vec3 c = point;
     float minClearance = FLT_MAX;
-    for (int i = 0; i < obstacleCount; i++)
+    for (SOI so = allObstacles.begin(); so != allObstacles.end(); so++)
     {
-        testOneObstacleOverlap (obstacles[i].radius,
-                                obstacles[i].center);
+        testOneObstacleOverlap ((**so).radius, (**so).center);
     }
     return minClearance;
 }
@@ -810,7 +792,11 @@ float CtfBase::minDistanceToObstacle (const Vec3 point)
 
 void CtfBase::removeOneObstacle (void)
 {
-    if (obstacleCount > 0) obstacleCount--;
+    if (obstacleCount > 0)
+    {
+        obstacleCount--;
+        allObstacles.pop_back();
+    }
 }
 
 
@@ -847,6 +833,10 @@ public:
         SteerTest::camera.mode = Camera::cmFixedDistanceOffset;
         SteerTest::camera.fixedTarget.set (15, 0, 0);
         SteerTest::camera.fixedPosition.set (80, 60, 0);
+
+        // start with 40% of possible obstacles
+        for (int i = 0; i<(CtfBase::maxObstacleCount * 0.4); i++)
+            CtfBase::addOneObstacle ();
     }
 
     void update (const float currentTime, const float elapsedTime)
@@ -963,13 +953,11 @@ public:
 
     void drawObstacles (void)
     {
-        for (int i = 0; i < CtfBase::obstacleCount; i++)
+        const Vec3 color (0.8f, 0.6f, 0.4f);
+        const SOG& allSO = CtfBase::allObstacles;
+        for (SOI so = allSO.begin(); so != allSO.end(); so++)
         {
-            const Vec3 color (0.8f, 0.6f, 0.4f);
-            drawXZCircle (CtfBase::obstacles[i].radius,
-                          CtfBase::obstacles[i].center,
-                          color,
-                          40);
+            drawXZCircle ((**so).radius, (**so).center, color, 40);
         }
     }
 

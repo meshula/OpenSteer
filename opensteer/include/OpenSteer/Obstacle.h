@@ -75,6 +75,12 @@ public:
 };
 
 
+// an STL vector of Obstacle pointers and an iterator for it:
+typedef std::vector<Obstacle*> ObstacleGroup;
+typedef ObstacleGroup::const_iterator ObstacleIterator;
+
+
+
 // ----------------------------------------------------------------------------
 // SphericalObstacle a simple concrete type of obstacle
 
@@ -84,6 +90,11 @@ class SphericalObstacle : public Obstacle
 public:
     float radius;
     Vec3 center;
+
+    // constructors
+    SphericalObstacle (float r, Vec3 c) : radius(r), center (c) {}
+    SphericalObstacle (void) : radius(1), center (Vec3::zero) {}
+
     seenFromState seenFrom (void) const {return _seenFrom;}
     void setSeenFrom (seenFromState s) {_seenFrom = s;}
 
