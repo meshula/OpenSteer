@@ -173,13 +173,16 @@ void SimpleVehicle::applySteeringForce (const Vec3& force,
 
     // damp out abrupt changes and oscillations in steering acceleration
     // (rate is proportional to time step, then clipped into useful range)
-    const float smoothRate = clip (9 * elapsedTime, 0.15f, 0.4f);
-    blendIntoAccumulator (smoothRate,
-                          newAcceleration,
-                          smoothedAcceleration);
+    if (elapsedTime > 0)
+    {
+        const float smoothRate = clip (9 * elapsedTime, 0.15f, 0.4f);
+        blendIntoAccumulator (smoothRate,
+                              newAcceleration,
+                              _smoothedAcceleration);
+    }
 
     // Euler integrate (per frame) acceleration into velocity
-    newVelocity += smoothedAcceleration * elapsedTime;
+    newVelocity += _smoothedAcceleration * elapsedTime;
 
     // enforce speed limit
     newVelocity = newVelocity.truncateLength (maxSpeed ());
@@ -193,6 +196,14 @@ void SimpleVehicle::applySteeringForce (const Vec3& force,
     // regenerate local space (by default: align vehicle's forward axis with
     // new velocity, but this behavior may be overridden by derived classes.)
     regenerateLocalSpace (newVelocity, elapsedTime);
+
+    // maintain path curvature information
+    measurePathCurvature (elapsedTime);
+
+    // running average of recent positions
+    blendIntoAccumulator (elapsedTime * 0.06f, // QQQ
+                          position (),
+                          _smoothedPosition);
 }
 
 
@@ -226,7 +237,7 @@ void SimpleVehicle::regenerateLocalSpaceForBanking (const Vec3& newVelocity,
 
     // acceleration points toward the center of local path curvature, the
     // length determines how much the vehicle will roll while turning
-    const Vec3 accelUp = smoothedAcceleration * 0.05f;
+    const Vec3 accelUp = _smoothedAcceleration * 0.05f;
 
     // combined banking, sum of UP due to turning and global UP
     const Vec3 bankUp = accelUp + globalUp;
@@ -248,6 +259,28 @@ void SimpleVehicle::regenerateLocalSpaceForBanking (const Vec3& newVelocity,
 
 
 // ----------------------------------------------------------------------------
+// measure path curvature (1/turning-radius), maintain smoothed version
+
+
+void SimpleVehicle::measurePathCurvature (const float elapsedTime)
+{
+    if (elapsedTime > 0)
+    {
+        const Vec3 dP = _lastPosition - position ();
+        const Vec3 dF = (_lastForward - forward ()) / dP.length ();
+        const Vec3 lateral = dF.perpendicularComponent (forward ());
+        const float sign = (lateral.dot (side ()) < 0) ? 1 : -1;
+        _curvature = lateral.length() * sign;
+        blendIntoAccumulator (elapsedTime * 4.0f,
+                              _curvature,
+                              _smoothedCurvature);
+        _lastForward = forward ();
+        _lastPosition = position ();
+    }
+}
+
+
+// ----------------------------------------------------------------------------
 // draw lines from vehicle's position showing its velocity and acceleration
 
 
@@ -261,8 +294,8 @@ void SimpleVehicle::annotationVelocityAcceleration (float maxLengthA,
     const Vec3 aColor (desat, desat, 1); // bluish
     const Vec3 vColor (    1, desat, 1); // pinkish
 
-    annotationLine (p, p + (velocity ()          * vScale), vColor);
-    annotationLine (p, p + (smoothedAcceleration * aScale), aColor);
+    annotationLine (p, p + (velocity ()           * vScale), vColor);
+    annotationLine (p, p + (_smoothedAcceleration * aScale), aColor);
 }
 
 

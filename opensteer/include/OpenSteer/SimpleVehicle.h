@@ -112,7 +112,10 @@ public:
         setMaxForce (0.1f);   // steering force is clipped to this magnitude
         setMaxSpeed (1.0f);   // velocity is clipped to this magnitude
 
-        smoothedAcceleration = Vec3::zero;
+        // reset bookkeeping to do running averages of these quanities
+        resetSmoothedPosition ();
+        resetSmoothedCurvature ();
+        resetSmoothedAcceleration ();
     }
 
     // get/set mass
@@ -169,6 +172,28 @@ public:
     // (assumes velocity remains constant)
     Vec3 predictFuturePosition (const float predictionTime) const;
 
+    // get instantaneous curvature (since last update)
+    float curvature (void) {return _curvature;}
+
+    // get/reset smoothedCurvature, smoothedAcceleration and smoothedPosition
+    float smoothedCurvature (void) {return _smoothedCurvature;}
+    float resetSmoothedCurvature (float value = 0)
+    {
+        _lastForward = Vec3::zero;
+        _lastPosition = Vec3::zero;
+        return _smoothedCurvature = _curvature = value;
+    }
+    Vec3 smoothedAcceleration (void) {return _smoothedAcceleration;}
+    Vec3 resetSmoothedAcceleration (const Vec3& value = Vec3::zero)
+    {
+        return _smoothedAcceleration = value;
+    }
+    Vec3 smoothedPosition (void) {return _smoothedPosition;}
+    Vec3 resetSmoothedPosition (const Vec3& value = Vec3::zero)
+    {
+        return _smoothedPosition = value;
+    }
+
     // give each vehicle a unique number
     int serialNumber;
     static int serialNumberCounter;
@@ -204,8 +229,15 @@ private:
     float _maxSpeed;   // the maximum speed this vehicle is allowed to move
                        // (velocity is clipped to this magnitude)
 
-    // previous acceleration for blending
-    Vec3 smoothedAcceleration;
+    float _curvature;
+    Vec3 _lastForward;
+    Vec3 _lastPosition;
+    Vec3 _smoothedPosition;
+    float _smoothedCurvature;
+    Vec3 _smoothedAcceleration;
+
+    // measure path curvature (1/turning-radius), maintain smoothed version
+    void measurePathCurvature (const float elapsedTime);
 };
 
 
