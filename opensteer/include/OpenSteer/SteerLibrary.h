@@ -1098,7 +1098,11 @@ steerForTargetSpeed (const float targetSpeed)
 
 
 // ----------------------------------------------------------------------------
-// xxx experiment cwr 9-6-02
+// Given a SphericalObstacle, calculate whether our vehicle's forward axis
+// intersects the sphere.  If so calculate the distances to the two points of
+// intersection.  If either are in front of us, return the minimum distance to
+// the obstacle along the forward axis.  Results of these tests are returned in
+// a PathIntersection object.
 
 
 template<class Super>
@@ -1125,7 +1129,7 @@ findNextIntersectionWithSphere (SphericalObstacle& obs,
     // find "local center" (lc) of sphere in boid's coordinate space
     lc = localizePosition (obs.center);
 
-    // computer line-sphere intersection parameters
+    // compute line-sphere intersection parameters
     b = -2 * lc.z;
     c = square (lc.x) + square (lc.y) + square (lc.z) - 
         square (obs.radius + radius());
@@ -1144,14 +1148,16 @@ findNextIntersectionWithSphere (SphericalObstacle& obs,
     // both intersections are behind us, so no potential collisions
     if ((p < 0) && (q < 0)) return; 
 
-    // at least one intersection is in front of us
+    // at least one intersection is in front, so intersects our forward path
     intersection.intersect = true;
     intersection.distance =
         ((p > 0) && (q > 0)) ?
         // both intersections are in front of us, find nearest one
         ((p < q) ? p : q) :
-        // otherwise only one intersections is in front, select it
-        ((p > 0) ? p : q);
+        // otherwise one is ahead and one is behind, so we are INSIDE the
+        // obstacle, the distance to the intersection is 0 (assuming the sphere
+        // is solid, if it were hollow this should be ((p > 0) ? p : q)).
+        0.0f;
     return;
 }
 
