@@ -271,7 +271,7 @@ inline float round (float x)
 
 inline float truncPositive (float x)
 {
-    return (float)(int)(x+0.5);
+    return (float)(int)x;
 }
 
 inline float trunc (float x)
