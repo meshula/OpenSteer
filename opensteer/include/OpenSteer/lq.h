@@ -158,6 +158,13 @@ lqDB* lqCreateDatabase (float originx, float originy, float originz,
 
 
 /* ------------------------------------------------------------------ */
+/* Deallocates the LQ database */
+
+
+void lqDeleteDatabase (lqDB*);
+
+
+/* ------------------------------------------------------------------ */
 /* The application needs to call this once on each lqClientProxy at
    setup time to initialize its list pointers and associate the proxy
    with its client object. */ 

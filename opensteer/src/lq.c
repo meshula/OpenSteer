@@ -127,6 +127,17 @@ lqInternalDB* lqCreateDatabase (float originx, float originy, float originz,
 
 
 /* ------------------------------------------------------------------ */
+/* Deallocate the memory used by the LQ database */
+
+
+void lqDeleteDatabase(lqDB* lq)
+{
+    free (lq->bins);
+    free (lq);
+}
+
+
+/* ------------------------------------------------------------------ */
 /* Given an LQ database object and the nine basic parameters: fill in
    the object's slots, allocate the bin array, and initialize its
    contents. */

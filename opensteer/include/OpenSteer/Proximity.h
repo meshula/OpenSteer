@@ -220,7 +220,7 @@ public:
     // destructor
     virtual ~LQProximityDatabase ()
     {
-        free (lq);
+        lqDeleteDatabase (lq);
         lq = NULL;
     }
 
