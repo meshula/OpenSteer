@@ -84,7 +84,7 @@
 
 
 # The name of the binary file we want to generate.  Also handles libraries! (.a)
-TARGET		= steertest.elf
+TARGET		= OpenSteerDemo.elf
 
 
 ##########################################################################
