@@ -647,6 +647,7 @@ void SteerTest::keyboardMiniHelp (void)
     printMessage ("  c      select next camera mode.");
     printMessage ("  f      select next preset frame rate");
     printMessage ("  Tab    select next PlugIn.");
+    printMessage ("  a      toggle annotation on/off.");
     printMessage ("  Space  toggle between Run and Pause.");
     printMessage ("  ->     step forward one frame.");
     printMessage ("  Esc    exit.");

@@ -487,6 +487,12 @@ void keyboardFunc (unsigned char key, int x, int y)
         SteerTest::printMessage (message);
         break;
 
+    // toggle annotation state
+    case 'a':
+        SteerTest::printMessage (SteerTest::toggleAnnotationState () ?
+                                 "annotation ON" : "annotation OFF");
+        break;
+
     // toggle run/pause state
     case space:
         SteerTest::printMessage (SteerTest::clock.togglePausedState () ?
@@ -880,6 +886,7 @@ void drawCircleOrDisk (const float radius,
     if (filled) iglVertexVec3 (in3d ? ls.position() : center);
 
     // rotate p around the circle in "segments" steps
+    float sin=0, cos=0;
     const int vertexCount = filled ? segments+1 : segments;
     for (int i = 0; i < vertexCount; i++)
     {
@@ -890,7 +897,7 @@ void drawCircleOrDisk (const float radius,
                            (Vec3) (pointOnCircle + center));
 
         // rotate point one more step around circle
-        pointOnCircle = pointOnCircle.rotateAboutGlobalY (step);
+        pointOnCircle = pointOnCircle.rotateAboutGlobalY (step, sin, cos);
     }
 
     // close drawing operation

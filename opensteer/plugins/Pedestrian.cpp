@@ -42,6 +42,14 @@
 #include "OpenSteer/Pathway.h"
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/SteerTest.h"
+#include "OpenSteer/Proximity.h"
+
+
+// ----------------------------------------------------------------------------
+
+
+typedef AbstractProximityDatabase<AbstractVehicle*> ProximityDatabase;
+typedef AbstractTokenForProximityDatabase<AbstractVehicle*> ProximityToken;
 
 
 // ----------------------------------------------------------------------------
@@ -70,14 +78,23 @@ public:
     // type for a group of Pedestrians
     typedef std::vector<Pedestrian*> groupType;
 
-    // per-instance reference to its group
-    const groupType& others;
-
     // constructor
-    Pedestrian (groupType& OTHERS) : others (OTHERS) {reset ();}
+    Pedestrian (ProximityDatabase& pd)
+    {
+        // allocate a token for this boid in the proximity database
+        proximityToken = NULL;
+        newPD (pd);
+
+        // reset Pedestrian state
+        reset ();
+    }
 
     // destructor
-    virtual ~Pedestrian () {}
+    virtual ~Pedestrian ()
+    {
+        // delete this boid's token in the proximity database
+        delete proximityToken;
+    }
 
     // reset all instance state
     void reset (void)
@@ -113,6 +130,9 @@ public:
 
         // trail parameters: 3 seconds with 60 points along the trail
         setTrailParameters (3, 60);
+
+        // notify proximity database that our position has changed
+        proximityToken->updateForNewPosition (position());
     }
 
     // per frame simulation update
@@ -142,6 +162,9 @@ public:
         // annotation
         annotationVelocityAcceleration (5, 0);
         recordTrailVertex (currentTime, position());
+
+        // notify proximity database that our position has changed
+        proximityToken->updateForNewPosition (position());
     }
 
     // compute combined steering force: move forward, avoid obstacles
@@ -175,9 +198,17 @@ public:
             // otherwise consider avoiding collisions with others
             Vec3 collisionAvoidance;
             const float caLeadTime = 3;
+
+            // find all neighbors within maxRadius using proximity database
+            // (radius is largest distance between vehicles traveling head-on
+            // where a collision is possible within caLeadTime seconds.)
+            const float maxRadius = caLeadTime * maxSpeed() * 2;
+            neighbors.clear();
+            proximityToken->findNeighbors (position(), maxRadius, neighbors);
+
             if (leakThrough < frandom01())
                 collisionAvoidance =
-                    steerToAvoidNeighbors(caLeadTime, (AVGroup&)others)*10;
+                    steerToAvoidNeighbors (caLeadTime, neighbors) * 10;
 
             // if collision avoidance is needed, do it
             if (collisionAvoidance != Vec3::zero)
@@ -253,7 +284,8 @@ public:
         const Vec3 color = headOn ? red : green;
         const char* string = headOn ? "OUCH!" : "pardon me";
         const Vec3 location = position() + Vec3 (0, 0.5f, 0);
-        draw2dTextAt3dLocation (*string, location, color);
+        if (SteerTest::annotationIsOn())
+            draw2dTextAt3dLocation (*string, location, color);
     }
 
 
@@ -289,6 +321,23 @@ public:
         annotationLine (BR, FR, white);
     }
 
+    // switch to new proximity database -- just for demo purposes
+    void newPD (ProximityDatabase& pd)
+    {
+        // delete this boid's token in the old proximity database
+        delete proximityToken;
+
+        // allocate a token for this boid in the proximity database
+        proximityToken = pd.allocateToken (this);
+    }
+
+    // a pointer to this boid's interface object for the proximity database
+    ProximityToken* proximityToken;
+
+    // allocate one and share amoung instances just to save memory usage
+    // (change to per-instance allocation to be more MP-safe)
+    static AVGroup neighbors;
+
     // path to be followed by this pedestrian
     // XXX Ideally this should be a generic Pathway, but we use the
     // XXX getTotalPathLength and radius methods (currently defined only
@@ -296,11 +345,12 @@ public:
     // XXX there be a "random position inside path" method on Pathway?
     PolylinePathway* path;
 
-
     // direction for path following (upstream or downstream)
     int pathDirection;
 };
 
+
+AVGroup Pedestrian::neighbors;
 
 
 // ----------------------------------------------------------------------------
@@ -379,8 +429,13 @@ public:
 
     void open (void)
     {
-        // create the specified number of Pedestrians, save pointers to them
-        for (int i = 0; i < 70; i++) crowd.push_back (new Pedestrian (crowd));
+        // make the database used to accelerate proximity queries
+        cyclePD = -1;
+        nextPD ();
+
+        // create the specified number of Pedestrians
+        population = 0;
+        for (int i = 0; i < 100; i++) addPedestrianToCrowd ();
 
         // initialize camera and selectedVehicle
         Pedestrian& firstPedestrian = **crowd.begin();
@@ -411,7 +466,12 @@ public:
         SteerTest::updateCamera (currentTime, elapsedTime, selected);
 
         // draw "ground plane"
-        SteerTest::gridUtility (selected.position());
+//         SteerTest::gridUtility (selected.position());
+//         SteerTest::gridUtility (SteerTest::selectedVehicle ?
+//                                 selected.position() :
+//                                 Vec3::zero);
+        if (SteerTest::selectedVehicle) gridCenter = selected.position();
+        SteerTest::gridUtility (gridCenter);
 
         // draw and annotate each Pedestrian
         for (iterator i = crowd.begin(); i != crowd.end(); i++) (**i).draw (); 
@@ -426,24 +486,35 @@ public:
         serialNumberAnnotationUtility (selected, nearMouse);
 
         // textual annotation for selected Pedestrian
-        const Vec3 color (0.8f, 0.8f, 1.0f);
-        const Vec3 textOffset (0, 0.25f, 0);
-        const Vec3 textPosition = selected.position() + textOffset;
-        const Vec3 camPosition = SteerTest::camera.position();
-        const float camDistance = Vec3::distance (selected.position(),
-                                                  camPosition);
-        const char* spacer = "      ";
-        std::ostringstream annote;
-        annote << std::setprecision (2) << std::setiosflags (std::ios::fixed);
-        annote << spacer << "1: speed: " << selected.speed() << std::endl;
-        annote << std::setprecision (1);
-        annote << spacer << "2: cam dist: " << camDistance << std::endl;
-        annote << spacer << "3: no third thing" << std::ends;
-        draw2dTextAt3dLocation (annote, textPosition, color);
+        if (SteerTest::selectedVehicle && SteerTest::annotationIsOn())
+        {
+            const Vec3 color (0.8f, 0.8f, 1.0f);
+            const Vec3 textOffset (0, 0.25f, 0);
+            const Vec3 textPosition = selected.position() + textOffset;
+            const Vec3 camPosition = SteerTest::camera.position();
+            const float camDistance = Vec3::distance (selected.position(),
+                                                      camPosition);
+            const char* spacer = "      ";
+            std::ostringstream annote;
+            annote << std::setprecision (2);
+            annote << std::setiosflags (std::ios::fixed);
+            annote << spacer << "1: speed: " << selected.speed() << std::endl;
+            annote << std::setprecision (1);
+            annote << spacer << "2: cam dist: " << camDistance << std::endl;
+            annote << spacer << "3: no third thing" << std::ends;
+            draw2dTextAt3dLocation (annote, textPosition, color);
+        }
 
         // display status in the upper left corner of the window
         std::ostringstream status;
-        status << "[F4] ";
+        status << "[F1/F2] Crowd size: " << population;
+        status << "\n[F3] PD type: ";
+        switch (cyclePD)
+        {
+        case 0: status << "LQ bin lattice"; break;
+        case 1: status << "brute force";    break;
+        }
+        status << "\n[F4] ";
         if (gUseDirectedPathFollowing)
             status << "Directed path following.";
         else
@@ -462,7 +533,7 @@ public:
     {
         // display a Pedestrian's serial number as a text label near its
         // screen position when it is near the selected vehicle or mouse.
-        if (&selected && &nearMouse) // neither are NULL
+        if (&selected && &nearMouse && SteerTest::annotationIsOn())
         {
             for (iterator i = crowd.begin(); i != crowd.end(); i++)
             {
@@ -501,9 +572,8 @@ public:
 
     void close (void)
     {
-        // delete each Pedestrian
-        for (iterator i = crowd.begin(); i != crowd.end(); i++) delete (*i);
-        crowd.clear ();
+        // delete all Pedestrians
+       while (population > 0) removePedestrianFromCrowd ();
     }
 
     void reset (void)
@@ -522,8 +592,11 @@ public:
     {
         switch (keyNumber)
         {
+        case 1:  addPedestrianToCrowd ();                               break;
+        case 2:  removePedestrianFromCrowd ();                          break;
+        case 3:  nextPD ();                                             break;
         case 4: gUseDirectedPathFollowing = !gUseDirectedPathFollowing; break;
-        case 5: gWanderSwitch = !gWanderSwitch; break;
+        case 5: gWanderSwitch = !gWanderSwitch;                         break;
         }
     }
 
@@ -533,16 +606,98 @@ public:
         message << "Function keys handled by ";
         message << '"' << name() << '"' << ':' << std::ends;
         SteerTest::printMessage (message);
+        SteerTest::printMessage (message);
+        SteerTest::printMessage ("  F1     add a pedestrian to the crowd.");
+        SteerTest::printMessage ("  F2     remove a pedestrian from crowd.");
+        SteerTest::printMessage ("  F3     use next proximity database.");
         SteerTest::printMessage ("  F4     toggle directed path follow.");
         SteerTest::printMessage ("  F5     toggle wander component on/off.");
         SteerTest::printMessage ("");
     }
+
+
+    void addPedestrianToCrowd (void)
+    {
+        population++;
+        Pedestrian* pedestrian = new Pedestrian (*pd);
+        crowd.push_back (pedestrian);
+        if (population == 1) SteerTest::selectedVehicle = pedestrian;
+    }
+
+
+    void removePedestrianFromCrowd (void)
+    {
+        if (population > 0)
+        {
+            // save pointer to last pedestrian, then remove it from the crowd
+            const Pedestrian* pedestrian = crowd.back();
+            crowd.pop_back();
+            population--;
+
+            // if it is SteerTest's selected vehicle, unselect it
+            if (pedestrian == SteerTest::selectedVehicle)
+                SteerTest::selectedVehicle = NULL;
+
+            // delete the Pedestrian
+            delete pedestrian;
+        }
+    }
+
+
+    // for purposes of demonstration, allow cycling through various
+    // types of proximity databases.  this routine is called when the
+    // SteerTest user pushes a function key.
+    void nextPD (void)
+    {
+        // save pointer to old PD
+        ProximityDatabase* oldPD = pd;
+
+        // allocate new PD
+        const int totalPD = 2;
+        switch (cyclePD = (cyclePD + 1) % totalPD)
+        {
+        case 0:
+            {
+                const Vec3 center;
+                const int div = 20;
+                const Vec3 divisions (div, 1, div);
+                const float diameter = 80; // XXX need a better way to get this
+                const Vec3 dimensions (diameter, diameter, diameter);
+                typedef LQProximityDatabase<AbstractVehicle*> LQPDAV;
+                pd = new LQPDAV (center, dimensions, divisions);
+                break;
+            }
+        case 1:
+            {
+                pd = new BruteForceProximityDatabase<AbstractVehicle*> ();
+                break;
+            }
+        }
+
+        // switch each boid to new PD
+        for (iterator i=crowd.begin(); i!=crowd.end(); i++) (**i).newPD(*pd);
+
+        // delete old PD (if any)
+        delete oldPD;
+    }
+
 
     const AVGroup& allVehicles (void) {return (const AVGroup&) crowd;}
 
     // crowd: a group (STL vector) of all Pedestrians
     Pedestrian::groupType crowd;
     typedef Pedestrian::groupType::const_iterator iterator;
+
+    Vec3 gridCenter;
+
+    // pointer to database used to accelerate proximity queries
+    ProximityDatabase* pd;
+
+    // keep track of current flock size
+    int population;
+
+    // which of the various proximity databases is currently in use
+    int cyclePD;
 };
 
 

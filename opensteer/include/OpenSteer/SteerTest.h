@@ -215,6 +215,8 @@ public:
     static bool annotationIsOn (void) {return enableAnnotation;}
     static void setAnnotationOn (void) {enableAnnotation = true;}
     static void setAnnotationOff (void) {enableAnnotation = false;}
+    static bool toggleAnnotationState (void)
+        {return (enableAnnotation = !enableAnnotation);}
 
     // ----------------------------------------------------------- console text
 

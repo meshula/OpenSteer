@@ -306,44 +306,47 @@ void AnnotationMixin<Super>::recordTrailVertex (const float currentTime,
 template<class Super>
 void AnnotationMixin<Super>::drawTrail (void)
 {
-    const Vec3 trailColor = grayColor (0.7f);
-    const Vec3 tickColor = gWhite;
-
-    int index = trailIndex;
-    for (int j = 0; j < trailVertexCount; j++)
+    if (SteerTest::annotationIsOn())
     {
-        // index of the next vertex (mod around ring buffer)
-        const int next = (index + 1) % trailVertexCount;
+        const Vec3 trailColor = grayColor (0.7f);
+        const Vec3 tickColor = gWhite;
 
-        // "tick mark": every second, draw a segment in a different color
-        const int tick = ((trailFlags [index] & 2) ||
-                          (trailFlags [next] & 2));
-        const Vec3 color = tick ? tickColor : trailColor;
-
-        // draw every other segment
-        if (trailFlags [index] & 1)
+        int index = trailIndex;
+        for (int j = 0; j < trailVertexCount; j++)
         {
-            if (j == 0)
+            // index of the next vertex (mod around ring buffer)
+            const int next = (index + 1) % trailVertexCount;
+
+            // "tick mark": every second, draw a segment in a different color
+            const int tick = ((trailFlags [index] & 2) ||
+                              (trailFlags [next] & 2));
+            const Vec3 color = tick ? tickColor : trailColor;
+
+            // draw every other segment
+            if (trailFlags [index] & 1)
             {
-                // draw segment from current position to first trail point
-                drawLineAlpha (curPosition,
-                               trailVertices [index],
-                               color,
-                               1);
+                if (j == 0)
+                {
+                    // draw segment from current position to first trail point
+                    drawLineAlpha (curPosition,
+                                   trailVertices [index],
+                                   color,
+                                   1);
+                }
+                else
+                {
+                    // draw trail segments with opacity decreasing with age
+                    const float minO = 0.05f; // minimum opacity
+                    const float fraction = (float) j / trailVertexCount;
+                    const float opacity = (fraction * (1 - minO)) + minO;
+                    drawLineAlpha (trailVertices [index],
+                                   trailVertices [next],
+                                   color,
+                                   opacity);
+                }
             }
-            else
-            {
-                // draw trail segments with opacity decreasing with age
-                const float minO = 0.05f; // minimum opacity
-                const float fraction = (float) j / trailVertexCount;
-                const float opacity = (fraction * (1 - minO)) + minO;
-                drawLineAlpha (trailVertices [index],
-                               trailVertices [next],
-                               color,
-                               opacity);
-            }
+            index = next;
         }
-        index = next;
     }
 }
 

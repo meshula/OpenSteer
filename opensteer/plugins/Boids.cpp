@@ -267,6 +267,7 @@ public:
         nextPD ();
 
         // make default-sized flock
+        population = 0;
         for (int i = 0; i < 200; i++) addBoidToFlock ();
 
         // initialize camera

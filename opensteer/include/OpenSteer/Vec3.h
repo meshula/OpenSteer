@@ -183,6 +183,22 @@ public:
                      (this->z * c) - (this->x * s));
     }
 
+    // version for caching sin/cos computation
+    Vec3 rotateAboutGlobalY (float angle, float& sin, float& cos) const 
+    {
+        // is both are zero, they have not be initialized yet
+        if (sin==0 && cos==0)
+        {
+            sin = sinXXX (angle);
+            cos = cosXXX (angle);
+        }
+        return Vec3 ((this->x * cos) + (this->z * sin),
+                     (this->y),
+                     (this->z * cos) - (this->x * sin));
+    }
+
+    // if this position is outside sphere, push it back in by one diameter
+
     Vec3 sphericalWrapAround (const Vec3& center, float radius)
     {
         const Vec3 offset = *this - center;
