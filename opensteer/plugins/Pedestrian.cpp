@@ -69,6 +69,9 @@ ObstacleGroup gObstacles;
 Vec3 gEndpoint0;
 Vec3 gEndpoint1;
 bool gUseDirectedPathFollowing = true;
+// ------------------------------------ xxxcwr11-1-04 fixing steerToAvoid
+RectangleObstacle gObstacle3 (7,7);
+// ------------------------------------ xxxcwr11-1-04 fixing steerToAvoid
 
 // this was added for debugging tool, but I might as well leave it in
 bool gWanderSwitch = true;
@@ -190,7 +193,13 @@ public:
         if (leakThrough < frandom01())
         {
             const float oTime = 6; // minTimeToCollision = 6 seconds
+// ------------------------------------ xxxcwr11-1-04 fixing steerToAvoid
+// just for testing
+//             obstacleAvoidance = steerToAvoidObstacles (oTime, gObstacles);
+//             obstacleAvoidance = steerToAvoidObstacle (oTime, gObstacle1);
+//             obstacleAvoidance = steerToAvoidObstacle (oTime, gObstacle3);
             obstacleAvoidance = steerToAvoidObstacles (oTime, gObstacles);
+// ------------------------------------ xxxcwr11-1-04 fixing steerToAvoid
         }
 
         // if obstacle avoidance is needed, do it
@@ -408,6 +417,37 @@ PolylinePathway* getTestPath (void)
         gObstacle2.radius = 5;
         gObstacles.push_back (&gObstacle1);
         gObstacles.push_back (&gObstacle2);
+// ------------------------------------ xxxcwr11-1-04 fixing steerToAvoid
+
+        gObstacles.push_back (&gObstacle3);
+
+//         // rotated to be perpendicular with path
+//         gObstacle3.setForward (1, 0, 0);
+//         gObstacle3.setSide (0, 0, 1);
+//         gObstacle3.setPosition (20, 0, h);
+
+//         // moved up to test off-center
+//         gObstacle3.setForward (1, 0, 0);
+//         gObstacle3.setSide (0, 0, 1);
+//         gObstacle3.setPosition (20, 3, h);
+
+//         // rotated 90 degrees around path to test other local axis
+//         gObstacle3.setForward (1, 0, 0);
+//         gObstacle3.setSide (0, -1, 0);
+//         gObstacle3.setUp (0, 0, -1);
+//         gObstacle3.setPosition (20, 0, h);
+
+        // tilted 45 degrees
+        gObstacle3.setForward (Vec3(1,1,0).normalize());
+        gObstacle3.setSide (0,0,1);
+        gObstacle3.setUp (Vec3(-1,1,0).normalize());
+        gObstacle3.setPosition (20, 0, h);
+
+//         gObstacle3.setSeenFrom (Obstacle::outside);
+//         gObstacle3.setSeenFrom (Obstacle::inside);
+        gObstacle3.setSeenFrom (Obstacle::both);
+
+// ------------------------------------ xxxcwr11-1-04 fixing steerToAvoid
 
         gEndpoint0 = pathPoints[0];
         gEndpoint1 = pathPoints[pathPointCount-1];
@@ -572,6 +612,24 @@ public:
         // draw obstacles
         drawXZCircle (gObstacle1.radius, gObstacle1.center, gWhite, 40);
         drawXZCircle (gObstacle2.radius, gObstacle2.center, gWhite, 40);
+// ------------------------------------ xxxcwr11-1-04 fixing steerToAvoid
+        {
+            float w = gObstacle3.width / 2;
+            Vec3 p = gObstacle3.position ();
+            Vec3 s = gObstacle3.side ();
+            drawLine (p + (s * w), p + (s * -w), gWhite);
+
+            Vec3 v1 = gObstacle3.globalizePosition (Vec3 (w, w, 0));
+            Vec3 v2 = gObstacle3.globalizePosition (Vec3 (-w, w, 0));
+            Vec3 v3 = gObstacle3.globalizePosition (Vec3 (-w, -w, 0));
+            Vec3 v4 = gObstacle3.globalizePosition (Vec3 (w, -w, 0));
+
+            drawLine (v1, v2, gWhite);
+            drawLine (v2, v3, gWhite);
+            drawLine (v3, v4, gWhite);
+            drawLine (v4, v1, gWhite);
+        }
+// ------------------------------------ xxxcwr11-1-04 fixing steerToAvoid
     }
 
     void close (void)

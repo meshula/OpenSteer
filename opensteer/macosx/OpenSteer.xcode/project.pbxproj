@@ -193,6 +193,34 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
+		32C150890765ABE000A8BC25 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = TerrainRayTest.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		32C1508A0765ABE000A8BC25 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = TerrainRayTest.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		32C1508B0765ABE000A8BC25 = {
+			fileRef = 32C150890765ABE000A8BC25;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		32C1508C0765ABE000A8BC25 = {
+			fileRef = 32C1508A0765ABE000A8BC25;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		32F3E5C707295CBA002E9EDE = {
 			fileRef = 32FFF52706E9CEA700E1D8A3;
 			isa = PBXBuildFile;
@@ -485,6 +513,8 @@
 		};
 		32FFF54406E9CEBD00E1D8A3 = {
 			children = (
+				32C150890765ABE000A8BC25,
+				32C1508A0765ABE000A8BC25,
 				32FFF54506E9CEBD00E1D8A3,
 				32FFF54606E9CEBD00E1D8A3,
 				32FFF54706E9CEBD00E1D8A3,
@@ -941,6 +971,7 @@
 				32F3E5D407295CC5002E9EDE,
 				32F3E5D507295CC6002E9EDE,
 				32F3E5D607295CC7002E9EDE,
+				32C1508C0765ABE000A8BC25,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -979,6 +1010,7 @@
 				32F3E5D707295CCD002E9EDE,
 				32F3E5D807295CCF002E9EDE,
 				841E3BFD0736BF4400E3AD2C,
+				32C1508B0765ABE000A8BC25,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
