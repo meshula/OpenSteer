@@ -42,6 +42,7 @@
 #define OPENSTEER_PROXIMITY_H
 
 
+#include <algorithm>
 #include <vector>
 #include "OpenSteer/Vec3.h"
 #include "OpenSteer/lq.h"   // XXX temp?
