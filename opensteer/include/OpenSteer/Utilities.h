@@ -167,17 +167,10 @@ float inline scalarRandomWalk (const float initial,
 // ----------------------------------------------------------------------------
 
 
-float inline MAX (float a, float b)
+float inline square (float x)
 {
-    return (a > b) ? a : b;
+    return x * x;
 }
-
-
-// ----------------------------------------------------------------------------
-
-
-// xxx cwr 9-6-02 temporary to support old code
-#define SQ(x) ((x)*(x))
 
 
 // ----------------------------------------------------------------------------

@@ -1031,6 +1031,10 @@ findNextIntersectionWithSphere (SphericalObstacle& obs,
     // obs" but then it won't let me store a pointer to in inside the
     // PathIntersection
 
+    // This routine is based on the Paul Bourke's derivation in:
+    //   Intersection of a Line and a Sphere (or circle)
+    //   http://www.swin.edu.au/astronomy/pbourke/geometry/sphereline/
+
     float b, c, d, p, q, s;
     Vec3 lc;
 
@@ -1043,7 +1047,8 @@ findNextIntersectionWithSphere (SphericalObstacle& obs,
 
     // computer line-sphere intersection parameters
     b = -2 * lc.z;
-    c = SQ (lc.x) + SQ (lc.y) + SQ (lc.z) - SQ (obs.radius + radius());
+    c = square (lc.x) + square (lc.y) + square (lc.z) - 
+        square (obs.radius + radius());
     d = (b * b) - (4 * c);
 
     // when the path does not intersect the sphere

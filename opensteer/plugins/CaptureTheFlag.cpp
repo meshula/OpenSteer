@@ -271,7 +271,9 @@ void CtfEnemy::update (const float currentTime, const float elapsedTime)
     const float seekerToGoalDist = Vec3::distance (gHomeBaseCenter,
                                                    gSeeker->position());
     const float adjustedDistance = seekerToGoalDist - radius()-gHomeBaseRadius;
-    const float seekerToGoalTime = MAX (0, adjustedDistance) /gSeeker->speed();
+    const float seekerToGoalTime = ((adjustedDistance < 0 ) ?
+                                    0 :
+                                    (adjustedDistance/gSeeker->speed()));
     const float maxPredictionTime = seekerToGoalTime * 0.9;
 
     // determine steering (pursuit, obstacle avoidance, or braking)
