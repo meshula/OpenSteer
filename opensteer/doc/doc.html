@@ -2,27 +2,31 @@
  "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>OpenSteer Preliminary Documentation</title>
 <style type="text/css">
   td.graybox { padding: 2px 8px 2px 8px;
                background-color: #e0e0e0;
                vertical-align: top; }
-  span.sourcecode {font-family: monospace;}
+  span.sourcecode { font-family: monospace; }
   td.boxVM { vertical-align: middle;
              padding: 0 0 0 0;
-             background-color: #ffffff;}
+             color: black;
+             background-color: white; }
+  body     { color: black;
+             background-color: white; }
+  .nowrap  { white-space: nowrap; }
 </style>
-</head>
   <!-- I should define a span-level style for code (and one for pathnames,
        "vocabulary" words (like "scare quotes") -->
-
-<body bgcolor="#ffffff">
+</head>
+<body>
 
 <table border=0 cellspacing=0 cellpadding=0 width="100%">
 <tr>
 <td class=boxVM align=left>
 <small>
-May 5, 2003  <!-- CHANGE DATE AT BOTTOM OF FILE TOO -->
+May 28, 2003  <!-- CHANGE DATE AT BOTTOM OF FILE TOO -->
 <br>
 <small>
 Version 0.7
@@ -86,8 +90,9 @@ Table of Contents
 <br><a href="#UsingSteerTest"     >Using SteerTest</a>
 <br><a href="#SamplePlugIns"      >Sample PlugIns</a>
 <br><a href="#WritingPlugIns"     >Writing PlugIns</a>
-
 <br><a href="#SteeringLibrary"    >Steering Library</a>
+
+<br><a href="#Integrating"        >Integrating with Your Code</a>
 
 <br><a href="#InstallingOpenSteer">Installing OpenSteer</a>
 <br><a href="#KnownBugs"          >Known Bugs and Missing Features</a>
@@ -111,25 +116,24 @@ build <a href="http://www.red3d.com/cwr/steer/">steering behaviors</a>
 for autonomous characters in games and other kinds of multi-agent
 simulations.  These agents may represent characters (humans, animals,
 alien creatures), vehicles (cars, planes, spaceships) or other kinds
-of mobile agents.  OpenSteer is written in C++ and is largely
-self-contained, with the hope that it will be easy to port.</p>
+of mobile agents.  OpenSteer was developed on Linux and subsequently
+ported to Windows and Mac OS X.</p>
 
 <p>OpenSteer provides a toolkit of steering behaviors, defined in
 terms of an abstract mobile agent called a <i>vehicle. </i>Sample code
 is provided, including a simple vehicle implementation and examples of
 combining simple steering behaviors to produce more complex
 behavior. In order to allow flexible integration with existing game
-engines OpenSteer adds its functionality as
-<a href="http://citeseer.nj.nec.com/smaragdakis00mixinbased.html">
-mixin layers</a>.</p>
+engines OpenSteer can add its functionality by either layering or
+inheritance.  <small><a href="#Integrating">[see "Integrating with
+Your Code" below]</a></small></p>
 
 <p>In addition to the library, OpenSteer provides an OpenGL-based
 application called <b>SteerTest</b> which displays predefined
 demonstrations of steering behaviors.  The user can quickly prototype,
 visualize, annotate and debug new steering behaviors by writing a
 plug-in for SteerTest.  SteerTest is written in C++ and uses OpenGL
-graphics.  It should run on many platforms, but has only been tested
-on Linux.  All OpenGL calls are segregated in one module, in case you
+graphics.  All OpenGL calls are segregated in one module, in case you
 need to substitute another graphics API.
 
 <p>SteerTest is based on a <i>PlugIn</i> architecture: an empty
@@ -595,7 +599,6 @@ an update method:&nbsp;&nbsp;
 if&nbsp;(this&nbsp;==&nbsp;SteerTest::selectedVehicle)&nbsp;{...}</span>
 </p>
 </ul>
-</p>
 
 
 <p>
@@ -618,12 +621,14 @@ For the Real Truth always consult the source code.</i></p>
 <p>In current organization of OpenSteer, its main library of steering
 behaviors is contained in the class SteerLibraryMixin (defined in
 <b>SteerLibrary.h</b>).  A mixin is a class with templated superclass
--- it is used to add a set of methods to a given base class.  In this
-case SteerLibraryMixin adds steering functionality to a class which
-supports the AbstractVehicle interface.  For example, SimpleVehicle
-combines SteerLibraryMixin and several other utilities with
-AbstractVehicle.  As a result, SimpleVehicle has all of the methods
-defined in SteerLibraryMixin, which are listed below.</p>
+-- it is used to add a set of methods to a given base class.
+<small><a href="#Integrating">[see "Integrating with Your Code"
+below]</a></small>  In this case SteerLibraryMixin adds steering
+functionality to a class which supports the AbstractVehicle interface.
+For example, SimpleVehicle combines SteerLibraryMixin and several
+other utilities with AbstractVehicle.  As a result, SimpleVehicle has
+all of the methods defined in SteerLibraryMixin, which are listed
+below.</p>
 
 <p>Note that several of the steering behaviors will signal a zero
 vector value (0, 0, 0) to indicate "no steering is required at this
@@ -792,6 +797,56 @@ will be clipped to the vehicle's maxForce parameter.</p>
 <big>
 <b>
 <br>
+<a name="Integrating"></a>
+Integrating with Your Code
+</b>
+</big>
+</big>
+</p>
+
+
+<p><i>Note: this section is so preliminary that it is really just a
+placeholder...</i></p>
+
+<p>This section will eventually talk about the structure of
+OpenSteer's classes, and how they are designed to provide you with
+flexibility as you integrate OpenSteer with your existing code.  It
+will mention that if you were writing news code, you could always base
+your classes on OpenSteer's.  More typically you will already have an
+existing code base, a game engine or a procedural animation system,
+into which you want to integrate some of OpenSteer's facilities.</p>
+
+<p>OpenSteer's classes have been designed to allow you freedom to
+either inherit its functionality, or to layer its functionality on top
+of your existing classes.  The latter approach is supported by the
+concept of 
+
+<a href="http://citeseer.nj.nec.com/smaragdakis00mixinbased.html">
+mixin classes</a> (essentially a class with templated superclass)
+which allows its functionality to be "mixed in with" (or "layered on
+top of") your existing classes.  A similar effect can be obtained by
+multiple inheritance of your preexisting base classes and OpenSteer's
+classes, but most C++ programmers prefer to avoid multiple
+inheritance.  Many of OpenSteer's classes are defined in three parts:
+an abstract protocol (aka interface or pure virtual class:
+"AbstractLocalSpace"), an implementation expressed as a mixin
+("LocalSpaceMixin") and an instantiable class made by layering the
+mixin on top of the abstract protocol ("LocalSpace").  For more detail
+see <b>LocalSpace.h</b> and the discussion at the top of
+<b>SimpleVehicle.h</b></p>
+
+<p>Finally OpenSteer anticipates that it may be used in class
+hierarchies based on either the IS-A or the HAS-A architecture.  That
+is, you might want an agent in your game to be structured so that it
+IS-A OpenSteer Vehicle or you may want to structure it so that it HAS-A
+Vehicle as a component part.</p>
+
+
+<p>
+<big>
+<big>
+<b>
+<br>
 <a name="InstallingOpenSteer"></a>
 Installing OpenSteer
 </b>
@@ -799,26 +854,59 @@ Installing OpenSteer
 </big>
 </p>
 
-<p>More detail to come.  Under Linux, the gist of it is:</p>
 
+<p><i>Note: this section is preliminary and subject to change.
+OpenSteer uses two external libraries: OpenGL and GLUT, you may need
+to install them before you can build OpenSteer.</i></p>
+
+<p>You can download software at
+
+<a href="http://sourceforge.net/project/showfiles.php?group_id=77546">
+OpenSteer's file release page at SourceForge</a>.  OpenSteer 0.7 is
+released in source form only, as a zip archive called
+<b>OpenSteer_0_7_source.zip</b>.  In the future we hope to provide
+precompiled binary releases.  OpenSteer 0.7 includes a Makefile to
+build the system under Linux and related systems. In the future we
+hope to provide support for popular IDEs (Integrated Development
+Environments) such as ProjectBuilder and Visual C++.</p>
+
+<p>To use an IDE: you will need to expand the contents of the zip
+archive, create a new "project" (or whatever it is called on your IDE)
+then import OpenSteer's files into the project.  You will probably
+need to specify where to find header files and where to find the
+external libraries OpenGL and GLUT.  OpenSteer 0.7 have been
+successfully built on Windows using Visual C++ (versions 6 and 7 (with
+warnings)) and on Mac OS X using ProjectBuilder.  To install, build
+and run under Linux:</p>
+
+<table border=0 cellspacing=3 cellpadding=0 width="90%" align=center>
+<tr>
+<td class=graybox>
 <ol>
-
-<li>download a recent version from
-<a href="http://sourceforge.net/projects/opensteer/">SourceForge</a>
-(as an rpm or tar)
-
-<li>install rpm, or expand tar, to create an <b>opensteer</b> directory
-
-<li><b>cd</b> to the <b>opensteer</b>
-
-<li>run <b>make</b> to build an executable
-
-<li>run <b>steertest</b> to launch the application (you might need to
-say <b>./steertest</b>)
-
+<li><a href="http://sourceforge.net/project/showfiles.php?group_id=77546">
+    download</a> an OpenSteer source release as a zip archive
+<li>expand the zip file to create an <b>opensteer</b> directory: &nbsp;
+    <span class=nowrap><b>unzip OpenSteer_0_7_source</b></span>
+<li>change to that directory: &nbsp;
+    <span class=nowrap><b>cd opensteer</b></span>
+<li>build an executable: &nbsp; <b>make</b>
+<li>launch the application: &nbsp; <b>steertest</b> &nbsp;
+    (you might need to say <b>./steertest</b>)
 </ol>
+</td>
+</tr>
+</table>
 
-<p>Directory structure of OpenSteer:</p>
+
+<p>Another way to obtain the source code is to "checkout" a copy from
+<a href="http://sourceforge.net/cvs/?group_id=77546">OpenSteer's CVS
+repository at SourceForge</a>.  This allows access to the current
+development code, and <a href="http://www.cvshome.org/">CVS</a>
+provides other services helpful to developers working on OpenSteer.
+It is also possible to <a
+href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/opensteer/">browse
+the CVS repository</a> over the web.  This is the directory structure
+of OpenSteer:</p>
 
 
 <table border=0 cellspacing=3 cellpadding=0 width="90%" align=center>
@@ -839,7 +927,6 @@ say <b>./steertest</b>)
 <td class=graybox>source for supplied SteerTest PlugIns</td>
 </tr>
 </table>
-
 
 
 <p>
@@ -901,6 +988,17 @@ of behaviors cannot be cleanly separated from the behaviors
 themselves.</p>
 
 <li><p>One ought to be able to add a PlugIn to SteerTest at runtime.</p>
+
+<li><p>In the Boid demo, there is no constraint on roll.  The boids
+end up at an arbitrary rotation about their forward axis.  They should
+keep their UP up and bank around turns.  They should have a preference
+for level flight.</p>
+
+<li><p>In the Pedestrian demo, there is a problem at one end (inside
+the loop) of the path: path following gets briefly confused.</p>
+
+<li><p>Compiling OpenSteer on GCC requires version 3 or later.  (I'm
+not sure if this is a "bug" to be fixed or just a fact to be noted.)</p>
 
 <!-- <li><p>Sources and sinks.</p> -->
 
@@ -968,7 +1066,7 @@ which includes a Steering Working Group</p>
 comments or suggestions.
 <br>
 <br>
-Last update: May 5, 2003  <!-- CHANGE DATE AT TOP OF FILE TOO -->
+Last update: May 28, 2003  <!-- CHANGE DATE AT TOP OF FILE TOO -->
 <br>
 </p>
 
