@@ -77,8 +77,6 @@ Clock::Clock (void)
     // the desired rate of frames per second,
     // or zero to mean "as fast as possible"
     targetFPS = 0;
-    // targetFPS = 30;
-    // targetFPS = 24;
 
     // real "wall clock" time since launch
     totalRealTime = 0;
@@ -126,7 +124,7 @@ Clock::Clock (void)
 
 void Clock::update (void)
 {
-    // wait for next frame time (when required (when targetFPS>0))
+    // wait for next frame time (when targetFPS>0)
     frameRateSync ();
 
     // save previous real time to measure elapsed time
@@ -144,13 +142,25 @@ void Clock::update (void)
     // save previous simulation time to measure elapsed time
     const float previousSimulationTime = totalSimulationTime;
 
+    // update total simulation time
+    if (targetFPS < 0)
+    {
+        // for "animation mode" use fixed frame time, ignore real time
+        const float frameDuration = -1.0f / targetFPS;
+        totalSimulationTime += paused ? newAdvanceTime : frameDuration;
+        if (!paused) newAdvanceTime += frameDuration - elapsedRealTime;
+    }
+    else
+    {
+        // new simulation time is total run time minus time spent paused
+        totalSimulationTime = (totalRealTime
+                               + totalAdvanceTime
+                               - totalPausedTime);
+    }
+
+
     // update total "manual advance" time
     totalAdvanceTime += newAdvanceTime;
-
-    // new simulation time is total run time minus time spent paused
-    totalSimulationTime = (totalRealTime
-                           + totalAdvanceTime
-                           - totalPausedTime);
 
     // how much time has elapsed since the last simulation step?
     elapsedSimulationTime = (paused ?
@@ -172,7 +182,8 @@ void Clock::update (void)
 
 void Clock::frameRateSync (void)
 {
-    // when we are have a fixed target update rate (vs as-fast-as-possible)
+    // when we are have a fixed target update rate (versus as-fast-as-possible
+    // (targetFPS==0) or "animation mode" (targetFPS<0))
     if (targetFPS > 0)
     {
         // find next (real time) frame start time

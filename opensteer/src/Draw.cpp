@@ -311,12 +311,13 @@ void writePhaseTimerReportToStream (float phaseTimer,
     stream << " (";
 
     // is there a "fixed frame rate target"?
-    if (SteerTest::clock.targetFPS > 0)
+    const int fps = absXXX (SteerTest::clock.targetFPS);
+    if (fps > 0)
     {
         // quantify time as a percentage of frame time
-        stream << ((100 * phaseTimer) / (1.0f / SteerTest::clock.targetFPS));
+        stream << ((100 * phaseTimer) / (1.0f / fps));
         stream << "% of 1/";
-        stream << SteerTest::clock.targetFPS;
+        stream << fps;
         stream << "sec)\n";
     }
     else
@@ -355,49 +356,75 @@ void drawDisplayFPS (void)
     }
     else
     {
-        // is there a "fixed frame rate target" or is it as-fast-as-possible?
-        const bool targetFrameRate = SteerTest::clock.targetFPS > 0;
+        // keep track of font metrics and start of next line
+        const int lh = 16; // xxx line height
+        const int cw = 9; // xxx character width
+        Vec3 screenLocation (10, 10, 0);
 
         // "smooth" instantaneous FPS rate: start at current fps the first
         // time through, then blend fps into a running average thereafter
         blendIntoAccumulator (smoothRate, fps, gSmoothedFPS);
 
-        // convert smoothed FPS value into labeled character string
-        std::ostringstream fpsStr;
-        fpsStr << "fps: " << (int) round (gSmoothedFPS);
-        if (SteerTest::clock.paused) fpsStr << " Paused";
-        fpsStr << std::ends;
+        // target frame rate
+        const int targetFPS = absXXX (SteerTest::clock.targetFPS);
 
-        // draw the string in white at the lower left corner of the window
-        const int lh = 16; // xxx
-        const Vec3 screenLocation1 (10, 10 + lh, 0);
-        draw2dTextAt2dLocation (fpsStr, screenLocation1, gWhite);
-
-        // add "usage" message if fixed target frame rate is specified
-        if (targetFrameRate)
+        // describe clock mode and frame rate statistics
+        screenLocation.y += lh;
+        std::ostringstream fooStr;
+        fooStr << "Clock: ";
+        if (SteerTest::clock.targetFPS < 0)
         {
-            // run time per frame over target frame time (as a percentage)
-            const float usage =
-                ((100 * SteerTest::clock.elapsedNonWaitRealTime) /
-                 (1.0f / SteerTest::clock.targetFPS));
-
-            // blend new usage value into running average
-            blendIntoAccumulator (smoothRate, usage, gSmoothedUsage);
-
-            // create usage description character string
-            std::ostringstream usageStr;
-            usageStr << std::setprecision (0);
-            usageStr << std::setiosflags (std::ios::fixed);
-            usageStr << gSmoothedUsage << "% usage of 1/";
-            usageStr << SteerTest::clock.targetFPS << " time step";
-            usageStr << std::ends;
-
-            // display message in lower left corner of window
-            // (draw in red if the instantaneous usage is 100% or more)
-            const Vec3 screenLocation2 (10, 10 + 2*lh, 0);
-            const Vec3 color = (usage >= 100) ? gRed : gGray60;
-            draw2dTextAt2dLocation (usageStr, screenLocation2, color);
+            fooStr << "animation mode (";
+            fooStr << targetFPS << " fps,";
+            fooStr << " display "<< round (gSmoothedFPS) << " fps, ";
+            const float ratio = gSmoothedFPS / targetFPS;
+            fooStr << (int) (100 * ratio) << "%)";
         }
+        else
+        {
+            fooStr << "real-time mode, ";
+            if (SteerTest::clock.targetFPS == 0)
+            {
+                fooStr << "variable frame rate (";
+                fooStr << round (gSmoothedFPS) << " fps)";
+            }
+            else
+            {
+                fooStr << "fixed frame rate (target: " << targetFPS;
+                fooStr << " actual: " << round (gSmoothedFPS) << ", ";
+
+                Vec3 sp;
+                sp = screenLocation;
+                sp.x += cw * (int) fooStr.tellp ();
+
+                // run time per frame over target frame time (as a percentage)
+                const float usage =
+                    ((100 * SteerTest::clock.elapsedNonWaitRealTime) /
+                     (1.0f / targetFPS));
+
+                // blend new usage value into running average
+                blendIntoAccumulator (smoothRate, usage, gSmoothedUsage);
+
+                // create usage description character string
+                std::ostringstream xxxStr;
+                xxxStr << std::setprecision (0);
+                xxxStr << std::setiosflags (std::ios::fixed);
+                xxxStr << "usage: " << gSmoothedUsage << "%";
+                xxxStr << std::ends;
+
+                const int usageLength = ((int) xxxStr.tellp ()) - 1;
+                for (int i = 0; i < usageLength; i++) fooStr << " ";
+                fooStr << ")";
+
+                // display message in lower left corner of window
+                // (draw in red if the instantaneous usage is 100% or more)
+                const Vec3 color = (usage >= 100) ? gRed : gWhite;
+                draw2dTextAt2dLocation (xxxStr, sp, color);
+            }
+        }
+        fooStr << std::ends;
+        draw2dTextAt2dLocation (fooStr, screenLocation, gWhite);
+
 
         // get smoothed phase timer information
         const float ptd = SteerTest::phaseTimerDraw();
@@ -408,6 +435,7 @@ void drawDisplayFPS (void)
         blendIntoAccumulator (smoothRate, pto, gSmoothedTimerOverhead);
 
         // display phase timer information
+        screenLocation.y += lh * 4;
         std::ostringstream timerStr;
         timerStr << "update: ";
         writePhaseTimerReportToStream (gSmoothedTimerUpdate, timerStr);
@@ -416,8 +444,7 @@ void drawDisplayFPS (void)
         timerStr << "other:  ";
         writePhaseTimerReportToStream (gSmoothedTimerOverhead, timerStr);
         timerStr << std::ends;
-        const Vec3 screenLocation3 (10, lh * 7, 0);
-        draw2dTextAt2dLocation (timerStr, screenLocation3, gGreen);
+        draw2dTextAt2dLocation (timerStr, screenLocation, gGreen);
     }
 }
 
@@ -429,9 +456,9 @@ void drawDisplayFPS (void)
 int selectNextPresetFrameRate (void)
 {
     // cycle through this list of frame rate presets on each subsequent call
-    int frameRatePresets[] = {0, 24, 60};
+    int frameRatePresets[] = {0, 24, 60, -60};
     static int frameRatePresetIndex = 0;
-    frameRatePresetIndex = (frameRatePresetIndex + 1) % 3;
+    frameRatePresetIndex = (frameRatePresetIndex + 1) % 4;
 
     // set SteerTest's clock's target frame rate, return that value
     return SteerTest::clock.targetFPS = frameRatePresets[frameRatePresetIndex];
@@ -554,8 +581,8 @@ void specialFunc (int key, int x, int y)
 
     case GLUT_KEY_RIGHT:
         SteerTest::clock.paused = true;
-        const int targetFPS = SteerTest::clock.targetFPS;
-        const float FPS = (targetFPS > 0) ? targetFPS : gSmoothedFPS;
+        const int targetFPS = absXXX (SteerTest::clock.targetFPS);
+        const float FPS = ((targetFPS == 0) ? gSmoothedFPS : targetFPS);
         const float frameTime = 1 / FPS;
         SteerTest::clock.advanceSimulationTime (frameTime);
         message << "single step forward (frame time: "
