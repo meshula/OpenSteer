@@ -223,14 +223,6 @@ void SteerTest::openSelectedPlugIn (void)
     camera.reset ();
     selectedVehicle = NULL;
     selectedPlugIn->open ();
-    if (selectedVehicle == NULL)
-    {
-        std::ostringstream message;
-        message << "SteerTest::selectedVehicle was NULL after calling ";
-        message << nameOfSelectedPlugIn ();
-        message << "'s open method (in SteerTest::openSelectedPlugIn)";
-        printWarning (message);
-    }
 }
 
 
@@ -246,6 +238,13 @@ void SteerTest::updateSelectedPlugIn (const float currentTime,
 
     // service queued reset request, if any
     doDelayedResetPlugInXXX ();
+
+    // if no vehicle is selected, and some exist, select the first one
+    if (selectedVehicle == NULL)
+    {
+        const AVGroup& vehicles = allVehiclesOfSelectedPlugIn();
+        if (vehicles.size() > 0) selectedVehicle = vehicles.front();
+    }
 
     // invoke selected PlugIn's Update method
     selectedPlugIn->update (currentTime, elapsedTime);
@@ -472,9 +471,12 @@ void SteerTest::position3dCamera (AbstractVehicle& selected)
 {
     selectedVehicle = &selected;
 
-    const Vec3 behind = selected.forward() * -cameraTargetDistance;
-    camera.setPosition (selected.position() + behind);
-    camera.target = selected.position();
+    if (&selected)
+    {
+        const Vec3 behind = selected.forward() * -cameraTargetDistance;
+        camera.setPosition (selected.position() + behind);
+        camera.target = selected.position();
+    }
 }
 
 
