@@ -30,14 +30,28 @@
 //
 // LocalSpace: a local coordinate system for 3d space
 //
-// These are comparable to a "3x4" transformation matrix, but the 3x3
-// portion is constrained to always be a pure rotation (no shear or scale),
-// the basis vectors are all mutually perpendicular and of unit length
+// Provide functionality such as transforming from local space to global
+// space and vice versa.  Also regenerates a valid space from a perturbed
+// "forward vector" which is the basis of abnstract vehicle turning.
+//
+// These are comparable to a 4x4 homogeneous transformation matrix where the
+// 3x3 (R) portion is constrained to be a pure rotation (no shear or scale).
+// The rows of the 3x3 R matrix are the basis vectors of the space.  They are
+// all constrained to be mutually perpendicular and of unit length.  The top
+// ("x") row is called "side", the middle ("y") row is called "up" and the
+// bottom ("z") row is called forward.  The translation vector is called
+// "position".  Finally the "homogeneous column" is always [0 0 0 1].
+//
+//     [ R R R  0 ]      [ Sx Sy Sz  0 ]
+//     [ R R R  0 ]      [ Ux Uy Uz  0 ]
+//     [ R R R  0 ]  ->  [ Fx Fy Fz  0 ]
+//     [          ]      [             ]
+//     [ T T T  1 ]      [ Tx Ty Tz  1 ]
 //
 // This file defines three classes:
 //   AbstractLocalSpace:  pure virtual interface
 //   LocalSpaceMixin:     mixin to layer LocalSpace functionality on any base
-//   LocalSpace:          a concrete object (can be "new-ed")
+//   LocalSpace:          a concrete object (can be instantiated)
 //
 // 06-05-02 cwr: created 
 //
@@ -69,6 +83,9 @@ public:
     virtual Vec3 position (void) const = 0;
     virtual Vec3 setPosition (Vec3 p) = 0;
 
+    // use right-(or left-)handed coordinate space
+    virtual bool rightHanded (void) const = 0;
+
     // reset transform to identity
     virtual void resetLocalSpace (void) = 0;
 
@@ -97,6 +114,10 @@ public:
     // for supplying both a new forward and and new up
     virtual void regenerateOrthonormalBasis (const Vec3& newForward,
                                              const Vec3& newUp) = 0;
+
+    // rotate 90 degrees in the direction implied by rightHanded()
+    virtual Vec3 localRotateForwardToSide (const Vec3& v) const = 0;
+    virtual Vec3 globalRotateForwardToSide (const Vec3& globalForward) const=0;
 };
 
 
@@ -137,16 +158,11 @@ public:
 
 
     // ------------------------------------------------------------------------
-    // global compile-time switch:
-    // does LocalSpace use a left- or right-handed coordinate system?
-    //
-    // XXX grumble, grumble: MS VC6 apparently cannot handle initialized
-    // XXX static const member variables.  So I will replace this with a
-    // XXX member function
+    // Global compile-time switch to control handedness/chirality: should
+    // LocalSpace use a left- or right-handed coordinate system?  This can be
+    // overloaded in derived types (e.g. vehicles) to change handedness.
 
-
-    //static const bool rightHanded = true;
-    static bool rightHanded (void) {return true;}
+    bool rightHanded (void) const {return true;}
 
 
     // ------------------------------------------------------------------------
@@ -257,7 +273,10 @@ public:
     void setUnitSideFromForwardAndUp (void)
     {
         // derive new unit side basis vector from forward and up
-        _side.cross (_forward, _up);
+        if (rightHanded())
+            _side.cross (_forward, _up);
+        else
+            _side.cross (_up, _forward);
         _side = _side.normalize ();
     }
 
@@ -277,15 +296,20 @@ public:
         // derive new Up basis vector from new Side and new Forward
         // (should have unit length since Side and Forward are
         // perpendicular and unit length)
-        _up.cross (_side, _forward);
+        if (rightHanded())
+            _up.cross (_side, _forward);
+        else
+            _up.cross (_forward, _side);
     }
 
-    // for when the new forward is NOT of unit length
+
+    // for when the new forward is NOT know to have unit length
 
     void regenerateOrthonormalBasis (const Vec3& newForward)
     {
         regenerateOrthonormalBasisUF (newForward.normalize());
     }
+
 
     // for supplying both a new forward and and new up
 
@@ -302,7 +326,7 @@ public:
     // "forward" (+Z) direction to the "side" (+/-X) direction
 
 
-    static Vec3 localRotateForwardToSide (const Vec3& v)
+    Vec3 localRotateForwardToSide (const Vec3& v) const
     {
         return Vec3 (rightHanded () ? -v.z : +v.z,
                      v.y,
