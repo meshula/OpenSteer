@@ -114,13 +114,13 @@ LIBS		+= glut GLU GL
 
 
 # Additional locations for header files
-INCDIRS		+= include include/OpenSteer
+INCDIRS		+= ../include
 
 # Additional locations for library files
 LIBDIRS		+= 
 
 # Additional locations for source files
-SRCDIRS		= src plugins
+SRCDIRS		= ../src ../plugins
 
 # Object files and the target will be placed in this directory with an
 # underscore and the buildname appended (e.g., for the "debug" build: objs_debug/)
