@@ -78,7 +78,7 @@ copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)\bin&quot;
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
 				DebugInformationFormat="3"/>
@@ -89,7 +89,7 @@ copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)\bin&quot;
 				AdditionalDependencies="opensteer.lib"
 				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)\lib&quot;;$(VENDOR_ROOT)\glut-3.7b\lib"
 				GenerateDebugInformation="TRUE"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -131,6 +131,12 @@ copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)\bin&quot;
 			</File>
 			<File
 				RelativePath="..\src\OpenSteerDemo.cpp">
+			</File>
+			<File
+				RelativePath="..\include\OpenSteer\OpenSteerDemo.h">
+			</File>
+			<File
+				RelativePath="..\src\OpenSteerDemoGL.cpp">
 			</File>
 		</Filter>
 		<Filter

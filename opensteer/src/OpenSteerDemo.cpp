@@ -44,7 +44,18 @@
 #include <algorithm>
 #include <sstream>
 #include "OpenSteer/OpenSteerDemo.h"
+#include "OpenSteer/Annotation.h"
 
+// Include headers for OpenGL (gl.h), OpenGL Utility Library (glu.h) and
+// OpenGL Utility Toolkit (glut.h).
+//
+// XXX In Mac OS X these headers are located in a different directory.
+// XXX Need to revisit conditionalization on operating system.
+#if __APPLE__ && __MACH__
+#include <GLUT/glut.h>   // for Mac OS X
+#else
+#include <GL/glut.h>     // for Linux and Windows
+#endif
 
 // ----------------------------------------------------------------------------
 // keeps track of both "real time" and "simulation time"
@@ -87,7 +98,7 @@ int OpenSteer::OpenSteerDemo::phase = OpenSteer::OpenSteerDemo::overheadPhase;
 // graphical annotation: master on/off switch
 
 
-bool OpenSteer::OpenSteerDemo::enableAnnotation = true;
+bool OpenSteer::enableAnnotation = true;
 
 
 // ----------------------------------------------------------------------------
@@ -436,7 +447,7 @@ OpenSteer::AbstractVehicle*
 OpenSteer::OpenSteerDemo::findVehicleNearestScreenPosition (int x, int y)
 {
     // find the direction from the camera position to the given pixel
-    const Vec3 direction = directionFromCameraToScreenPosition (x, y);
+    const Vec3 direction = directionFromCameraToScreenPosition (x, y, glutGet (GLUT_WINDOW_HEIGHT));
 
     // iterate over all vehicles to find the one whose center is nearest the
     // "eye-mouse" selection line
@@ -738,10 +749,17 @@ int OpenSteer::OpenSteerDemo::phaseStackIndex = 0;
 const int OpenSteer::OpenSteerDemo::phaseStackSize = 5;
 int OpenSteer::OpenSteerDemo::phaseStack [OpenSteer::OpenSteerDemo::phaseStackSize];
 
+namespace OpenSteer {
+bool updatePhaseActive = false;
+bool drawPhaseActive = false;
+}
 
 void 
 OpenSteer::OpenSteerDemo::pushPhase (const int newPhase)
 {
+    updatePhaseActive = newPhase == OpenSteer::OpenSteerDemo::updatePhase;
+    drawPhaseActive = newPhase == OpenSteer::OpenSteerDemo::drawPhase;
+
     // update timer for current (old) phase: add in time since last switch
     updatePhaseTimers ();
 
@@ -764,6 +782,8 @@ OpenSteer::OpenSteerDemo::popPhase (void)
 
     // restore old phase
     phase = phaseStack[--phaseStackIndex];
+    updatePhaseActive = phase == OpenSteer::OpenSteerDemo::updatePhase;
+    drawPhaseActive = phase == OpenSteer::OpenSteerDemo::drawPhase;
 }
 
 

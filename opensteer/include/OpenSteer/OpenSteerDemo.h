@@ -1,3 +1,5 @@
+
+
 // ----------------------------------------------------------------------------
 //
 //
@@ -229,13 +231,6 @@ namespace OpenSteer {
                                                   const float radiusMultiplier,
                                                   const Vec3 color);
 
-        // graphical annotation: master on/off switch
-        static bool annotationIsOn (void) {return enableAnnotation;}
-        static void setAnnotationOn (void) {enableAnnotation = true;}
-        static void setAnnotationOff (void) {enableAnnotation = false;}
-        static bool toggleAnnotationState (void)
-            {return (enableAnnotation = !enableAnnotation);}
-
         // ----------------------------------------------------------- console text
 
         // print a line on the console with "OpenSteerDemo: " then the given ending
@@ -252,8 +247,6 @@ namespace OpenSteer {
         // ---------------------------------------------------------------- private
 
     private:
-        static bool enableAnnotation;
-
         static int phase;
         static int phaseStack[];
         static int phaseStackIndex;
@@ -274,6 +267,56 @@ namespace OpenSteer {
         static const int updatePhase;
         static const int overheadPhase;
     };
+
+    // ----------------------------------------------------------------------------
+    // do all initialization related to graphics
+
+
+    void initializeGraphics (int argc, char **argv);
+
+
+    // ----------------------------------------------------------------------------
+    // run graphics event loop
+
+
+    void runGraphics (void);
+
+
+    // ----------------------------------------------------------------------------
+    // accessors for GLUT's window dimensions
+
+
+    float drawGetWindowHeight (void);
+    float drawGetWindowWidth (void);
+
+    
+    // ----------------------------------------------------------------------------
+    // draw 2d lines in screen space: x and y are the relevant coordinates
+
+
+    void draw2dLine (const Vec3& startPoint,
+                     const Vec3& endPoint,
+                     const Vec3& color);
+
+    // ------------------------------------------------------------------------
+
+
+    void draw2dTextAt3dLocation (const char& text,
+                                 const Vec3& location,
+                                 const Vec3& color);
+
+    void draw2dTextAt3dLocation (const std::ostringstream& text,
+                                 const Vec3& location,
+                                 const Vec3& color);
+
+    void draw2dTextAt2dLocation (const char& text,
+                                 const Vec3 location,
+                                 const Vec3 color);
+
+    void draw2dTextAt2dLocation (const std::ostringstream& text,
+                                 const Vec3 location,
+                                 const Vec3 color);
+
 
 } // namespace OpenSteer
     

@@ -97,13 +97,28 @@ namespace OpenSteer {
 
     void warnIfInUpdatePhase2( const char* name);
 
+    // hosting application must provide this bool. It's true when updating and not drawing,
+    // false otherwise.
+    extern bool updatePhaseActive;
+
     inline void warnIfInUpdatePhase (const char* name)
     {
-        if (OpenSteerDemo::phaseIsUpdate())
+        if (updatePhaseActive)
         {
             warnIfInUpdatePhase2 (name);
         }
     }
+
+
+    typedef void (*drawTriangleRoutine) (const Vec3& a,
+                                         const Vec3& b,
+                                         const Vec3& c,
+                                         const Vec3& color);
+
+    void draw2dLine (const Vec3& startPoint,
+                    const Vec3& endPoint,
+                    const Vec3& color,
+                    float w, float h);
 
 
     // ------------------------------------------------------------------------
@@ -261,9 +276,10 @@ namespace OpenSteer {
     // ------------------------------------------------------------------------
     // draw a reticle at the center of the window.  Currently it is small
     // crosshair with a gap at the center, drawn in white with black borders
+    // width and height of screen are passed in
 
 
-    void drawReticle (void);
+    void drawReticle (float w, float h);
 
 
     // ------------------------------------------------------------------------
@@ -275,25 +291,9 @@ namespace OpenSteer {
     void drawBasic3dSphericalVehicle (const AbstractVehicle& bv,
                                       const Vec3& color);
 
+    void drawBasic3dSphericalVehicle (drawTriangleRoutine, const AbstractVehicle& bv,
+                                      const Vec3& color);
 
-    // ------------------------------------------------------------------------
-
-
-    void draw2dTextAt3dLocation (const char& text,
-                                 const Vec3& location,
-                                 const Vec3& color);
-
-    void draw2dTextAt3dLocation (const std::ostringstream& text,
-                                 const Vec3& location,
-                                 const Vec3& color);
-
-    void draw2dTextAt2dLocation (const char& text,
-                                 const Vec3 location,
-                                 const Vec3 color);
-
-    void draw2dTextAt2dLocation (const std::ostringstream& text,
-                                 const Vec3 location,
-                                 const Vec3 color);
 
     // ------------------------------------------------------------------------
     // emit an OpenGL vertex based on a Vec3
@@ -309,15 +309,6 @@ namespace OpenSteer {
     void drawLine (const Vec3& startPoint,
                    const Vec3& endPoint,
                    const Vec3& color);
-
-
-    // ----------------------------------------------------------------------------
-    // draw 2d lines in screen space: x and y are the relevant coordinates
-
-
-    void draw2dLine (const Vec3& startPoint,
-                     const Vec3& endPoint,
-                     const Vec3& color);
 
 
     // ----------------------------------------------------------------------------
@@ -396,34 +387,13 @@ namespace OpenSteer {
     void checkForDrawError (const char * locationDescription);
 
 
-    // ----------------------------------------------------------------------------
-    // do all initialization related to graphics
-
-
-    void initializeGraphics (int argc, char **argv);
-
-
-    // ----------------------------------------------------------------------------
-    // run graphics event loop
-
-
-    void runGraphics (void);
-
-
-    // ----------------------------------------------------------------------------
-    // accessors for GLUT's window dimensions
-
-
-    float drawGetWindowHeight (void);
-    float drawGetWindowWidth (void);
-
 
     // ----------------------------------------------------------------------------
     // return a normalized direction vector pointing from the camera towards a
     // given point on the screen: the ray that would be traced for that pixel
 
 
-    Vec3 directionFromCameraToScreenPosition (int x, int y);
+    Vec3 directionFromCameraToScreenPosition (int x, int y, int h);
 
 
 

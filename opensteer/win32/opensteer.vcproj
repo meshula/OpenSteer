@@ -73,7 +73,8 @@ copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)\lib&quot;
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(IntDir)/opensteer.pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
 				DebugInformationFormat="3"/>

@@ -41,7 +41,7 @@
 
 
 #include "OpenSteer/Camera.h"
-#include "OpenSteer/OpenSteerDemo.h"
+#include "OpenSteer/Draw.h"
 
 
 // ----------------------------------------------------------------------------

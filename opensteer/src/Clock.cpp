@@ -49,7 +49,6 @@
 
 
 #include "OpenSteer/Clock.h"
-#include "OpenSteer/OpenSteerDemo.h"
 
 
 // ----------------------------------------------------------------------------
@@ -239,8 +238,10 @@ OpenSteer::Clock::advanceSimulationTimeOneFrame (void)
 void 
 OpenSteer::Clock::advanceSimulationTime (const float seconds)
 {
-    if (seconds < 0)
-        OpenSteerDemo::errorExit ("negative arg to advanceSimulationTime.");
+    if (seconds < 0) {
+        /// @todo - throw? how to handle error conditions? Not by crashing an app!
+        std::cerr << "negative arg to advanceSimulationTime - results will not be valid";
+    }
     else
         newAdvanceTime += seconds;
 }
@@ -259,7 +260,8 @@ namespace {
     float 
     clockErrorExit (void)
     {
-        OpenSteer::OpenSteerDemo::errorExit ("Problem reading system clock.\n");
+        /// @todo - throw? how to handle error conditions? Not by crashing an app!
+        std::cerr << "Problem reading system clock - results will not be valid";
         return 0.0f;
     }
 

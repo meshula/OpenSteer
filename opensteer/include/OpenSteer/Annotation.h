@@ -45,15 +45,22 @@
 #ifndef OPENSTEER_ANNOTATION_H
 #define OPENSTEER_ANNOTATION_H
 
-
-#include "OpenSteer/OpenSteerDemo.h"
-
+#include <OpenSteer/Draw.h>
+#include <OpenSteer/Vec3.h>
 
 // ----------------------------------------------------------------------------
 
 
 namespace OpenSteer {
 
+    extern bool enableAnnotation;
+    extern bool drawPhaseActive;
+
+    // graphical annotation: master on/off switch
+    inline bool annotationIsOn (void) {return enableAnnotation;}
+    inline void setAnnotationOn (void) {enableAnnotation = true;}
+    inline void setAnnotationOff (void) {enableAnnotation = false;}
+    inline bool toggleAnnotationState (void) {return (enableAnnotation = !enableAnnotation);}
 
     template <class Super>
     class AnnotationMixin : public Super
@@ -319,7 +326,7 @@ void
 OpenSteer::AnnotationMixin<Super>::drawTrail (const Vec3& trailColor,
                                               const Vec3& tickColor)
 {
-    if (OpenSteerDemo::annotationIsOn())
+    if (enableAnnotation)
     {
         int index = trailIndex;
         for (int j = 0; j < trailVertexCount; j++)
@@ -375,9 +382,9 @@ OpenSteer::AnnotationMixin<Super>::annotationLine (const Vec3& startPoint,
                                                    const Vec3& endPoint,
                                                    const Vec3& color) const
 {
-    if (OpenSteerDemo::annotationIsOn())
+    if (enableAnnotation)
     {
-        if (OpenSteerDemo::phaseIsDraw())
+        if (drawPhaseActive)
         {
             drawLine (startPoint, endPoint, color);
         }
@@ -407,9 +414,9 @@ OpenSteer::AnnotationMixin<Super>::annotationCircleOrDisk (const float radius,
                                                            const bool filled,
                                                            const bool in3d) const
 {
-    if (OpenSteerDemo::annotationIsOn())
+    if (enableAnnotation)
     {
-        if (OpenSteerDemo::phaseIsDraw())
+        if (drawPhaseActive)
         {
             drawCircleOrDisk (radius, axis, center, color,
                               segments, filled, in3d);

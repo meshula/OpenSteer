@@ -289,7 +289,7 @@ public:
         const Vec3 color = headOn ? red : green;
         const char* string = headOn ? "OUCH!" : "pardon me";
         const Vec3 location = position() + Vec3 (0, 0.5f, 0);
-        if (OpenSteerDemo::annotationIsOn())
+        if (OpenSteer::annotationIsOn())
             draw2dTextAt3dLocation (*string, location, color);
     }
 
@@ -490,7 +490,7 @@ public:
         serialNumberAnnotationUtility (selected, nearMouse);
 
         // textual annotation for selected Pedestrian
-        if (OpenSteerDemo::selectedVehicle && OpenSteerDemo::annotationIsOn())
+        if (OpenSteerDemo::selectedVehicle && OpenSteer::annotationIsOn())
         {
             const Vec3 color (0.8f, 0.8f, 1.0f);
             const Vec3 textOffset (0, 0.25f, 0);
@@ -537,7 +537,7 @@ public:
     {
         // display a Pedestrian's serial number as a text label near its
         // screen position when it is near the selected vehicle or mouse.
-        if (&selected && &nearMouse && OpenSteerDemo::annotationIsOn())
+        if (&selected && &nearMouse && OpenSteer::annotationIsOn())
         {
             for (iterator i = crowd.begin(); i != crowd.end(); i++)
             {
