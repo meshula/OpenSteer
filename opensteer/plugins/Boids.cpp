@@ -59,20 +59,12 @@ public:
     // type for a flock: an STL vector of Boid pointers
     typedef std::vector<Boid*> groupType;
 
-    // per-boid reference to its flock
-    const groupType& flock;
-
-    // a pointer to this boid's interface object for the proximity database
-    ProximityToken* proximityToken;
-
-    // constructor: argument is a reference to a flock container which is
-    // still being filled with the newly constructed member of the flock (that
-    // container is now redundant since the ProximityDatabase is holding the
-    // relvant information, the flock argument needs to be removed.)
-    Boid (const groupType& FLOCK, ProximityDatabase& pd) : flock (FLOCK)
+    // constructor
+    Boid (ProximityDatabase& pd)
     {
         // allocate a token for this boid in the proximity database
-        proximityToken = pd.allocateToken (this);
+        proximityToken = NULL;
+        newPD (pd);
 
         // reset all boid state
         reset ();
@@ -196,8 +188,21 @@ public:
         regenerateLocalSpaceForBanking (newVelocity, elapsedTime);
     }
 
+    // switch to new proximity database -- just for demo purposes
+    void newPD (ProximityDatabase& pd)
+    {
+        // delete this boid's token in the old proximity database
+        delete proximityToken;
+
+        // allocate a token for this boid in the proximity database
+        proximityToken = pd.allocateToken (this);
+    }
+
+    // a pointer to this boid's interface object for the proximity database
+    ProximityToken* proximityToken;
+
     // allocate one and share amoung instances just to save memory usage
-    // (change to per-instance allocation to be more mp-safe)
+    // (change to per-instance allocation to be more MP-safe)
     static AVGroup neighbors;
 
     static float worldRadius;
@@ -205,7 +210,7 @@ public:
 
 
 AVGroup Boid::neighbors;
-float Boid::worldRadius = 50;
+float Boid::worldRadius = 50.0f;
 
 
 // ----------------------------------------------------------------------------
@@ -225,21 +230,14 @@ public:
     void open (void)
     {
         // make the database used to accelerate proximity queries
-        const Vec3 center;
-        const int div = 10;
-        const Vec3 divisions (div, div, div);
-        const float diameter = Boid::worldRadius * 1.1 * 2;
-        debugPrint (diameter);
-        const Vec3 dimensions (diameter, diameter, diameter);
-        pd = new LQProximityDatabase<AbstractVehicle*> (center,
-                                                        dimensions,
-                                                        divisions);
+        cyclePD = -1;
+        nextPD ();
+
         // make default-sized flock
         for (int i = 0; i < 200; i++) addBoidToFlock ();
 
         // initialize camera
-        Boid& firstBoid = **flock.begin();
-        SteerTest::init3dCamera (firstBoid);
+        SteerTest::init3dCamera (*SteerTest::selectedVehicle);
         SteerTest::camera.mode = Camera::cmFixed;
         SteerTest::camera.fixedDistDistance = SteerTest::cameraTargetDistance;
         SteerTest::camera.fixedDistVOffset = 0;
@@ -283,17 +281,22 @@ public:
         const float h = drawGetWindowHeight ();
         const Vec3 screenLocation (10, h-50, 0);
         draw2dTextAt2dLocation (status, screenLocation, gGray80);
-        // std::ostringstream status2;
-        // status2  << "PD content count: " << pd->getPopulation ()<<std::endl;
-        // const Vec3 screenLocation2 (10, h-70, 0);
-        // draw2dTextAt2dLocation (status2, screenLocation2, gGray80);
+        std::ostringstream status2;
+        status2 << "PD type: ";
+        switch (cyclePD)
+        {
+        case 0: status2 << "LQ bin lattice"; break;
+        case 1: status2 << "brute force";    break;
+        }
+        status2 << std::endl;
+        const Vec3 screenLocation2 (10, h-70, 0);
+        draw2dTextAt2dLocation (status2, screenLocation2, gGray80);
     }
 
     void close (void)
     {
         // delete each member of the flock
-        for (iterator i = flock.begin(); i != flock.end(); i++) delete (*i);
-        flock.clear ();
+        while (population > 0) removeBoidFromFlock ();
 
         // delete the proximity database
         delete pd;
@@ -302,8 +305,7 @@ public:
 
     void reset (void)
     {
-        // reinitialize all boids in the flock
-//         initializeFlock ();
+        // reset each boid in flock
         for (iterator i = flock.begin(); i != flock.end(); i++) (**i).reset();
 
         // reset camera position
@@ -313,16 +315,50 @@ public:
         SteerTest::camera.doNotSmoothNextMove ();
     }
 
+    // for purposes of demonstration, allow cycling through various
+    // types of proximity databases.  this routine is called when the
+    // SteerTest user pushes a function key.
+    void nextPD (void)
+    {
+        // save pointer to old PD
+        ProximityDatabase* oldPD = pd;
+
+        // allocate new PD
+        const int totalPD = 2;
+        switch (cyclePD = (cyclePD + 1) % totalPD)
+        {
+        case 0:
+            {
+                const Vec3 center;
+                const int div = 10;
+                const Vec3 divisions (div, div, div);
+                const float diameter = Boid::worldRadius * 1.1 * 2;
+                const Vec3 dimensions (diameter, diameter, diameter);
+                typedef LQProximityDatabase<AbstractVehicle*> LQPDAV;
+                pd = new LQPDAV (center, dimensions, divisions);
+                break;
+            }
+        case 1:
+            {
+                pd = new BruteForceProximityDatabase<AbstractVehicle*> ();
+                break;
+            }
+        }
+
+        // switch each boid to new PD
+        for (iterator i=flock.begin(); i!=flock.end(); i++) (**i).newPD(*pd);
+
+        // delete old PD (if any)
+        delete oldPD;
+    }
+
     void handleFunctionKeys (int keyNumber)
     {
         switch (keyNumber)
         {
-        case 1:
-            addBoidToFlock ();
-            break;
-        case 2:
-            if (population > 0) removeBoidFromFlock ();
-            break;
+        case 1:  addBoidToFlock ();                           break;
+        case 2:  if (population > 0) removeBoidFromFlock ();  break;
+        case 3:  nextPD ();                                   break;
         }
     }
 
@@ -334,13 +370,14 @@ public:
         SteerTest::printMessage (message);
         SteerTest::printMessage ("  F1     add a boid to the flock.");
         SteerTest::printMessage ("  F2     remove a boid from the flock.");
+        SteerTest::printMessage ("  F3     use next proximity database.");
         SteerTest::printMessage ("");
     }
 
     void addBoidToFlock (void)
     {
         population++;
-        Boid* boid = new Boid (flock, *pd);
+        Boid* boid = new Boid (*pd);
         flock.push_back (boid);
         if (population == 1) SteerTest::selectedVehicle = boid;
     }
@@ -372,6 +409,9 @@ public:
 
     // keep track of current flock size
     int population;
+
+    // which of the various proximity databases is currently in use
+    int cyclePD;
 };
 
 

@@ -96,97 +96,105 @@ public:
 
 
 // ----------------------------------------------------------------------------
+// This is the "brute force" O(n^2) approach implemented in terms of the
+// AbstractProximityDatabase protocol so it can be compared directly to other
+// approaches.  (The SteerTest Boids plugin allows switching at runtime.)
 
 
-/*
+template <class ContentType>
+class BruteForceProximityDatabase
+    : public AbstractProximityDatabase<ContentType>
+{
+public:
 
-  template <class ContentType>
-  class BruteForceProximityDatabase :
-                                  public AbstractProximityDatabase<ContentType>
-  {
-  public:
+    // constructor
+    BruteForceProximityDatabase (void)
+    {
+    }
 
-      // constructor
-      BruteForceProximityDatabase (void)
-      {
-      }
+    // destructor
+    virtual ~BruteForceProximityDatabase ()
+    {
+    }
 
-      // destructor
-      virtual ~BruteForceProximityDatabase ()
-      {
-      }
+    // "token" to represent objects stored in the database
+    class tokenType : public AbstractTokenForProximityDatabase<ContentType>
+    {
+    public:
 
-      // "token" to represent objects stored in the database
-      class tokenType : public AbstractTokenForProximityDatabase<ContentType>
-      {
-      public:
+        // constructor
+        tokenType (ContentType parentObject, BruteForceProximityDatabase& pd)
+        {
+            // store pointer to our associated database and the object this
+            // token represents, and store this token on the database's vector
+            bfpd = &pd;
+            object = parentObject;
+            bfpd->group.push_back (this);
+        }
 
-          // constructor
-          tokenType (ContentType parentObject, BruteForceProximityDatabase& pd)
-          {
-              object = parentObject;
-              bfpd = pd;
-          }
+        // destructor
+        virtual ~tokenType ()
+        {
+            // remove this token from the database's vector
+            bfpd->group.erase (std::find (bfpd->group.begin(),
+                                          bfpd->group.end(),
+                                          this));
+        }
 
-          // the client object calls this each time its position changes
-          void updateForNewPosition (const Vec3& newPosition)
-          {
-              position = newPosition;
-          }
+        // the client object calls this each time its position changes
+        void updateForNewPosition (const Vec3& newPosition)
+        {
+            position = newPosition;
+        }
 
-          // find all neighbors within the given sphere (as center and radius)
-          void findNeighbors (const Vec3& center,
-                              const float radius,
-                              std::vector<ContentType>& results)
-          {
-              bfpd->XXXfindNeighbors (center, radius, results);
-          }
+        // find all neighbors within the given sphere (as center and radius)
+        void findNeighbors (const Vec3& center,
+                            const float radius,
+                            std::vector<ContentType>& results)
+        {
+            // loop over all tokens
+            const float r2 = radius * radius;
+            for (tokenIterator i = bfpd->group.begin();
+                 i != bfpd->group.end();
+                 i++)
+            {
+                const Vec3 offset = center - (**i).position;
+                const float d2 = offset.lengthSquared();
 
-      private:
-          BruteForceProximityDatabase* bfpd;
-          ContentType object;
-          Vec3 position;
-      };
+                // push onto result vector when within given radius
+                if (d2 < r2) results.push_back ((**i).object);
+            }
+        }
 
-      typedef std::vector<tokenType*> tokenVector;
-      typedef tokenVector::const_iterator tokenIterator;    
+    private:
+        BruteForceProximityDatabase* bfpd;
+        ContentType object;
+        Vec3 position;
+    };
 
+    typedef std::vector<tokenType*> tokenVector;
+    typedef typename tokenVector::const_iterator tokenIterator;    
 
-      // find all neighbors within the given sphere (as center and radius)
-      void XXXfindNeighbors (const Vec3& center,
-                             const float radius,
-                             std::vector<ContentType>& results)
-      {
-          // loop over all tokens
-          for (tokenIterator i = bfpd->group.begin();
-               i != bfpd->group.end();
-               i++)
-          {
-              tokenType& other = **i;
-              const float d = Vec3::distance (center, other.position);
-              if (d < radius)
-              {
-                  results.push_back ((ContentType) clientObject);
-              }
-          }
-      }
+    // allocate a token to represent a given client object in this database
+    tokenType* allocateToken (ContentType parentObject)
+    {
+        return new tokenType (parentObject, *this);
+    }
 
-
-      // allocate a token to represent a given client object in this database
-      tokenType* allocateToken (ContentType parentObject)
-      {
-          return new tokenType (parentObject, *this);
-      }
-
-  private:
-      // STL vector containing all tokens in database
-      tokenVector group;
-  };
-
-*/
+    // return the number of tokens currently in the database
+    int getPopulation (void)
+    {
+        return group.size();
+    }
+    
+private:
+    // STL vector containing all tokens in database
+    tokenVector group;
+};
 
 
 // ----------------------------------------------------------------------------
+// A AbstractProximityDatabase-style wrapper for the LQ bin lattice system
 
 
 template <class ContentType>
@@ -291,8 +299,6 @@ public:
         int& counter = *(int*)clientQueryState;
         counter++;
     }
-
-
 
 private:
     lqDB* lq;
