@@ -223,12 +223,12 @@
 				32FFF52906E9CEA700E1D8A3,
 				32FFF52A06E9CEA700E1D8A3,
 				32FFF52B06E9CEA700E1D8A3,
+				84AD12AD070E221100559513,
 				32FFF52C06E9CEA700E1D8A3,
 				32FFF52D06E9CEA700E1D8A3,
 				32FFF52E06E9CEA700E1D8A3,
 				32FFF52F06E9CEA700E1D8A3,
 				32FFF53006E9CEA700E1D8A3,
-				32FFF53106E9CEA700E1D8A3,
 				32FFF53206E9CEA700E1D8A3,
 				32FFF53306E9CEA700E1D8A3,
 			);
@@ -341,14 +341,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		32FFF53106E9CEA700E1D8A3 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.c.h;
-			path = SteerTest.h;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		32FFF53206E9CEA700E1D8A3 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -372,10 +364,10 @@
 				32FFF54706E9CEBD00E1D8A3,
 				32FFF54806E9CEBD00E1D8A3,
 				32FFF54906E9CEBD00E1D8A3,
+				84AD12B1070E224000559513,
 				32FFF54A06E9CEBD00E1D8A3,
 				32FFF54B06E9CEBD00E1D8A3,
 				32FFF54C06E9CEBD00E1D8A3,
-				32FFF54D06E9CEBD00E1D8A3,
 				32FFF54E06E9CEBD00E1D8A3,
 			);
 			isa = PBXGroup;
@@ -448,14 +440,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		32FFF54D06E9CEBD00E1D8A3 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.cpp;
-			path = SteerTest.cpp;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		32FFF54E06E9CEBD00E1D8A3 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -508,12 +492,6 @@
 		};
 		32FFF55606E9CEBE00E1D8A3 = {
 			fileRef = 32FFF54C06E9CEBD00E1D8A3;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		32FFF55706E9CEBE00E1D8A3 = {
-			fileRef = 32FFF54D06E9CEBD00E1D8A3;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -759,6 +737,34 @@
 //842
 //843
 //844
+		84AD12AD070E221100559513 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = OpenSteerDemo.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		84AD12AE070E221100559513 = {
+			fileRef = 84AD12AD070E221100559513;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		84AD12B1070E224000559513 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = OpenSteerDemo.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		84AD12B2070E224000559513 = {
+			fileRef = 84AD12B1070E224000559513;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		84FACBA506EFC297000A998A = {
 			children = (
 				32FFF56306E9CECE00E1D8A3,
@@ -814,6 +820,7 @@
 				8D11072A0486CEB800E47090,
 				8D11072B0486CEB800E47090,
 				32FFF58106E9CF3800E1D8A3,
+				84AD12AE070E221100559513,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -841,7 +848,6 @@
 				32FFF55406E9CEBE00E1D8A3,
 				32FFF55506E9CEBE00E1D8A3,
 				32FFF55606E9CEBE00E1D8A3,
-				32FFF55706E9CEBE00E1D8A3,
 				32FFF55806E9CEBE00E1D8A3,
 				32FFF56C06E9CECE00E1D8A3,
 				32FFF56D06E9CECE00E1D8A3,
@@ -851,6 +857,7 @@
 				32FFF57106E9CECE00E1D8A3,
 				32FFF57206E9CECE00E1D8A3,
 				32FFF57306E9CECE00E1D8A3,
+				84AD12B2070E224000559513,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
