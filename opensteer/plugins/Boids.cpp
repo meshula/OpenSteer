@@ -42,10 +42,10 @@
 #include "OpenSteer/Proximity.h"
 
 
-
-
-// Include names declared in the OpenSteer namespace into the namespaces to search to find names.
+// Include names declared in the OpenSteer namespace into the
+// namespaces to search to find names.
 using namespace OpenSteer;
+
 
 // ----------------------------------------------------------------------------
 
@@ -63,6 +63,11 @@ public:
 
     // type for a flock: an STL vector of Boid pointers
     typedef std::vector<Boid*> groupType;
+
+
+    // enumerate demos of various constraints on the flock
+    enum ConstraintType {none, insideSphere, outsideSphere, outsideSpheres,
+                         rectangle, outsideBox, insideBox};
 
 
     // constructor
@@ -133,6 +138,11 @@ public:
     // basic flocking
     Vec3 steerToFlock (void)
     {
+        // avoid obstacles if needed
+        // XXX this should probably be moved elsewhere
+        const Vec3 avoidance = steerToAvoidObstacles (1.0f, obstacles);
+        if (avoidance != Vec3::zero) return avoidance;
+
         const float separationRadius =  5.0f;
         const float separationAngle  = -0.707f;
         const float separationWeight =  12.0f;
@@ -182,30 +192,18 @@ public:
     // Take action to stay within sphereical boundary.  Returns steering
     // value (which is normally zero) and may take other side-effecting
     // actions such as kinematically changing the Boid's position.
+    //
+    // XXX not much here since I removed "steer back when outside" 11-11-04
+    //
     Vec3 handleBoundary (void)
     {
-        // while inside the sphere do noting
+        // while inside the sphere do nothing
         if (position().length() < worldRadius) return Vec3::zero;
 
         // once outside, select strategy
-        switch (boundaryCondition)
-        {
-        case 0:
-            {
-                // steer back when outside
-                const Vec3 seek = xxxsteerForSeek (Vec3::zero);
-                const Vec3 lateral = seek.perpendicularComponent (forward ());
-                return lateral;
-            }
-        case 1:
-            {
-                // wrap around (teleport)
-                setPosition (position().sphericalWrapAround (Vec3::zero,
-                                                             worldRadius));
-                return Vec3::zero;
-            }
-        }
-        return Vec3::zero; // should not reach here
+        // wrap around (teleport)
+        setPosition (position().sphericalWrapAround (Vec3::zero, worldRadius));
+        return Vec3::zero;
     }
 
 
@@ -228,12 +226,34 @@ public:
 
 
     // cycle through various boundary conditions
+    // XXX probably need to be re-thought
     static void nextBoundaryCondition (void)
     {
-        const int max = 2;
-        boundaryCondition = (boundaryCondition + 1) % max;
+        debugPrint ((int)constraint);
+        constraint = (ConstraintType) ((int) constraint + 1);
+        switch (constraint)
+        {
+        default:
+            constraint = none; // wrap-around, falls through to first case:
+        case none:
+            break;
+        case insideSphere:
+            break;
+        case outsideSphere:
+            break;
+        case outsideSpheres:
+            break;
+        case rectangle:
+            break;
+        case outsideBox:
+            break;
+        case insideBox:
+            break;
+        }
     }
-    static int boundaryCondition;
+    static ConstraintType constraint;
+    static ObstacleGroup obstacles;
+
 
     // a pointer to this boid's interface object for the proximity database
     ProximityToken* proximityToken;
@@ -243,12 +263,31 @@ public:
     static AVGroup neighbors;
 
     static float worldRadius;
+
+    // xxx perhaps this should be a call to a general purpose annotation for
+    // xxx "local xxx axis aligned box in XZ plane" -- same code in in
+    // xxx CaptureTheFlag.cpp
+    void annotateAvoidObstacle (const float minDistanceToCollision)
+    {
+        const Vec3 boxSide = side() * radius();
+        const Vec3 boxFront = forward() * minDistanceToCollision;
+        const Vec3 FR = position() + boxFront - boxSide;
+        const Vec3 FL = position() + boxFront + boxSide;
+        const Vec3 BR = position()            - boxSide;
+        const Vec3 BL = position()            + boxSide;
+        const Vec3 white (1,1,1);
+        annotationLine (FR, FL, white);
+        annotationLine (FL, BL, white);
+        annotationLine (BL, BR, white);
+        annotationLine (BR, FR, white);
+    }
 };
 
 
 AVGroup Boid::neighbors;
 float Boid::worldRadius = 50.0f;
-int Boid::boundaryCondition = 0;
+ObstacleGroup Boid::obstacles;
+Boid::ConstraintType Boid::constraint;
 
 
 // ----------------------------------------------------------------------------
@@ -283,6 +322,9 @@ public:
         OpenSteerDemo::camera.lookdownDistance = 20;
         OpenSteerDemo::camera.aimLeadTime = 0.5;
         OpenSteerDemo::camera.povOffset.set (0, 0.5, -2);
+
+        // set up obstacles
+        initObstacles ();
     }
 
     void update (const float currentTime, const float elapsedTime)
@@ -323,16 +365,30 @@ public:
         case 0: status << "LQ bin lattice"; break;
         case 1: status << "brute force";    break;
         }
-        status << "\n[F4]    Boundary: ";
-        switch (Boid::boundaryCondition)
+        status << "\n[F4]    Obstacles: ";
+        switch (Boid::constraint)
         {
-        case 0: status << "steer back when outside"; break;
-        case 1: status << "wrap around (teleport)";  break;
+        case Boid::none:
+            status << "none (wrap-around at sphere boundary)" ; break;
+        case Boid::insideSphere:
+            status << "inside a sphere" ; break;
+        case Boid::outsideSphere:
+            status << "inside a sphere, outside another" ; break;
+        case Boid::outsideSpheres:
+            status << "inside a sphere, outside several" ; break;
+        case Boid::rectangle:
+            status << "inside a sphere, with a rectangle" ; break;
+        case Boid::outsideBox:
+            status << "inside a sphere, outside a box" ; break;
+        case Boid::insideBox:
+            status << "inside a box" ; break;
         }
         status << std::endl;
         const float h = drawGetWindowHeight ();
         const Vec3 screenLocation (10, h-50, 0);
         draw2dTextAt2dLocation (status, screenLocation, gGray80);
+
+        drawObstacles ();
     }
 
     void close (void)
@@ -403,6 +459,7 @@ public:
         case 3:  nextPD ();                       break;
         case 4:  Boid::nextBoundaryCondition ();  break;
         }
+        updateObstacles ();
     }
 
     void printMiniHelpForFunctionKeys (void)
@@ -459,6 +516,363 @@ public:
 
     // which of the various proximity databases is currently in use
     int cyclePD;
+
+
+    SphereObstacle insideBigSphere;
+    SphereObstacle outsideSphere0;
+    SphereObstacle outsideSphere1;
+    SphereObstacle outsideSphere2;
+    SphereObstacle outsideSphere3;
+    SphereObstacle outsideSphere4;
+    SphereObstacle outsideSphere5;
+    SphereObstacle outsideSphere6;
+    RectangleObstacle rectangle;
+    BoxObstacle outsideBigBox, insideBigBox;
+
+    void initObstacles (void)
+    {
+        Boid::constraint = Boid::none;
+
+        insideBigSphere.radius = Boid::worldRadius;
+        insideBigSphere.setSeenFrom (Obstacle::inside);
+
+        outsideSphere0.radius = Boid::worldRadius * 0.5f;
+
+        const float r = Boid::worldRadius * 0.33f;
+        outsideSphere1.radius = r;
+        outsideSphere2.radius = r;
+        outsideSphere3.radius = r;
+        outsideSphere4.radius = r;
+        outsideSphere5.radius = r;
+        outsideSphere6.radius = r;
+
+        const float p = Boid::worldRadius * 0.5f;
+        const float m = -p;
+        const float z = 0.0f;
+        outsideSphere1.center.set (p, z, z);
+        outsideSphere2.center.set (m, z, z);
+        outsideSphere3.center.set (z, p, z);
+        outsideSphere4.center.set (z, m, z);
+        outsideSphere5.center.set (z, z, p);
+        outsideSphere6.center.set (z, z, m);
+
+        const Vec3 tiltF = Vec3 (1.0f, 1.0f, 0.0f).normalize ();
+        const Vec3 tiltS (0.0f, 0.0f, 1.0f);
+        const Vec3 tiltU = Vec3 (-1.0f, 1.0f, 0.0f).normalize ();
+
+        rectangle.width = 50.0f;
+        rectangle.height = 80.0f;
+        rectangle.setSeenFrom (Obstacle::both);
+        rectangle.setForward (tiltF);
+        rectangle.setSide (tiltS);
+        rectangle.setUp (tiltU);
+
+        outsideBigBox.width = 50.0f;
+        outsideBigBox.height = 80.0f;
+        outsideBigBox.depth = 20.0f;
+        outsideBigBox.setForward (tiltF);
+        outsideBigBox.setSide (tiltS);
+        outsideBigBox.setUp (tiltU);
+
+        insideBigBox = outsideBigBox;
+        insideBigBox.setSeenFrom (Obstacle::inside);
+
+        updateObstacles ();
+    }
+
+    // update Boid::obstacles list when Boid::constraint changes
+    void updateObstacles (void)
+    {
+        // first clear out obstacle list, and add back big sphere
+        Boid::obstacles.clear ();
+        Boid::obstacles.push_back (&insideBigSphere);
+
+        // add back obstacles based on mode
+        switch (Boid::constraint)
+        {
+        case Boid::none:
+            Boid::obstacles.clear (); // this is only one with no big sphere
+            break;
+        case Boid::insideSphere:
+            break;
+        case Boid::outsideSphere:
+            Boid::obstacles.push_back (&outsideSphere0);
+            break;
+        case Boid::outsideSpheres:
+            Boid::obstacles.push_back (&outsideSphere1);
+            Boid::obstacles.push_back (&outsideSphere2);
+            Boid::obstacles.push_back (&outsideSphere3);
+            Boid::obstacles.push_back (&outsideSphere4);
+            Boid::obstacles.push_back (&outsideSphere5);
+            Boid::obstacles.push_back (&outsideSphere6);
+            break;
+        case Boid::rectangle:
+            Boid::obstacles.push_back (&rectangle);
+            break;
+        case Boid::outsideBox:
+            Boid::obstacles.push_back (&outsideBigBox);
+            break;
+        case Boid::insideBox:
+            Boid::obstacles.push_back (&insideBigBox);
+            break;
+        }
+    }
+
+
+    void drawObstacles (void)
+    {
+        Vec3 light (0.2f, 0.2f, 0.4f);
+        Vec3 dark (0.1f, 0.1f, 0.2f);
+        switch (Boid::constraint)
+        {
+        case Boid::none:
+            break;
+        case Boid::insideSphere:
+            tempDrawSphere (insideBigSphere, light);
+            break;
+        case Boid::outsideSphere:
+            tempDrawSphere (insideBigSphere, light);
+            tempDrawSphere (outsideSphere0, dark);
+            break;
+        case Boid::outsideSpheres:
+            tempDrawSphere (insideBigSphere, light);
+            tempDrawSphere (outsideSphere1, dark);
+            tempDrawSphere (outsideSphere2, dark);
+            tempDrawSphere (outsideSphere3, dark);
+            tempDrawSphere (outsideSphere4, dark);
+            tempDrawSphere (outsideSphere5, dark);
+            tempDrawSphere (outsideSphere6, dark);
+            break;
+        case Boid::rectangle:
+            tempDrawSphere (insideBigSphere, light);
+            {
+                float w = rectangle.width / 2;
+                float h = rectangle.height / 2;
+                Vec3 v1 = rectangle.globalizePosition (Vec3 (w, h, 0));
+                Vec3 v2 = rectangle.globalizePosition (Vec3 (-w, h, 0));
+                Vec3 v3 = rectangle.globalizePosition (Vec3 (-w, -h, 0));
+                Vec3 v4 = rectangle.globalizePosition (Vec3 (w, -h, 0));
+                drawLine (v1, v2, dark);
+                drawLine (v2, v3, dark);
+                drawLine (v3, v4, dark);
+                drawLine (v4, v1, dark);
+            }
+            break;
+        case Boid::outsideBox:
+            tempDrawSphere (insideBigSphere, light);
+            tempDrawBox (outsideBigBox, dark);
+            break;
+        case Boid::insideBox:
+            tempDrawSphere (insideBigSphere, light);
+            tempDrawBox (insideBigBox, dark);
+            break;
+        }
+    }
+
+    // XXX temporary DrawSphere utility - clean up and move to Draw.cpp
+    // XXX 
+    // XXX this utility should provide a "filled-p" switch to slect
+    // XXX between wire frame and filled triangles.  It should also
+    // XXX support optional backface culling, drawing only triangles
+    // XXX oriented towards (or away from) a given POV.
+    //
+    void tempDrawSphere (const SphereObstacle& sphere,
+                         const Vec3& color)
+    {
+        drawIcosahedralGeodesicSphere (sphere.radius, sphere.center, color);
+    }
+
+
+    // XXX move to Vec3 or utilities
+    inline Vec3 projectOnSphere (const Vec3& v,
+                                 const float radius,
+                                 const Vec3& center)
+    {
+        const Vec3 unitRadial = (v - center).normalize ();
+        return center + (unitRadial * radius);
+    }
+
+    // XXX move to Vec3 or utilities
+    inline Vec3 midpointOnSphere (const Vec3& a, 
+                                  const Vec3& b,
+                                  const float radius,
+                                  const Vec3& center)
+    {
+        return projectOnSphere ((a + b) * 0.5f, radius, center);
+    }
+
+
+    // XXX clean up and move to Draw.cpp
+    // XXX min edge length should be a parameter
+    void drawOctahedralGeodesicSphere (const float radius,
+                                       const Vec3& center,
+                                       const Vec3& color)
+    {
+        const Vec3 x = center + (radius * Vec3 (1.0f, 0.0f, 0.0f));
+        const Vec3 y = center + (radius * Vec3 (0.0f, 1.0f, 0.0f));
+        const Vec3 z = center + (radius * Vec3 (0.0f, 0.0f, 1.0f));
+
+        // start from faces of an octahedron
+        drawMeshedTriangleOnSphere ( x,  y,  z, radius, center, 10.0f, color);
+        drawMeshedTriangleOnSphere (-x,  y,  z, radius, center, 10.0f, color);
+        drawMeshedTriangleOnSphere ( x, -y,  z, radius, center, 10.0f, color);
+        drawMeshedTriangleOnSphere (-x, -y,  z, radius, center, 10.0f, color);
+        drawMeshedTriangleOnSphere ( x,  y, -z, radius, center, 10.0f, color);
+        drawMeshedTriangleOnSphere (-x,  y, -z, radius, center, 10.0f, color);
+        drawMeshedTriangleOnSphere ( x, -y, -z, radius, center, 10.0f, color);
+        drawMeshedTriangleOnSphere (-x, -y, -z, radius, center, 10.0f, color);
+    }
+
+
+    // XXX clean up and move to Draw.cpp
+    // XXX min edge length should be a parameter
+    void drawIcosahedralGeodesicSphere (const float radius,
+                                        const Vec3& center,
+                                        const Vec3& color)
+    {
+        // Geometry based on Paul Bourke's excellent article:
+        //   Platonic Solids (Regular polytopes in 3D)
+        //   http://astronomy.swin.edu.au/~pbourke/polyhedra/platonic/
+
+        // define the icosahedron's 12 vertices:
+        // XXX better to pre-scale a and b, but just for the moment try:
+        const float phi = (1.0f + sqrtXXX(5.0f)) * 0.5f; // "golden ratio"
+        const float a = 0.5;
+        const float b = 1.0f / (2.0f * phi);
+        const Vec3 v1 = projectOnSphere(center+Vec3(0, b, -a), radius, center);
+        const Vec3 v2 = projectOnSphere(center+Vec3(b, a, 0), radius, center);
+        const Vec3 v3 = projectOnSphere(center+Vec3(-b, a, 0), radius, center);
+        const Vec3 v4 = projectOnSphere(center+Vec3(0, b, a), radius, center);
+        const Vec3 v5 = projectOnSphere(center+Vec3(0, -b, a), radius, center);
+        const Vec3 v6 = projectOnSphere(center+Vec3(-a, 0, b), radius, center);
+        const Vec3 v7 = projectOnSphere(center+Vec3(0, -b, -a), radius, center);
+        const Vec3 v8 = projectOnSphere(center+Vec3(a, 0, -b), radius, center);
+        const Vec3 v9 = projectOnSphere(center+Vec3(a, 0, b), radius, center);
+        const Vec3 v10 = projectOnSphere(center+Vec3(-a, 0, -b), radius, center);
+        const Vec3 v11 = projectOnSphere(center+Vec3(b, -a, 0), radius, center);
+        const Vec3 v12 = projectOnSphere(center+Vec3(-b, -a, 0), radius, center);
+
+        // draw the icosahedron's 20 triangular faces:
+        const float min = 10.0f;
+        drawMeshedTriangleOnSphere (v1, v2, v3,   radius, center, min, color);
+        drawMeshedTriangleOnSphere (v4, v3, v2,   radius, center, min, color);
+        drawMeshedTriangleOnSphere (v4, v5, v6,   radius, center, min, color);
+        drawMeshedTriangleOnSphere (v4, v9, v5,   radius, center, min, color);
+        drawMeshedTriangleOnSphere (v1, v7, v8,   radius, center, min, color);
+        drawMeshedTriangleOnSphere (v1, v10, v7,  radius, center, min, color);
+        drawMeshedTriangleOnSphere (v5, v11, v12, radius, center, min, color);
+        drawMeshedTriangleOnSphere (v7, v12, v11, radius, center, min, color);
+        drawMeshedTriangleOnSphere (v3, v6, v10,  radius, center, min, color);
+        drawMeshedTriangleOnSphere (v12, v10, v6, radius, center, min, color);
+        drawMeshedTriangleOnSphere (v2, v8, v9,   radius, center, min, color);
+        drawMeshedTriangleOnSphere (v11, v9, v8,  radius, center, min, color);
+        drawMeshedTriangleOnSphere (v4, v6, v3,   radius, center, min, color);
+        drawMeshedTriangleOnSphere (v4, v2, v9,   radius, center, min, color);
+        drawMeshedTriangleOnSphere (v1, v3, v10,  radius, center, min, color);
+        drawMeshedTriangleOnSphere (v1, v8, v2,   radius, center, min, color);
+        drawMeshedTriangleOnSphere (v7, v10, v12, radius, center, min, color);
+        drawMeshedTriangleOnSphere (v7, v11, v8,  radius, center, min, color);
+        drawMeshedTriangleOnSphere (v5, v12, v6,  radius, center, min, color);
+        drawMeshedTriangleOnSphere (v5, v9, v11,  radius, center, min, color);
+     }
+
+
+    // Draws line from A to B but not from B to A: assumes each edge
+    // will be drawn in both directions, picks just one direction for
+    // drawing according to an arbitary but reproducable criterion.
+    void drawMeshedTriangleLine (const Vec3& a, 
+                                 const Vec3& b,
+                                 const Vec3& color)
+    {
+        if (a.x != b.x)
+        {
+            if (a.x > b.x) drawLine (a, b, color);
+        }
+        else
+        {
+            if (a.y != b.y)
+            {
+                if (a.y > b.y) drawLine (a, b, color); 
+            }
+            else
+            {
+                if (a.z > b.z) drawLine (a, b, color); 
+            }
+        }
+    }
+
+    void drawMeshedTriangleOnSphere (const Vec3& a, 
+                                     const Vec3& b,
+                                     const Vec3& c,
+                                     const float radius,
+                                     const Vec3& center,
+                                     const float max, // max Edge Length
+                                     const Vec3& color)
+    {
+        // measure edge lengths
+        const float abLength = (a - b).length ();
+        const float bcLength = (b - c).length ();
+        const float caLength = (c - a).length ();
+
+        // below length threshold?
+        if ((abLength < max) && (bcLength < max) && (caLength < max))
+        {
+            // if all are short, draw edges
+            // (note this will generally draw each edge twice)
+            drawMeshedTriangleLine (a, b, color);
+            drawMeshedTriangleLine (b, c, color);
+            drawMeshedTriangleLine (c, a, color);
+        }
+        else // otherwise, subdivide and recurse
+        {
+            // find midpoints
+            const Vec3 ab = midpointOnSphere (a, b, radius, center);
+            const Vec3 bc = midpointOnSphere (b, c, radius, center);
+            const Vec3 ca = midpointOnSphere (c, a, radius, center);
+
+            // recurse
+            drawMeshedTriangleOnSphere ( a, ab, ca, radius, center, max, color);
+            drawMeshedTriangleOnSphere (ab,  b, bc, radius, center, max, color);
+            drawMeshedTriangleOnSphere (ca, bc,  c, radius, center, max, color);
+            drawMeshedTriangleOnSphere (ab, bc, ca, radius, center, max, color);
+        }
+    }
+
+    void tempDrawBox (const BoxObstacle& box, const Vec3 color)
+    {
+        const float w = box.width / 2;
+        const float h = box.height / 2;
+        const float d = box.depth / 2;
+        const Vec3 p = box.position ();
+        const Vec3 s = box.side ();
+        const Vec3 u = box.up ();
+        const Vec3 f = box.forward ();
+
+        const Vec3 v1 = box.globalizePosition (Vec3 ( w,  h,  d));
+        const Vec3 v2 = box.globalizePosition (Vec3 (-w,  h,  d));
+        const Vec3 v3 = box.globalizePosition (Vec3 (-w, -h,  d));
+        const Vec3 v4 = box.globalizePosition (Vec3 ( w, -h,  d));
+
+        const Vec3 v5 = box.globalizePosition (Vec3 ( w,  h, -d));
+        const Vec3 v6 = box.globalizePosition (Vec3 (-w,  h, -d));
+        const Vec3 v7 = box.globalizePosition (Vec3 (-w, -h, -d));
+        const Vec3 v8 = box.globalizePosition (Vec3 ( w, -h, -d));
+
+        drawLine (v1, v2, color);
+        drawLine (v2, v3, color);
+        drawLine (v3, v4, color);
+        drawLine (v4, v1, color);
+
+        drawLine (v5, v6, color);
+        drawLine (v6, v7, color);
+        drawLine (v7, v8, color);
+        drawLine (v8, v5, color);
+
+        drawLine (v1, v5, color);
+        drawLine (v2, v6, color);
+        drawLine (v3, v7, color);
+        drawLine (v4, v8, color);
+    }
 };
 
 
