@@ -68,7 +68,6 @@ OpenSteer::PolylinePathway::initialize (const int _pointCount,
     radius = _radius;
     cyclic = _cyclic;
     pointCount = _pointCount;
-    totalPathLength = 0;
     if (cyclic) pointCount++;
     lengths = new float    [pointCount];
     points  = new Vec3 [pointCount];
@@ -81,7 +80,20 @@ OpenSteer::PolylinePathway::initialize (const int _pointCount,
         const bool closeCycle = cyclic && (i == pointCount-1);
         const int j = closeCycle ? 0 : i;
         points[i] = _points[j];
+	}
+	setupLengths();
+}
 
+// ----------------------------------------------------------------------------
+// utility for constructors
+
+void 
+OpenSteer::PolylinePathway::setupLengths ()
+{
+     totalPathLength = 0;
+   // loop over all points
+    for (int i = 0; i < pointCount; i++)
+    {
         // for the end of each segment
         if (i > 0)
         {
@@ -98,6 +110,28 @@ OpenSteer::PolylinePathway::initialize (const int _pointCount,
     }
 }
 
+// ----------------------------------------------------------------------------
+// move existing points safely
+
+void 
+OpenSteer::PolylinePathway::movePoints (const int _firstPoint,
+										const int _numPoints,
+                                        const Vec3 _points[])
+{
+    // loop over all points
+    for (int i = _firstPoint; i < _firstPoint + _numPoints; i++)
+    {
+		int	j = i - _firstPoint;
+        // copy in point locations, closing cycle when appropriate
+        points[i] = _points[j];
+		//if the first point is set, make sure we close the loop!
+        if (cyclic && i == 0)
+		{
+			points[pointCount-1] = _points[j];
+		}
+	}
+	setupLengths();
+}
 
 // ----------------------------------------------------------------------------
 // Given an arbitrary point ("A"), returns the nearest point ("P") on
