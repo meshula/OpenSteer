@@ -37,11 +37,14 @@
 
 
 #include <sstream>
-#include <limits> // for numeric_limits::max()
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/OpenSteerDemo.h"
 #include "OpenSteer/Proximity.h"
 
+#ifndef NO_LQ_BIN_STATS
+#include <iomanip> // for setprecision
+#include <limits> // for numeric_limits::max()
+#endif // NO_LQ_BIN_STATS
 
 // Include names declared in the OpenSteer namespace into the
 // namespaces to search to find names.
@@ -494,10 +497,14 @@ public:
     {
 #ifndef NO_LQ_BIN_STATS
         int min, max; float average;
-        (**(flock.begin())).proximityToken->getBinPopulationStats(min,max,average);
-        std::cout << "Bin populations: min, max, average pop of non-empty bins: "
-                  << min << ", " << max << ", " << average << std::endl; 
-        std::cout << "Boid neighbors: min, max, average: "
+        Boid& aBoid = **(flock.begin());
+        aBoid.proximityToken->getBinPopulationStats (min, max, average);
+        std::cout << std::setprecision (2)
+                  << std::setiosflags (std::ios::fixed);
+        std::cout << "Bin populations: min, max, average: "
+                  << min << ", " << max << ", " << average
+                  << " (non-empty bins)" << std::endl; 
+        std::cout << "Boid neighbors:  min, max, average: "
                   << Boid::minNeighbors << ", "
                   << Boid::maxNeighbors << ", "
                   << ((float)Boid::totalNeighbors) / ((float)population)

@@ -606,13 +606,11 @@ void lqMapOverAllObjects (lqInternalDB* lq,
 
 #ifndef NO_LQ_BIN_STATS
 
-int lqgbpsPerBinCount;
-
-void lqgbpsCounter (void* clientObject __attribute__ ((unused)),
+void lqgbpsCounter (void* clientObject    __attribute__ ((unused)),
                     float distanceSquared __attribute__ ((unused)),
-                    void* clientQueryState __attribute__ ((unused)))
+                    void* clientQueryState)
 {
-    lqgbpsPerBinCount++;
+    (*(int*)clientQueryState)++;
 }
 
 void lqGetBinPopulationStats (lqInternalDB* lq,
@@ -626,19 +624,23 @@ void lqGetBinPopulationStats (lqInternalDB* lq,
     int nonEmptyBinCount = 0;
     int bincount = lq->divx * lq->divy * lq->divz;
     int i;
+
     for (i=0; i<bincount; i++)
     {
         // clear the counter
-        lqgbpsPerBinCount = 0;
+        int objectCount = 0;
 
         // apply counting function to each object in bin[i]
-	lqMapOverAllObjectsInBin (lq->bins[i], lqgbpsCounter, NULL);
+	lqMapOverAllObjectsInBin (lq->bins[i], lqgbpsCounter, &objectCount);
 
         // collect data: max and min population, count objects and non-empty bins
-        if (maxPop < lqgbpsPerBinCount) maxPop = lqgbpsPerBinCount;
-        if (minPop > lqgbpsPerBinCount) minPop = lqgbpsPerBinCount;
-        totalCount += lqgbpsPerBinCount;
-        if (lqgbpsPerBinCount > 0) nonEmptyBinCount++;
+        if (objectCount > 0)
+        {
+            nonEmptyBinCount++;
+            if (maxPop < objectCount) maxPop = objectCount;
+            if (minPop > objectCount) minPop = objectCount;
+            totalCount += objectCount;
+        }
     }
 
     // set return values
