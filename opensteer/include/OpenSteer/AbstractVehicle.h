@@ -51,7 +51,6 @@
 
 namespace OpenSteer {
 
-
     class AbstractVehicle : public AbstractLocalSpace 
     {
     public:
@@ -90,6 +89,9 @@ namespace OpenSteer {
         // the maximum speed this vehicle is allowed to move
         virtual float maxSpeed (void) const = 0;
         virtual float setMaxSpeed (float) = 0;
+
+		// dp - added to support heterogeneous flocks
+		virtual void update(const float currentTime, const float elapsedTime) = 0;
     };
 
 
