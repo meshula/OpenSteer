@@ -220,6 +220,17 @@ inline void draw3dDisk (const float radius,
 }
 
 
+// draw a circular arc on the XZ plane, from a start point, around a center,
+// for a given arc length, in a given number of segments and color.  The
+// sign of arcLength determines the direction in which the arc is drawn.
+
+void drawXZArc (const Vec3& start,
+                const Vec3& center,
+                const float arcLength,
+                const int segments,
+                const Vec3& color);
+
+
 // ------------------------------------------------------------------------
 // draw a reticle at the center of the window.  Currently it is small
 // crosshair with a gap at the center, drawn in white with black borders
@@ -330,6 +341,17 @@ void drawQuadrangle (const Vec3& a,
                      const Vec3& c,
                      const Vec3& d,
                      const Vec3& color);
+
+
+// ----------------------------------------------------------------------------
+// draws a "wide line segment": a rectangle of the given width and color
+// whose mid-line connects two given endpoints
+
+
+void drawXZWideLine (const Vec3& startPoint,
+                     const Vec3& endPoint,
+                     const Vec3& color,
+                     float width);
 
 
 // ----------------------------------------------------------------------------

@@ -873,6 +873,32 @@ void drawQuadrangle (const Vec3& a,
 
 
 // ------------------------------------------------------------------------
+// draws a "wide line segment": a rectangle of the given width and color
+// whose mid-line connects two given endpoints
+
+
+void drawXZWideLine (const Vec3& startPoint,
+                     const Vec3& endPoint,
+                     const Vec3& color,
+                     float width)
+{
+    warnIfInUpdatePhase ("drawXZWideLine");
+
+    const Vec3 offset = endPoint - startPoint;
+    const Vec3 along = offset.normalize();
+    const Vec3 perp = gGlobalSpace.localRotateForwardToSide (along);
+    const Vec3 radius = perp * width / 2;
+
+    const Vec3 a = startPoint + radius;
+    const Vec3 b = endPoint + radius;
+    const Vec3 c = endPoint - radius;
+    const Vec3 d = startPoint - radius;
+
+    iDrawQuadrangle (a, b, c, d, color);
+}
+
+
+// ------------------------------------------------------------------------
 // Between matched sets of these two calls, assert that all polygons
 // will be drawn "double sided", that is, without back-face culling
 
@@ -982,6 +1008,57 @@ void drawXZCircleOrDisk (const float radius,
 {
     // draw a circle-or-disk on the XZ plane
     drawCircleOrDisk (radius, Vec3::zero, center, color, segments, filled, false);
+}
+
+
+// ------------------------------------------------------------------------
+// draw a circular arc on the XZ plane, from a start point, around a center,
+// for a given arc length, in a given number of segments and color.  The
+// sign of arcLength determines the direction in which the arc is drawn.
+//
+// XXX maybe this should alow allow "in3d" cricles about an given axis
+// XXX maybe there should be a "filled" version of this
+// XXX maybe this should be merged in with drawCircleOrDisk
+
+
+void drawXZArc (const Vec3& start,
+                const Vec3& center,
+                const float arcLength,
+                const int segments,
+                const Vec3& color)
+{
+    warnIfInUpdatePhase ("drawXZArc");
+
+    // "spoke" is initially the vector from center to start,
+    // it is then rotated around its tail
+    Vec3 spoke = start - center;
+
+    // determine the angular step per segment
+    const float radius = spoke.length ();
+    const float twoPi = 2 * M_PI;
+    const float circumference = twoPi * radius;
+    const float arcAngle = twoPi * arcLength / circumference;
+    const float step = arcAngle / segments;
+
+    // set drawing color
+    glColor3f (color.x, color.y, color.z);
+
+    // begin drawing a series of connected line segments
+    glBegin (GL_LINE_STRIP);
+
+    // draw each segment along arc
+    float sin=0, cos=0;
+    for (int i = 0; i < segments; i++)
+    {
+        // emit next point on arc
+        iglVertexVec3 (spoke + center);
+
+        // rotate point to next step around circle
+        spoke = spoke.rotateAboutGlobalY (step, sin, cos);
+    }
+
+    // close drawing operation
+    glEnd ();
 }
 
 
