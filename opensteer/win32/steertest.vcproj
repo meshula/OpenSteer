@@ -99,8 +99,8 @@ copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)\bin&quot;
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="mkdir $(ProjectDir)\bin
-copy $(TargetPath) $(ProjectDir)\bin
+				CommandLine="mkdir &quot;$(ProjectDir)\bin&quot;
+copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)\bin&quot;
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
