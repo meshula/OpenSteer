@@ -490,6 +490,7 @@
 				32FFF54706E9CEBD00E1D8A3,
 				32FFF54806E9CEBD00E1D8A3,
 				32FFF54906E9CEBD00E1D8A3,
+				841E3BFC0736BF4400E3AD2C,
 				84AD12B1070E224000559513,
 				32FFF54A06E9CEBD00E1D8A3,
 				32FFF54B06E9CEBD00E1D8A3,
@@ -839,6 +840,20 @@
 //842
 //843
 //844
+		841E3BFC0736BF4400E3AD2C = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			path = Obstacle.cpp;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		841E3BFD0736BF4400E3AD2C = {
+			fileRef = 841E3BFC0736BF4400E3AD2C;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		84AD12AD070E221100559513 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -963,6 +978,7 @@
 				3243869407292CCB00B6EBA6,
 				32F3E5D707295CCD002E9EDE,
 				32F3E5D807295CCF002E9EDE,
+				841E3BFD0736BF4400E3AD2C,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
