@@ -41,7 +41,7 @@ Documentation </big></big></b> <br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><small><br>
-October 14, 2004<br>
+October 15, 2004<br>
       <small>Version 0.8.2</small></small></td>
       <td style="vertical-align: top; text-align: right;"><a
  href="index.html"><img src="images/beta_250a.gif" alt="OpenSteer Logo"
@@ -98,7 +98,7 @@ for autonomous characters in games and other kinds of multi-agent
 simulations. These agents may represent characters (humans, animals,
 alien creatures), vehicles (cars, planes, spaceships) or other kinds
 of mobile agents. OpenSteer was originally developed on Linux and
-subsequently ported to Windows and Mac OS X.</p>
+was subsequently ported to Windows and Mac OS X.</p>
 <p>OpenSteer provides a toolkit of steering behaviors, defined in
 terms of an abstract mobile agent called a <i>vehicle. </i>Sample
 code
@@ -243,7 +243,7 @@ the <a href="stref.html">quick reference guide</a>)</td>
 Keys (labeled F1 through F12 on most keyboards). Type a <span
  style="font-weight: bold;">?</span> to print a list of all recognized
 commands, including those handled
-by the current PlugIn.&nbsp; (There is an issue with printing <small><a
+by the current PlugIn. (There is an issue with printing <small><a
  href="KnownBugs">[see "Known Bugs" below]</a></small>.)<br>
 </p>
 <p>OpenSteerDemo keeps track of a single <i>selected</i> agent which
@@ -321,7 +321,7 @@ continue to happen each frame, but the <i>elapsed time </i>("dt") is
 given as zero.) The clock can be set to run in one of three modes
 described in the table below. You can use OpenSteerDemo's
 <b>&nbsp;f&nbsp;</b> keyboard command to cycle among several
-preset combinations of clock mode and target frame rate.&nbsp; Your
+preset combinations of clock mode and target frame rate. Your
 PlugIn code can also set these modes using Clock methods:<span
  class="sourcecode">
 get/setFixedFrameRate, get/setAnimationMode,
@@ -335,7 +335,7 @@ more detail, see <b>Clock.h</b></p>
       <td class="graybox">For viewing real-time simulations. Updates
 run as
 fast as possible. Simulation time steps are set equal to the amount of
-real time elapsed since the previous update.&nbsp; Similar to graphics
+real time elapsed since the previous update. Similar to graphics
 on a PC.<br>
       </td>
     </tr>
@@ -343,11 +343,12 @@ on a PC.<br>
       <td class="graybox">fixed target frame rate</td>
       <td class="graybox"> For viewing real-time simulations. Updates
 are
-constrained to occur at multiples of a fixed frame rate (often 60, 30
-or 24 fps) by waiting until the next fame boundary.&nbsp; If the update
-takes too long, it has to wait for the second frame boundary <small>(aka
-"frame out" or "double
-framing")</small>.&nbsp; Similar to graphics on a video game console. </td>
+constrained to occur at multiples of a fixed frame rate (often 30 or 60
+fps) by waiting until the next fame boundary. If the update
+takes too long, it has to wait for the second frame boundary (aka <span
+ style="font-style: italic;">frame out</span> or <span
+ style="font-style: italic;">double
+framing</span>). Similar to graphics on a video game console. </td>
     </tr>
     <tr>
       <td class="graybox">animation mode<br>
@@ -355,7 +356,7 @@ framing")</small>.&nbsp; Similar to graphics on a video game console. </td>
       <td class="graybox">For running fixed time step simulations,
 generally <span style="font-style: italic;">not</span> in real-time,
 which may
-appear to run in "slow motion".&nbsp; Ignores real time to produce
+appear to run in "slow motion". Ignores real time to produce
 consistent simulation results.<br>
       </td>
     </tr>
@@ -559,7 +560,7 @@ component to the OpenSteerDemo build target). On Linux using <a
  href="http://www.gnu.org/software/make/">make</a> (or <a
  href="http://www.kdevelop.org/">KDevelop</a>), if you leave your
 PlugIn's source file in the standard directory (<b>opensteer/plugins/</b>)
-will be compiled automatically.&nbsp; (Ideally compiling a PlugIn
+will be compiled automatically. (Ideally compiling a PlugIn
 should not require compiling OpenSteerDemo <small><a href="#KnownBugs">[see
 "Known Bugs" below]</a></small>.)</p>
 <p>The samples in <b>opensteer/plugins/</b> each define at least one
@@ -804,13 +805,13 @@ will be clipped to the vehicle's maxForce parameter.</p>
 <br>
 </p>
 <blockquote>These "do nothing" methods are defined by
-SteerLibraryMixin.&nbsp; They are called when various steering
-behaviors decide to take action.&nbsp; These <span
+SteerLibraryMixin. They are called when various steering
+behaviors decide to take action. These <span
  style="font-style: italic;">hook</span> methods are intended to be
 overloaded
 by
 PlugIn writers to provide graphical annotation, or other side
-effects.&nbsp; For
+effects. For
 example the Pedestrian vehicle class overloads<span class="sourcecode">
 annotateAvoidObstacle </span>to draw annotation lines around the
 vehicle's obstacle avoidance corridor when an obstacle is found inside
@@ -861,19 +862,29 @@ Installing OpenSteer
 </b></big></big></p>
 OpenSteer can be used several ways. You may want to simply <a
  href="http://sourceforge.net/project/showfiles.php?group_id=77546">download</a>
-the OpenSteerDemo application to run the demos.&nbsp; You may want to <a
+the OpenSteerDemo application to run the demos. You may want to <a
  href="http://cvs.sourceforge.net/viewcvs.py/opensteer/">browse</a>
-through some of the source code over the web.&nbsp; You may want to <a
+through some of the source code over the web. You may want to <a
  href="http://sourceforge.net/project/showfiles.php?group_id=77546">download</a>
-a complete copy of the source to try some informal experiments.&nbsp;
+a complete copy of the source to try some informal code-tweaking
+experiments.
 Or you may be interested in joining with the community of developers
-actively maintaining and improving the OpenSteer software.<br>
-<p>To download a precompiled version of the OpenSteerDemo application,
+actively maintaining and improving the OpenSteer software by using code
+from the <a href="http://sourceforge.net/cvs/?group_id=77546">CVS
+repository</a>.
+<p>To download an executable copy of the OpenSteerDemo application,
 or a zip archive of the full source, visit
 <a href="http://sourceforge.net/project/showfiles.php?group_id=77546">OpenSteer's
-file release page at SourceForge</a>. The OpenSteerDemo application is
+<span style="font-style: italic;">file release</span> page at
+SourceForge</a>. The OpenSteerDemo application is
 available
-as precompiled binary executables for Linux, Mac OS X, and Windows. </p>
+as precompiled binary executables for Linux, Mac OS X, and
+Windows.&nbsp; Source code and compiled applications are grouped
+together by release. You can receive&nbsp; notifications of future
+releases by subscribing to a low traffic <a
+ href="http://lists.sourceforge.net/mailman/listinfo/opensteer-announce">mailing
+list for OpenSteer announcements</a>.&nbsp; The current release is
+OpenSteer 0.8.2 which contains these files: </p>
 <table align="center" border="0" cellpadding="0" cellspacing="3"
  width="90%">
   <tbody>
@@ -901,7 +912,7 @@ as precompiled binary executables for Linux, Mac OS X, and Windows. </p>
   </tbody>
 </table>
 <p>Otherwise, use CVS to obtain the most up-to-date version of the
-OpenSteer Source code.&nbsp; If you want to be a developer, or at least
+OpenSteer source code. If you want to be a developer, or at least
 a serious kibitzer, or want to help by testing the newest version of
 the code, or frankly, as long as you feel comfortable doing a <a
  href="https://www.cvshome.org/">CVS</a> <a
@@ -913,8 +924,9 @@ repository</a> and checkout the code. (If you are not a SourceForge
 member can do the checkout anonymously:&nbsp; <small><small>cvs -z3
 -d:pserver:anonymous@cvs-pserver.sourceforge.net:80/cvsroot/opensteer
 co opensteer</small></small>). CVS client software is included with
-Linux and Mac OS X systems.&nbsp; An easy-to-use Windows CVS client is<a
- href="http://www.tortoisecvs.org/"> TortoiseCVS</a>.This is the
+Linux and Mac OS X systems. A free and easy-to-use Windows CVS
+client is<a href="http://www.tortoisecvs.org/"> TortoiseCVS</a>. This
+is the
 directory structure
 of OpenSteer:&nbsp;<br>
 </p>
@@ -968,14 +980,18 @@ required by OpenSteer, and (3) the
 appropriate programmer's tools for your platform. The table
 below lists three platforms, four build tools, and which <span
  style="font-style: italic;">project file</span> to use for
-each.&nbsp;&nbsp;Note that <span style="font-style: italic;"> </span><a
+each. Note that <span style="font-style: italic;"> </span><a
  href="http://www.gnu.org/software/make/">make</a> and <a
  href="http://www.apple.com/macosx/features/xcode/">Xcode</a> are
 supplied free with their respective operating systems, <a
  href="http://www.kdevelop.org/">KDevelop</a> is available for free
 download. <a href="http://msdn.microsoft.com/vstudio/">Visual Studio</a>
-and <a href="http://msdn.microsoft.com/visualc/">VC++7.1</a> are
-available for sale.</p>
+and <a href="http://msdn.microsoft.com/visualc/">VC++</a> are
+available for sale.&nbsp; Regarding compiler versions: on Windows
+please use <a href="http://msdn.microsoft.com/visualc/">Visual C++ 7.1</a>
+(or newer), on Linux please use GCC 3.0 (or newer), on Mac OS X if you
+have Xcode you have the right compiler.<br>
+</p>
 <table align="center" border="0" cellpadding="0" cellspacing="3"
  width="90%">
   <tbody>
@@ -999,7 +1015,7 @@ opensteer/macosx/OpenSteer.xcode </td>
       <td class="graybox" width="25%">Windows<br>
       </td>
       <td class="graybox"><a href="http://msdn.microsoft.com/vstudio/">Visual
-Studio</a> (<a href="http://msdn.microsoft.com/visualc/">VC++7.1</a>):&nbsp;&nbsp;
+Studio</a> (<a href="http://msdn.microsoft.com/visualc/">Visual C++</a>):&nbsp;&nbsp;
 opensteer/win32/OpenSteer.sln </td>
     </tr>
   </tbody>
@@ -1007,14 +1023,13 @@ opensteer/win32/OpenSteer.sln </td>
 <p>To build using an IDE (Xcode, Visual Studio or KDevelop) simply
 double click on
 the project file indicated above, then do a Full Build or Build
-Solution.&nbsp; To run the resulting application, use the IDE's Run
-command or double click on the OpenSteerDemo desktop icon.&nbsp; To
-build using the Linux Makefile, <span style="font-style: italic;">cd</span>
-to opensteer/linux/ and use the <span style="font-style: italic;">make</span>
-command.&nbsp; To run the application, you can use <span
- style="font-style: italic;">make run</span> from the opensteer/linux/
-directory.<br>
-</p>
+Solution. To run the resulting application, use the IDE's Run
+command or double click on the OpenSteerDemo desktop icon. To use
+the Linux Makefile, <span style="font-weight: bold;">cd</span>
+to <span style="font-weight: bold;">opensteer/linux/</span> -- build
+using the <span style="font-weight: bold;">make</span>
+command, run the application with the <span style="font-weight: bold;">make
+run</span> command.</p>
 <p><big><big><b><br>
 <a name="KnownBugs"></a>Known Bugs and Missing Features
 </b></big></big></p>
@@ -1069,11 +1084,11 @@ user-selectable option. Right now they are as likely to fly straight up
 and horizontally.<br>
   </li>
   <li>
-    <p>One ought to be able to add a PlugIn to OpenSteerDemo at runtime.</p>
-  </li>
-  <li>
-    <p>Compiling OpenSteer on GCC requires version 3 or later. (I'm not
-sure if this is a "bug" to be fixed or just a fact to be noted.)</p>
+    <p>One ought to be able to add a PlugIn to OpenSteerDemo at
+runtime. <small>[<a
+ href="https://sourceforge.net/forum/message.php?msg_id=2788973">forum
+thread</a>]<br>
+    </small></p>
   </li>
   <li>
     <p>Non-penetration constraints should be supported in OpenSteer so
@@ -1087,24 +1102,24 @@ non-planar surfaces.</p>
   </li>
   <li>
     <p>OpenSteer should divide cleanly into a runtime library and a
-demo application. It currently does not.&nbsp; See this <a
- href="http://sourceforge.net/tracker/index.php?func=detail&amp;aid=1029515&amp;group_id=77546&amp;atid=550583">bug</a>
-and this <a
- href="http://sourceforge.net/forum/message.php?msg_id=2805231">forum
-thread</a>.</p>
+demo application. It currently does not. <small>[<a
+ href="http://sourceforge.net/tracker/index.php?func=detail&amp;aid=1029515&amp;group_id=77546&amp;atid=550583">bug</a>,
+    <a href="http://sourceforge.net/forum/message.php?msg_id=2805231">forum
+thread</a>.]</small></p>
   </li>
   <li>
-    <p>Printed messages from OpenSteerDemo and PlugIns are lost, or at
-least are not immediately seen by the user in some circumstances.&nbsp;
-See this <a
+    <p>When OpenSteerDemo is launched from the desktop (not from a
+command line, say by double-clicking on an icon) printed messages may
+be lost, or at
+least not be seen immediately by the user. <small>[<a
  href="http://sourceforge.net/forum/message.php?msg_id=2801351">forum
-thread</a>.<br>
+thread</a>]</small><br>
     </p>
   </li>
   <li>
     <p>Many of OpenSteer's component APIs (such as: Clock, Annotation
 and SimpleVehicle) are not documented beyond cryptic comments in header
-files.&nbsp; It has been <a
+files. It has been <a
  href="http://sourceforge.net/forum/message.php?msg_id=2698066">suggested</a>
 that perhaps OpenSteer should use comments compatible with the <a
  href="http://www.stack.nl/%7Edimitri/doxygen/">Doxygen</a> system for
@@ -1112,19 +1127,22 @@ generating API docs.<br>
     </p>
   </li>
   <li>
-    <p>Stupidly, the various "annotation" (deferred graphics) types
+    <p>Stupidly, the various <span style="font-style: italic;">annotation</span>
+(deferred graphics) types
 (lines, circles) are currently limited to a fixed number of
-objects.&nbsp; OpenSteerDemo complains incessantly when these limits
+objects. OpenSteerDemo complains incessantly when these limits
 are exceeded.<br>
     </p>
   </li>
   <li>
     <p>There should be sample code (a PlugIn) showing how to use
-OpenSteer in a more traditional, non-mixin, HAS-A architecture.<br>
+OpenSteer in a more traditional, non-mixin, HAS-A architecture. <small>[<a
+ href="https://sourceforge.net/forum/message.php?msg_id=2799598">forum
+thread</a>]</small><br>
     </p>
   </li>
   <li>
-    <p>Besides, shouldn't these bugs be listed in the <a
+    <p>Besides, shouldn't all these bugs be listed in the <a
  href="http://sourceforge.net/tracker/?group_id=77546">appropriate place</a>
 on SourceForge?</p>
   </li>
@@ -1163,10 +1181,37 @@ which includes a Steering Working Group</p>
   <li>
     <p><a href="http://www.red3d.com/cwr/papers/1999/gdc99steer.html">Steering
 Behaviors For Autonomous Characters</a> the GDC 1999 paper on steering
-behaviors and this background and update page with <a
- href="http://www.red3d.com/cwr/steer/">Java demos and related links</a></p>
+behaviors, and this companion page with <a
+ href="http://www.red3d.com/cwr/steer/">background, updates and </a><a
+ href="http://www.red3d.com/cwr/steer/">Java demos</a>.<a
+ href="http://www.red3d.com/cwr/steer/"><br>
+    </a></p>
   </li>
-  <li>Sample applications of steering behaviors:
+  <li>
+    <p>Systems that use OpenSteer:</p>
+    <ul>
+      <li>
+        <p><a href="http://www.cs.ubc.ca/%7Ebforsyth/research/">Intelligent
+Support of Interactive Manual Control: Haptic Guidance Based on a
+Look-Ahead Predictor</a> by <a href="http://www.cs.ubc.ca/%7Ebforsyth/">Ben
+Forsyth</a> .&nbsp; In his Master's thesis, Ben used OpenSteer as a
+framework for his experiments, used path following behavior in a novel
+application, and invented a new and more realistic model of a steerable
+wheeled vehicle.<br>
+        </p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Systems similar to OpenSteer:</p>
+    <ul>
+      <li><a href="http://www.spiderland.org/breve/">breve</a>: a 3d
+Simulation Environment for Decentralized Simulations and Artificial Life<br>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Sample applications of steering behaviors (pre-OpenSteer): </p>
     <ul>
       <li>
         <p><a href="http://www.red3d.com/cwr/papers/2000/pip.html">Interaction
@@ -1191,7 +1236,7 @@ driven by steering behaviors.</p>
 comments or suggestions.
 <br>
 <br>
-<!-- CHANGE DATE AT TOP OF FILE TOO -->Last update: October 14, 2004 <br>
+<!-- CHANGE DATE AT TOP OF FILE TOO -->Last update: October 15, 2004 <br>
 </p>
 <a href="http://sourceforge.net">
 <img src="http://sourceforge.net/sflogo.php?group_id=77546&amp;type=1"
