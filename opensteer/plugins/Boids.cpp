@@ -106,8 +106,8 @@ public:
         // randomize initial position
         setPosition (RandomVectorInUnitRadiusSphere () * 20);
 
-        // trail is 1 second long with 20 points (10 dashes) along its length
-        // setTrailParameters (10, 200);
+        // notify proximity database that our position has changed
+        proximityToken->updateForNewPosition (position());
     }
 
     // draw this boid into the scene
@@ -124,7 +124,7 @@ public:
         // combined steering force: boids are always flocking, plus
         // when near sphere boundary, gently seek toward the center
         const Vec3 flocking = steerToFlock ();
-        if (position().length() < 50)
+        if (position().length() < worldRadius)
         {
             applySteeringForce (flocking, elapsedTime);
         }
@@ -199,10 +199,13 @@ public:
     // allocate one and share amoung instances just to save memory usage
     // (change to per-instance allocation to be more mp-safe)
     static AVGroup neighbors;
+
+    static float worldRadius;
 };
 
 
 AVGroup Boid::neighbors;
+float Boid::worldRadius = 50;
 
 
 // ----------------------------------------------------------------------------
@@ -222,14 +225,17 @@ public:
     void open (void)
     {
         // make the database used to accelerate proximity queries
-        // XXX the sphere boundary diameter is 100 and they frequently
-        // XXX go outside that.  Using 110, but need to link constants
-        // XXX here and in Boid::update
-        pd = new LQProximityDatabase<AbstractVehicle*> (Vec3::zero,
-                                                        Vec3 (110, 110, 110),
-                                                        Vec3 (15, 15, 15));
+        const Vec3 center;
+        const int div = 10;
+        const Vec3 divisions (div, div, div);
+        const float diameter = Boid::worldRadius * 1.1 * 2;
+        debugPrint (diameter);
+        const Vec3 dimensions (diameter, diameter, diameter);
+        pd = new LQProximityDatabase<AbstractVehicle*> (center,
+                                                        dimensions,
+                                                        divisions);
         // make default-sized flock
-        makeFlock (200);
+        for (int i = 0; i < 200; i++) addBoidToFlock ();
 
         // initialize camera
         Boid& firstBoid = **flock.begin();
@@ -297,7 +303,8 @@ public:
     void reset (void)
     {
         // reinitialize all boids in the flock
-        initializeFlock ();
+//         initializeFlock ();
+        for (iterator i = flock.begin(); i != flock.end(); i++) (**i).reset();
 
         // reset camera position
         SteerTest::position3dCamera (*SteerTest::selectedVehicle);
@@ -351,18 +358,6 @@ public:
 
         // delete the Boid
         delete boid;
-    }
-
-    // create new flock of the given size
-    void makeFlock (const int size)
-    {
-        for (int i = 0; i < size; i++) addBoidToFlock ();
-    }
-
-    // initialize the flock's positions and orientations
-    void initializeFlock (void)
-    {
-        for (iterator i = flock.begin(); i != flock.end(); i++) (**i).reset();
     }
 
     // return an AVGroup containing each boid of the flock

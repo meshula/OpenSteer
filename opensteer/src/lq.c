@@ -63,10 +63,7 @@
 /* ------------------------------------------------------------------ */
 
 
-/* ------------------------------------------------ xxxBasicProximity */
-#include <malloc.h>
-/* #include <stdlib.h> */
-/* ------------------------------------------------ xxxBasicProximity */
+#include <stdlib.h>
 #include <float.h>
 #include "lq.h"
 
@@ -560,32 +557,16 @@ void* lqFindNearestNeighborWithinRadius (lqInternalDB* lq,
 /* internal helper function */
 
 
-/* ------------------------------------------------ xxxBasicProximity */
-/* XXX temp!!! */
-/* #include <stdio.h> */
-/* int XXXbin; */
-/* ------------------------------------------------ xxxBasicProximity */
-
-
 void lqMapOverAllObjectsInBin (lqClientProxy* binProxyList, 
 			       lqCallBackFunction func,
 			       void* clientQueryState)
 {
-/* ------------------------------------------------ xxxBasicProximity */
-/*    printf ("%5d:", XXXbin); */
-/* ------------------------------------------------ xxxBasicProximity */
     /* walk down proxy list, applying call-back function to each one */
     while (binProxyList != NULL)
     {
 	(*func) (binProxyList->object, 0, clientQueryState);
 	binProxyList = binProxyList->next;
-/* ------------------------------------------------ xxxBasicProximity */
-/*        printf ("*"); */
-/* ------------------------------------------------ xxxBasicProximity */
     }
-/* ------------------------------------------------ xxxBasicProximity */
-/*        printf ("\n"); */
-/* ------------------------------------------------ xxxBasicProximity */
 }
 
 
@@ -599,15 +580,9 @@ void lqMapOverAllObjects (lqInternalDB* lq,
 {
     int i;
     int bincount = lq->divx * lq->divy * lq->divz;
-/* ------------------------------------------------ xxxBasicProximity */
-/*    XXXbin = 0; */
-/* ------------------------------------------------ xxxBasicProximity */
     for (i=0; i<bincount; i++)
     {
 	lqMapOverAllObjectsInBin (lq->bins[i], func, clientQueryState);
-/* ------------------------------------------------ xxxBasicProximity */
-/*        XXXbin++; */
-/* ------------------------------------------------ xxxBasicProximity */
     }
     lqMapOverAllObjectsInBin (lq->other, func, clientQueryState);
 }

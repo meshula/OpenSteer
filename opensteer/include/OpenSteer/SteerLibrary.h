@@ -157,12 +157,10 @@ public:
     // used by boid behaviors
 
 
-    bool inBoidNeighborhood (const Vec3& queryLocation,
+    bool inBoidNeighborhood (const AbstractVehicle& other,
                              const float minDistance,
                              const float maxDistance,
-                             const float cosMaxAngle,
-                             float& distanceWeight,
-                             Vec3& unitOffset);
+                             const float cosMaxAngle);
 
 
     // ------------------------------------------------------------------------
@@ -644,51 +642,52 @@ steerToAvoidCloseNeighbors (const float minSeparationDistance,
 
 
 // ----------------------------------------------------------------------------
-// used by boid behaviors
+// used by boid behaviors: is a given vehicle within this boid's neighborhood?
 
 
 template<class Super>
 bool
 SteerLibraryMixin<Super>::
-inBoidNeighborhood (const Vec3& queryLocation,
+inBoidNeighborhood (const AbstractVehicle& other,
                     const float minDistance,
                     const float maxDistance,
-                    const float cosMaxAngle,
-                    float& distanceWeight,
-                    Vec3& unitOffset)
+                    const float cosMaxAngle)
 {
-    const Vec3 offset = queryLocation - position();
-    const float distance = offset.length ();
-    unitOffset = offset / distance;
-    const float forwardness = forward().dot (unitOffset);
-
-    // conical weighting function (linear falloff)
-    const float d = maxDistance - distance; //xxx NAME???
-    distanceWeight = d / maxDistance;
-
-    if (distance < minDistance)
+    if (&other == this)
     {
-        return true;
+        return false;
     }
     else
     {
-        if ((distance < maxDistance) && (forwardness > cosMaxAngle))
+        const Vec3 offset = other.position() - position();
+        const float distanceSquared = offset.lengthSquared ();
+
+        // definitely in neighborhood if inside minDistance sphere
+        if (distanceSquared < (minDistance * minDistance))
         {
             return true;
         }
         else
         {
-            distanceWeight = 0;
-            return false;
+            // definitely not in neighborhood if outside maxDistance sphere
+            if (distanceSquared > (maxDistance * maxDistance))
+            {
+                return false;
+            }
+            else
+            {
+                // otherwise, test angular offset from forward axis
+                const Vec3 unitOffset = offset / sqrt (distanceSquared);
+                const float forwardness = forward().dot (unitOffset);
+                return forwardness > cosMaxAngle;
+            }
         }
     }
 }
 
 
-
 // ----------------------------------------------------------------------------
-// Separation behavior (xxx used by Boids xxx)
-// xxx used by Boids -- determines the direction away from nearby boids
+// Separation behavior: steer away from neighbors
 
 
 template<class Super>
@@ -698,52 +697,37 @@ steerForSeparation (const float maxDistance,
                     const float cosMaxAngle,
                     const AVGroup& flock)
 {
-    // for each of the other vehicles...
+    // steering accumulator and count of neighbors, both initially zero
     Vec3 steering;
     int neighbors = 0;
-    for (AVIterator i = flock.begin(); i != flock.end(); i++)
-    {
-        AbstractVehicle& other = **i;
-        if (&other != this)
-        {
-            float distanceWeight;
-            Vec3 unitOffset;
-            if (inBoidNeighborhood (other.position(),
-                                    radius()*3,
-                                    maxDistance,
-                                    cosMaxAngle,
-                                    distanceWeight,
-                                    unitOffset))
-            {
-                // XXX ------------------------------ do it like in psboids
-                // // repulsive force, diminished with distance
-                // steering += unitOffset * -distanceWeight;
-                // XXX ------------------------------ do it like in psboids
-                const Vec3 offset = other.position() - position();
-                const float distanceSquared = offset.dot(offset);
-                steering += (offset / -distanceSquared);
-                // XXX ------------------------------ do it like in psboids
 
-                // count neighbors
-                neighbors++;
-            }
+    // for each of the other vehicles...
+    for (AVIterator other = flock.begin(); other != flock.end(); other++)
+    {
+        if (inBoidNeighborhood (**other, radius()*3, maxDistance, cosMaxAngle))
+        {
+            // add in steering contribution
+            // (opposite of the offset direction, divided once by distance
+            // to normalize, divided another time to get 1/d falloff)
+            const Vec3 offset = (**other).position() - position();
+            const float distanceSquared = offset.dot(offset);
+            steering += (offset / -distanceSquared);
+
+            // count neighbors
+            neighbors++;
         }
     }
 
-    // XXX ------------------------------ do it like in psboids
-    //     if (neighbors > 0) steering = steering / neighbors;
-    // XXX ------------------------------ do it like in psboids
-    if (neighbors > 0)
-    {
-        steering = (steering / neighbors).normalize();
-    }
-    // XXX ------------------------------ do it like in psboids
+    // divide by neighbors, then normalize to pure direction
+    if (neighbors > 0) steering = (steering / neighbors).normalize();
 
     return steering;
 }
 
+
 // ----------------------------------------------------------------------------
-// Alignment behavior
+// Alignment behavior: steer to head in same direction as neighbors
+
 
 template<class Super>
 Vec3
@@ -752,62 +736,34 @@ steerForAlignment (const float maxDistance,
                    const float cosMaxAngle,
                    const AVGroup& flock)
 {
-    // for each of the other vehicles...
+    // steering accumulator and count of neighbors, both initially zero
     Vec3 steering;
     int neighbors = 0;
-    for (AVIterator i = flock.begin(); i != flock.end(); i++)
+
+    // for each of the other vehicles...
+    for (AVIterator other = flock.begin(); other != flock.end(); other++)
     {
-        AbstractVehicle& other = **i;
-        if (&other != this)
+        if (inBoidNeighborhood (**other, radius()*3, maxDistance, cosMaxAngle))
         {
-            float distanceWeight;
-            Vec3 unitOffset;
-            if (inBoidNeighborhood (other.position(),
-                                    radius()*3,
-                                    maxDistance,
-                                    cosMaxAngle,
-                                    distanceWeight,
-                                    unitOffset))
-            {
-                // const Vec3 alignError = forward() - other.forward;
-                // steering += alignError * -distanceWeight;
-                // XXX ------------------------------ do it like in psboids
-                // const Vec3 myVelocity = forward() * speed;
-                // const Vec3 otherVelocity = other.forward() * other.speed;
-                // const Vec3 velocityDifference = myVelocity - otherVelocity;
-                // XXX ------------------------------ do it like in psboids
+            // accumulate sum of neighbor's heading
+            steering += (**other).forward();
 
-                // XXX ------------------------------ do it like in psboids
-                // // corrective force, diminished with distance
-                // steering += velocityDifference * -distanceWeight;
-                // XXX ------------------------------ do it like in psboids
-                steering += other.forward();
-                // XXX ------------------------------ do it like in psboids
-
-                // count neighbors
-                neighbors++;
-            }
-
+            // count neighbors
+            neighbors++;
         }
     }
 
-    // XXX ------------------------------ do it like in psboids
-    //     if (neighbors > 0) steering = steering / neighbors;
-    // XXX ------------------------------ do it like in psboids
-    if (neighbors > 0)
-    {
-        steering = steering / neighbors;
-        steering -= forward();
-        steering = steering.normalize();
-    }
-    // XXX ------------------------------ do it like in psboids
+    // divide by neighbors, subtract off current heading to get error-
+    // correcting direction, then normalize to pure direction
+    if (neighbors > 0) steering = ((steering/neighbors)-forward()).normalize();
 
     return steering;
 }
 
 
 // ----------------------------------------------------------------------------
-// Cohesion behavior
+// Cohesion behavior: to to move toward center of neighbors
+
 
 
 template<class Super>
@@ -817,51 +773,29 @@ steerForCohesion (const float maxDistance,
                   const float cosMaxAngle,
                   const AVGroup& flock)
 {
-    // for each of the other vehicles...
+    // steering accumulator and count of neighbors, both initially zero
     Vec3 steering;
     int neighbors = 0;
-    for (AVIterator i = flock.begin(); i != flock.end(); i++)
+
+    // for each of the other vehicles...
+    for (AVIterator other = flock.begin(); other != flock.end(); other++)
     {
-        AbstractVehicle& other = **i;
-        if (&other != this)
+        if (inBoidNeighborhood (**other, radius()*3, maxDistance, cosMaxAngle))
         {
+            // accumulate sum of neighbor's positions
+            steering += (**other).position();
 
-            float distanceWeight;
-            Vec3 unitOffset;
-            if (inBoidNeighborhood (other.position(),
-                                    radius()*3,
-                                    maxDistance,
-                                    cosMaxAngle,
-                                    distanceWeight,
-                                    unitOffset))
-            {
-                // XXX ------------------------------ do it like in psboids
-                // // attractive force, diminished with distance
-                // steering += unitOffset * distanceWeight;
-                // XXX ------------------------------ do it like in psboids
-                steering += other.position();
-                // XXX ------------------------------ do it like in psboids
-
-                // count neighbors
-                neighbors++;
-            }
+            // count neighbors
+            neighbors++;
         }
     }
 
-    // XXX ------------------------------ do it like in psboids
-    //     if (neighbors > 0) steering = steering / neighbors;
-    // XXX ------------------------------ do it like in psboids
-    if (neighbors > 0)
-    {
-        steering = steering / neighbors;
-        steering -= position();
-        steering = steering.normalize();
-    }
-    // XXX ------------------------------ do it like in psboids
+    // divide by neighbors, subtract off current position to get error-
+    // correcting direction, then normalize to pure direction
+    if (neighbors > 0) steering =((steering/neighbors)-position()).normalize();
 
     return steering;
 }
-
 
 
 // ----------------------------------------------------------------------------
