@@ -222,39 +222,37 @@ float clockErrorExit (void)
 float Clock::realTimeSinceFirstClockUpdate (void)
 #ifdef _WIN32
 {
-    LONGLONG time, freq;
-	if (!QueryPerformanceCounter((LARGE_INTEGER *)&time)   ||
-		!QueryPerformanceFrequency((LARGE_INTEGER *)&freq))
-        return clockErrorExit ();
+    // get time from Windows
+    LONGLONG counter, frequency;
+    bool clockOK = (QueryPerformanceCounter ((LARGE_INTEGER *)&counter)  &&
+                    QueryPerformanceFrequency ((LARGE_INTEGER *)&frequency));
+    if (!clockOK) return clockErrorExit ();
 
-	// ensure the base time is recorded once after launch
-    if (basePerformanceCounter == 0) basePerformanceCounter = time;
+    // ensure the base counter is recorded once after launch
+    if (basePerformanceCounter == 0) basePerformanceCounter = counter;
 
     // real "wall clock" time since launch
-    const LONGLONG counterDifference = time - basePerformanceCounter;
-    return ((float) counterDifference) / ((float)freq);
+    const LONGLONG counterDifference = counter - basePerformanceCounter;
+    return ((float) counterDifference) / ((float)frequency);
 }
 #else
 {
+    // get time from Linux (Unix, Mac OS X, ...)
     timeval t;
-    if (gettimeofday (&t, 0) != 0)
-    {
-        return clockErrorExit ();
-    }
-    else
-    {
-        // ensure the base time is recorded once after launch
-        if (baseRealTimeSec == 0)
-        {
-            baseRealTimeSec = t.tv_sec;
-            baseRealTimeUsec = t.tv_usec;
-        }
+    if (gettimeofday (&t, 0) != 0) return clockErrorExit ();
 
-        // real "wall clock" time since launch
-        return (( t.tv_sec  - baseRealTimeSec) +
-                ((t.tv_usec - baseRealTimeUsec) / 1000000.0f));
+    // ensure the base time is recorded once after launch
+    if (baseRealTimeSec == 0)
+    {
+        baseRealTimeSec = t.tv_sec;
+        baseRealTimeUsec = t.tv_usec;
     }
+
+    // real "wall clock" time since launch
+    return (( t.tv_sec  - baseRealTimeSec) +
+            ((t.tv_usec - baseRealTimeUsec) / 1000000.0f));
 }
 #endif
+
 
 // ----------------------------------------------------------------------------
