@@ -103,13 +103,13 @@ namespace OpenSteer {
         // draw an opaque colored line segment between two locations in space
         void annotationLine (const Vec3& startPoint,
                              const Vec3& endPoint,
-                             const Vec3& color);
+                             const Vec3& color) const;
 
         // draw a circle on the XZ plane
         void annotationXZCircle (const float radius,
                                  const Vec3& center,
                                  const Vec3& color,
-                                 const int segments)
+                                 const int segments) const
         {
             annotationXZCircleOrDisk (radius, center, color, segments, false);
         }
@@ -119,7 +119,7 @@ namespace OpenSteer {
         void annotationXZDisk (const float radius,
                                const Vec3& center,
                                const Vec3& color,
-                               const int segments)
+                               const int segments) const
         {
             annotationXZCircleOrDisk (radius, center, color, segments, true);
         }
@@ -130,7 +130,7 @@ namespace OpenSteer {
                                  const Vec3& center,
                                  const Vec3& axis,
                                  const Vec3& color,
-                                 const int segments)
+                                 const int segments) const
         {
             annotation3dCircleOrDisk (radius, center, axis, color, segments, false);
         }
@@ -141,7 +141,7 @@ namespace OpenSteer {
                                const Vec3& center,
                                const Vec3& axis,
                                const Vec3& color,
-                               const int segments)
+                               const int segments) const
         {
             annotation3dCircleOrDisk (radius, center, axis, color, segments, true);
         }
@@ -155,7 +155,7 @@ namespace OpenSteer {
                                        const Vec3& center,
                                        const Vec3& color,
                                        const int segments,
-                                       const bool filled)
+                                       const bool filled) const
         {
             annotationCircleOrDisk (radius,
                                     Vec3::zero,
@@ -172,7 +172,7 @@ namespace OpenSteer {
                                        const Vec3& axis,
                                        const Vec3& color,
                                        const int segments,
-                                       const bool filled)
+                                       const bool filled) const
         {
             annotationCircleOrDisk (radius,
                                     axis,
@@ -189,7 +189,7 @@ namespace OpenSteer {
                                      const Vec3& color,
                                      const int segments,
                                      const bool filled,
-                                     const bool in3d);
+                                     const bool in3d) const;
 
         // ------------------------------------------------------------------------
     private:
@@ -373,7 +373,7 @@ template<class Super>
 void 
 OpenSteer::AnnotationMixin<Super>::annotationLine (const Vec3& startPoint,
                                                    const Vec3& endPoint,
-                                                   const Vec3& color)
+                                                   const Vec3& color) const
 {
     if (OpenSteerDemo::annotationIsOn())
     {
@@ -405,7 +405,7 @@ OpenSteer::AnnotationMixin<Super>::annotationCircleOrDisk (const float radius,
                                                            const Vec3& color,
                                                            const int segments,
                                                            const bool filled,
-                                                           const bool in3d)
+                                                           const bool in3d) const
 {
     if (OpenSteerDemo::annotationIsOn())
     {
