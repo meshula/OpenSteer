@@ -35,12 +35,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opensteerd.lib"
+				OutputFile="$(OutDir)/$(ProjectName)_d.exe"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)\lib&quot;"
 				GenerateDebugInformation="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="mkdir $(ProjectDir)\bin
+copy $(TargetPath) $(ProjectDir)\bin"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -83,7 +86,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opensteer.lib"
-				OutputFile="$(OutDir)/opensteer.exe"
+				OutputFile="$(OutDir)/$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)\lib&quot;"
 				GenerateDebugInformation="TRUE"
@@ -94,7 +97,9 @@
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="mkdir $(ProjectDir)\bin
+copy $(TargetPath) $(ProjectDir)\bin"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -120,20 +125,17 @@
 			Name="src"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm">
 			<File
-				RelativePath="..\plugins\Boids.cpp">
-			</File>
-			<File
 				RelativePath="..\src\main.cpp">
 			</File>
 			<File
-				RelativePath="..\src\SteerTest.cpp">
+				RelativePath="..\src\OpenSteerDemo.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
 			<File
-				RelativePath=".\SteerTest.ico">
+				RelativePath=".\OpenSteerDemo.ico">
 			</File>
 			<File
 				RelativePath=".\SteerTest.rc">
@@ -142,6 +144,9 @@
 		<Filter
 			Name="plugins"
 			Filter="">
+			<File
+				RelativePath="..\plugins\Boids.cpp">
+			</File>
 			<File
 				RelativePath="..\plugins\CaptureTheFlag.cpp">
 			</File>

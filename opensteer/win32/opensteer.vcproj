@@ -39,7 +39,8 @@
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(TargetPath) $(ProjectDir)\lib"/>
+				CommandLine="mkdir $(ProjectDir)\lib
+copy $(TargetPath) $(ProjectDir)\lib"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -83,7 +84,8 @@
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(TargetPath) $(ProjectDir)\lib"/>
+				CommandLine="mkdir $(ProjectDir)\lib
+copy $(TargetPath) $(ProjectDir)\lib"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
