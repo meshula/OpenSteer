@@ -162,6 +162,9 @@ void SteerTest::updateSimulationAndRedraw (void)
 void SteerTest::errorExit (const char* message)
 {
     printMessage (message);
+#ifdef _MSC_VER
+	MessageBox(0, message, "SteerTest Unfortunate Event", MB_ICONERROR);
+#endif
     exit (-1);
 }
 
