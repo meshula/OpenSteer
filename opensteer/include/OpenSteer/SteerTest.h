@@ -169,11 +169,23 @@ public:
 
     // set a certain initial camera state used by several plug-ins
     static void init2dCamera (AbstractVehicle& selected);
+    static void init2dCamera (AbstractVehicle& selected,
+                              float distance,
+                              float elevation);
     static void init3dCamera (AbstractVehicle& selected);
+    static void init3dCamera (AbstractVehicle& selected,
+                              float distance,
+                              float elevation);
 
     // set initial position of camera based on a vehicle
     static void position3dCamera (AbstractVehicle& selected);
+    static void position3dCamera (AbstractVehicle& selected,
+                                  float distance,
+                                  float elevation);
     static void position2dCamera (AbstractVehicle& selected);
+    static void position2dCamera (AbstractVehicle& selected,
+                                  float distance,
+                                  float elevation);
 
     // camera updating utility used by several (all?) plug-ins
     static void updateCamera (const float currentTime,

@@ -447,33 +447,49 @@ bool SteerTest::mouseInWindow = false;
 
 void SteerTest::init3dCamera (AbstractVehicle& selected)
 {
-    position3dCamera (selected);
+    init3dCamera (selected, cameraTargetDistance, camera2dElevation);
+}
 
-    camera.fixedDistDistance = cameraTargetDistance;
-    camera.fixedDistVOffset = camera2dElevation;
-
+void SteerTest::init3dCamera (AbstractVehicle& selected,
+                              float distance,
+                              float elevation)
+{
+    position3dCamera (selected, distance, elevation);
+    camera.fixedDistDistance = distance;
+    camera.fixedDistVOffset = elevation;
     camera.mode = Camera::cmFixedDistanceOffset;
 }
 
 
 void SteerTest::init2dCamera (AbstractVehicle& selected)
 {
-    position2dCamera (selected);
+    init2dCamera (selected, cameraTargetDistance, camera2dElevation);
+}
 
-    camera.fixedDistDistance = cameraTargetDistance;
-    camera.fixedDistVOffset = camera2dElevation;
-
+void SteerTest::init2dCamera (AbstractVehicle& selected,
+                              float distance,
+                              float elevation)
+{
+    position2dCamera (selected, distance, elevation);
+    camera.fixedDistDistance = distance;
+    camera.fixedDistVOffset = elevation;
     camera.mode = Camera::cmFixedDistanceOffset;
 }
 
 
 void SteerTest::position3dCamera (AbstractVehicle& selected)
 {
-    selectedVehicle = &selected;
+    position3dCamera (selected, cameraTargetDistance, camera2dElevation);
+}
 
+void SteerTest::position3dCamera (AbstractVehicle& selected,
+                                  float distance,
+                                  float elevation)
+{
+    selectedVehicle = &selected;
     if (&selected)
     {
-        const Vec3 behind = selected.forward() * -cameraTargetDistance;
+        const Vec3 behind = selected.forward() * -distance;
         camera.setPosition (selected.position() + behind);
         camera.target = selected.position();
     }
@@ -482,12 +498,19 @@ void SteerTest::position3dCamera (AbstractVehicle& selected)
 
 void SteerTest::position2dCamera (AbstractVehicle& selected)
 {
+    position2dCamera (selected, cameraTargetDistance, camera2dElevation);
+}
+
+void SteerTest::position2dCamera (AbstractVehicle& selected,
+                                  float distance,
+                                  float elevation)
+{
     // position the camera as if in 3d:
-    position3dCamera (selected);
+    position3dCamera (selected, distance, elevation);
 
     // then adjust for 3d:
     Vec3 position3d = camera.position();
-    position3d.y += camera2dElevation;
+    position3d.y += elevation;
     camera.setPosition (position3d);
 }
 
