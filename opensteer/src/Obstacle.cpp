@@ -203,59 +203,6 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
 
 
 // ----------------------------------------------------------------------------
-// RectangleObstacle
-// find first intersection of a vehicle's path with this obstacle
-
-
-void 
-OpenSteer::
-RectangleObstacle::
-findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
-                                 PathIntersection& pi) const
-{
-    // initialize pathIntersection object to "no intersection found"
-    pi.intersect = false;
-
-    const Vec3 lp =  localizePosition (vehicle.position ());
-    const Vec3 ld = localizeDirection (vehicle.forward ());
-
-    // no obstacle intersection if path is parallel to rectangle's plane
-    if (ld.dot (Vec3::forward) == 0.0f) return;
-
-    // no obstacle intersection if vehicle is heading away from rectangle
-    if ((lp.z > 0.0f) && (ld.z > 0.0f)) return;
-    if ((lp.z < 0.0f) && (ld.z < 0.0f)) return;
-
-    // no obstacle intersection if obstacle "not seen" from vehicle's side
-    if ((seenFrom () == outside) && (lp.z < 0.0f)) return;
-    if ((seenFrom () == inside)  && (lp.z > 0.0f)) return;
-
-    // find intersection of path with rectangle's plane (XY plane)
-    const float ix = lp.x - (ld.x * lp.z / ld.z);
-    const float iy = lp.y - (ld.y * lp.z / ld.z);
-    const Vec3 planeIntersection (ix, iy, 0.0f);
-
-    // no obstacle intersection if plane intersection is outside rectangle
-    const float r = vehicle.radius ();
-    const float w = r + (width * 0.5f);
-    const float h = r + (height * 0.5f);
-    if ((ix > w) || (ix < -w) || (iy > h) || (iy < -h)) return;
-
-    // otherwise, the vehicle path DOES intersect this rectangle
-    const Vec3 pin = planeIntersection.normalize ();
-    const Vec3 gpin = globalizeDirection (pin);
-    const float sideSign = (lp.z > 0.0f) ? +1.0f : -1.0f;
-    const Vec3 opposingNormal = forward () * sideSign;
-    pi.intersect = true;
-    pi.obstacle = this;
-    pi.distance = (lp - planeIntersection).length ();
-    pi.steerHint = opposingNormal + gpin;
-    pi.surfacePoint = globalizePosition (planeIntersection);
-    pi.surfaceNormal = opposingNormal;
-}
-
-
-// ----------------------------------------------------------------------------
 // BoxObstacle
 // find first intersection of a vehicle's path with this obstacle
 
@@ -298,6 +245,72 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
     // find first intersection of vehicle path with group of six faces
     PathIntersection next;
     firstPathIntersectionWithObstacleGroup (vehicle, faces, pi, next);
+}
+
+
+// ----------------------------------------------------------------------------
+// PlaneObstacle
+// find first intersection of a vehicle's path with this obstacle
+
+
+void 
+OpenSteer::
+PlaneObstacle::
+findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
+                                 PathIntersection& pi) const
+{
+    // initialize pathIntersection object to "no intersection found"
+    pi.intersect = false;
+
+    const Vec3 lp =  localizePosition (vehicle.position ());
+    const Vec3 ld = localizeDirection (vehicle.forward ());
+
+    // no obstacle intersection if path is parallel to XY (side/up) plane
+    if (ld.dot (Vec3::forward) == 0.0f) return;
+
+    // no obstacle intersection if vehicle is heading away from the XY plane
+    if ((lp.z > 0.0f) && (ld.z > 0.0f)) return;
+    if ((lp.z < 0.0f) && (ld.z < 0.0f)) return;
+
+    // no obstacle intersection if obstacle "not seen" from vehicle's side
+    if ((seenFrom () == outside) && (lp.z < 0.0f)) return;
+    if ((seenFrom () == inside)  && (lp.z > 0.0f)) return;
+
+    // find intersection of path with rectangle's plane (XY plane)
+    const float ix = lp.x - (ld.x * lp.z / ld.z);
+    const float iy = lp.y - (ld.y * lp.z / ld.z);
+    const Vec3 planeIntersection (ix, iy, 0.0f);
+
+    // no obstacle intersection if plane intersection is outside 2d shape
+    if (!xyPointInsideShape (planeIntersection, vehicle.radius ())) return;
+
+    // otherwise, the vehicle path DOES intersect this rectangle
+    const Vec3 pin = planeIntersection.normalize ();
+    const Vec3 gpin = globalizeDirection (pin);
+    const float sideSign = (lp.z > 0.0f) ? +1.0f : -1.0f;
+    const Vec3 opposingNormal = forward () * sideSign;
+    pi.intersect = true;
+    pi.obstacle = this;
+    pi.distance = (lp - planeIntersection).length ();
+    pi.steerHint = opposingNormal + gpin;
+    pi.surfacePoint = globalizePosition (planeIntersection);
+    pi.surfaceNormal = opposingNormal;
+}
+
+
+// ----------------------------------------------------------------------------
+// RectangleObstacle
+// determines if a given point on XY plane is inside obstacle shape
+
+
+bool 
+OpenSteer::
+RectangleObstacle::
+xyPointInsideShape (const Vec3& point, float radius) const
+{
+    const float w = radius + (width * 0.5f);
+    const float h = radius + (height * 0.5f);
+    return !((point.x >  w) || (point.x < -w) || (point.y >  h) || (point.y < -h));
 }
 
 
