@@ -51,6 +51,11 @@
 #ifndef OPENSTEER_CLOCK_H
 #define OPENSTEER_CLOCK_H
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+
 
 class Clock
 {
@@ -116,10 +121,15 @@ public:
     // "manually" advance clock by this amount on next update
     float newAdvanceTime;
 
-    // "Calendar time" in seconds and microseconds (obtained from
-    // the OS by gettimeofday) when this clock was first updated
+    // "Calendar time" when this clock was first updated
+#ifdef _WIN32
+    // from QueryPerformanceCounter on Windows
+	LONGLONG basePerformanceCounter;
+#else
+    // from gettimeofday on Linux and Mac OS X
     int baseRealTimeSec;
     int baseRealTimeUsec;
+#endif
 };
 
 

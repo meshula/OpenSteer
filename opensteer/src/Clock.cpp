@@ -105,10 +105,13 @@ Clock::Clock (void)
     // "manually" advance clock by this amount on next update
     newAdvanceTime = 0;
 
-    // "Calendar time" in seconds and microseconds (obtained from
-    // the OS by gettimeofday) when this clock was first updated
-    baseRealTimeSec = 0;
+    // "Calendar time" when this clock was first updated
+#ifdef _WIN32
+    basePerformanceCounter = 0;  // from QueryPerformanceCounter on Windows
+#else
+    baseRealTimeSec = 0;         // from gettimeofday on Linux and Mac OS X
     baseRealTimeUsec = 0;
+#endif
 }
 
 
@@ -206,38 +209,8 @@ void Clock::advanceSimulationTime (const float seconds)
 // the clock was first updated.
 //
 // XXX Need to revisit conditionalization on operating system.
-//
-// XXX as of 5-5-03: two versions, one for Linux/Unix (by Craig Reynolds) and
-// XXX one for Windows (by Leaf Garland).  As Leaf's comment suggests, the
-// XXX original version of this function mirrored the Linux/Unix clock model.
-// XXX This should be redesigned to be more agnostic to operating system.
 
 
-
-// original version:
-//
-// float Clock::realTimeSinceFirstClockUpdate (void)
-// {
-//     timeval t;
-//     if (gettimeofday (&t, 0) != 0)
-//     {
-//         SteerTest::errorExit ("Problem reading system clock.\n");
-//         return (0);  // won't be reached, but prevents compiler warning
-//     }
-//     else
-//     {
-//         // ensure the base time is recorded once after launch
-//         if (baseRealTimeSec == 0)
-//         {
-//             baseRealTimeSec = t.tv_sec;
-//             baseRealTimeUsec = t.tv_usec;
-//         }
-
-//         // real "wall clock" time since launch
-//         return (( t.tv_sec  - baseRealTimeSec) +
-//                 ((t.tv_usec - baseRealTimeUsec) / 1000000.0f));
-//     }
-// }
 
 float clockErrorExit (void)
 {
@@ -250,29 +223,16 @@ float Clock::realTimeSinceFirstClockUpdate (void)
 #ifdef _WIN32
 {
     LONGLONG time, freq;
-    if (QueryPerformanceCounter((LARGE_INTEGER *)&time))
-    {
-        if (QueryPerformanceFrequency((LARGE_INTEGER *)&freq))
-        {
-            // This is complicated by trying to stick with the original
-            // method of storing time as two integers instead of a float.
-            float dtime = (float)time / (float)freq;
-            int sec = (int)dtime;
-            int usec = (int)((dtime - sec) * 1000000);
-
-            if (baseRealTimeSec == 0)
-            {
-                baseRealTimeSec = sec;
-                baseRealTimeUsec = usec;
-            }
-
-            // real "wall clock" time since launch
-            return (( sec  - baseRealTimeSec) +
-                    ((usec - baseRealTimeUsec) / 1000000.0f));
-        }
+	if (!QueryPerformanceCounter((LARGE_INTEGER *)&time)   ||
+		!QueryPerformanceFrequency((LARGE_INTEGER *)&freq))
         return clockErrorExit ();
-    }
-    return clockErrorExit ();
+
+	// ensure the base time is recorded once after launch
+    if (basePerformanceCounter == 0) basePerformanceCounter = time;
+
+    // real "wall clock" time since launch
+    const LONGLONG counterDifference = time - basePerformanceCounter;
+    return ((float) counterDifference) / ((float)freq);
 }
 #else
 {
@@ -296,6 +256,5 @@ float Clock::realTimeSinceFirstClockUpdate (void)
     }
 }
 #endif
-
 
 // ----------------------------------------------------------------------------

@@ -140,9 +140,9 @@ public:
         const float cohesionAngle  = -0.15f;
         const float cohesionWeight = 8.0f;
 
-        const float maxRadius = std::max (separationRadius,
-                                          std::max (alignmentRadius,
-                                                    cohesionRadius));
+        const float maxRadius = maxXXX (separationRadius,
+                                        maxXXX (alignmentRadius,
+                                                cohesionRadius));
 
         // find all flockmates within maxRadius using proximity database
         neighbors.clear();
