@@ -251,39 +251,21 @@ void inline blendIntoAccumulator (const float smoothRate,
 // ----------------------------------------------------------------------------
 // round (x)  "round off" x to the nearest integer (as a float value)
 //
-// trunc (x)  truncate the fractional part of x:
-//            round down (toward zero) to the next integer (aka "floor")
-//
-// These are Gnu-sanctioned(?) post-ANSI-Standard(?) extensions (as in
+// This is a Gnu-sanctioned(?) post-ANSI-Standard(?) extension (as in
 // http://www.opengroup.org/onlinepubs/007904975/basedefs/math.h.html)
-// which may not be present in all C++ environments.  They are defined
-// in math.h headers in Linux and Mac OS X, but apparently not in Win32:
+// which may not be present in all C++ environments.  It is defined in
+// math.h headers in Linux and Mac OS X, but apparently not in Win32:
 
 
 #ifdef _WIN32
 
-
-inline float roundPositive (float x)
-{
-    return (float)(int)(x+0.5);
-}
-
 inline float round (float x)
 {
-    if (x<0) return -roundPositive(-x); else return roundPositive(x);
+  if (x < 0)
+      return -floor (0.5 - x);
+  else
+      return  floor (0.5 + x);
 }
-
-
-inline float truncPositive (float x)
-{
-    return (float)(int)x;
-}
-
-inline float trunc (float x)
-{
-    if (x<0) return -truncPositive(-x); else return truncPositive(x);
-}
-
 
 #endif
 
