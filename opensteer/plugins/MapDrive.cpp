@@ -2393,7 +2393,7 @@ public:
         const float h = drawGetWindowHeight ();
         const Vec3 screenLocation (10, h-50, 0);
         const Vec3 color (0.15f, 0.15f, 0.5f);
-        draw2dTextAt2dLocation (status, screenLocation, color);
+        draw2dTextAt2dLocation (status, screenLocation, color, drawGetWindowWidth(), drawGetWindowHeight());
 
         {
             const float v = 5;
@@ -2404,21 +2404,21 @@ public:
 
             // limit tick mark
             const float l = vehicle->annoteMaxRelSpeed;
-            draw2dLine (Vec3 (m+(f*l), v-3, 0), Vec3 (m+(f*l),v+3, 0), gBlack);
+            draw2dLine (Vec3 (m+(f*l), v-3, 0), Vec3 (m+(f*l),v+3, 0), gBlack, drawGetWindowWidth(), drawGetWindowHeight());
             // two "inverse speedometers" showing limits due to curvature and
             // path alignment
             if (l!=0)
             {
                 const float c = vehicle->annoteMaxRelSpeedCurve;
                 const float p = vehicle->annoteMaxRelSpeedPath;
-                draw2dLine (Vec3(m+(f*c), v+1, 0), Vec3(w-m, v+1, 0), gRed);
-                draw2dLine (Vec3(m+(f*p), v-2, 0), Vec3(w-m, v-1, 0), gGreen);
+                draw2dLine (Vec3(m+(f*c), v+1, 0), Vec3(w-m, v+1, 0), gRed, drawGetWindowWidth(), drawGetWindowHeight());
+                draw2dLine (Vec3(m+(f*p), v-2, 0), Vec3(w-m, v-1, 0), gGreen, drawGetWindowWidth(), drawGetWindowHeight());
             }
             // speedometer: horizontal line with length proportional to speed
-            draw2dLine (Vec3 (m, v, 0), Vec3 (m + (f * s), v, 0), gWhite);
+            draw2dLine (Vec3 (m, v, 0), Vec3 (m + (f * s), v, 0), gWhite, drawGetWindowWidth(), drawGetWindowHeight());
             // min and max tick marks
-            draw2dLine (Vec3 (m,       v, 0), Vec3 (m,      v-2, 0), gWhite);
-            draw2dLine (Vec3 (w-m,     v, 0), Vec3 (w-m,    v-2, 0), gWhite);
+            draw2dLine (Vec3 (m,       v, 0), Vec3 (m,      v-2, 0), gWhite, drawGetWindowWidth(), drawGetWindowHeight());
+            draw2dLine (Vec3 (w-m,     v, 0), Vec3 (w-m,    v-2, 0), gWhite, drawGetWindowWidth(), drawGetWindowHeight());
         }
     }
 

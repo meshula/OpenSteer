@@ -205,7 +205,7 @@ public:
                    << std::setiosflags (std::ios::fixed)
                    << agent.speed()
                    << std::ends;
-            draw2dTextAt3dLocation (annote, textPosition, textColor);
+            draw2dTextAt3dLocation (annote, textPosition, textColor, drawGetWindowWidth(), drawGetWindowHeight());
         }
 
         // highlight vehicle nearest mouse

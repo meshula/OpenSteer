@@ -290,7 +290,7 @@ public:
         const char* string = headOn ? "OUCH!" : "pardon me";
         const Vec3 location = position() + Vec3 (0, 0.5f, 0);
         if (OpenSteer::annotationIsOn())
-            draw2dTextAt3dLocation (*string, location, color);
+            draw2dTextAt3dLocation (*string, location, color, drawGetWindowWidth(), drawGetWindowHeight());
     }
 
 
@@ -506,7 +506,7 @@ public:
             annote << std::setprecision (1);
             annote << spacer << "2: cam dist: " << camDistance << std::endl;
             annote << spacer << "3: no third thing" << std::ends;
-            draw2dTextAt3dLocation (annote, textPosition, color);
+            draw2dTextAt3dLocation (annote, textPosition, color, drawGetWindowWidth(), drawGetWindowHeight());
         }
 
         // display status in the upper left corner of the window
@@ -528,7 +528,7 @@ public:
         status << std::endl;
         const float h = drawGetWindowHeight ();
         const Vec3 screenLocation (10, h-50, 0);
-        draw2dTextAt2dLocation (status, screenLocation, gGray80);
+        draw2dTextAt2dLocation (status, screenLocation, gGray80, drawGetWindowWidth(), drawGetWindowHeight());
     }
 
 
@@ -556,7 +556,7 @@ public:
                     const Vec3 textColor (0.8f, 1, 0.8f);
                     const Vec3 textOffset (0, 0.25f, 0);
                     const Vec3 textPos = vehicle->position() + textOffset;
-                    draw2dTextAt3dLocation (sn, textPos, textColor);
+                    draw2dTextAt3dLocation (sn, textPos, textColor, drawGetWindowWidth(), drawGetWindowHeight());
                 }
             }
         }

@@ -41,10 +41,12 @@
 // ----------------------------------------------------------------------------
 
 
-#include <algorithm>
-#include <sstream>
 #include "OpenSteer/OpenSteerDemo.h"
 #include "OpenSteer/Annotation.h"
+
+#include <algorithm>
+#include <sstream>
+#include <iomanip>
 
 // Include headers for OpenGL (gl.h), OpenGL Utility Library (glu.h) and
 // OpenGL Utility Toolkit (glut.h).
@@ -814,3 +816,697 @@ OpenSteer::OpenSteerDemo::updatePhaseTimers (void)
 
 
 // ----------------------------------------------------------------------------
+
+
+namespace {
+
+    char* appVersionName = "OpenSteerDemo 0.8.2";
+
+    // The number of our GLUT window
+    int windowID;
+
+    bool gMouseAdjustingCameraAngle = false;
+    bool gMouseAdjustingCameraRadius = false;
+    int gMouseAdjustingCameraLastX;
+    int gMouseAdjustingCameraLastY;
+
+
+
+
+    // ----------------------------------------------------------------------------
+    // initialize GL mode settings
+
+
+    void 
+    initGL (void)
+    {
+        // background = dark gray
+        glClearColor (0.3f, 0.3f, 0.3f, 0);
+
+        // enable depth buffer clears
+        glClearDepth (1.0f);
+
+        // select smooth shading
+        glShadeModel (GL_SMOOTH);
+
+        // enable  and select depth test
+        glDepthFunc (GL_LESS);
+        glEnable (GL_DEPTH_TEST);
+
+        // turn on backface culling
+        glEnable (GL_CULL_FACE);
+        glCullFace (GL_BACK);
+
+        // enable blending and set typical "blend into frame buffer" mode
+        glEnable (GL_BLEND);
+        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        // reset projection matrix
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+    }
+
+
+
+
+
+    // ----------------------------------------------------------------------------
+    // handler for window resizing
+
+
+    void 
+    reshapeFunc (int width, int height)
+    {
+        // set viewport to full window
+        glViewport(0, 0, width, height);
+
+        // set perspective transformation
+        glMatrixMode (GL_PROJECTION);
+        glLoadIdentity ();
+        const GLfloat w = width;
+        const GLfloat h = height;
+        const GLfloat aspectRatio = (height == 0) ? 1 : w/h;
+        const GLfloat fieldOfViewY = 45;
+        const GLfloat hither = 1;  // put this on Camera so PlugIns can frob it
+        const GLfloat yon = 400;   // put this on Camera so PlugIns can frob it
+        gluPerspective (fieldOfViewY, aspectRatio, hither, yon);
+
+        // leave in modelview mode
+        glMatrixMode(GL_MODELVIEW);
+    }
+
+
+    // ----------------------------------------------------------------------------
+    // This is called (by GLUT) each time a mouse button pressed or released.
+
+
+    void 
+    mouseButtonFunc (int button, int state, int x, int y)
+    {
+        // if the mouse button has just been released
+        if (state == GLUT_UP)
+        {
+            // end any ongoing mouse-adjusting-camera session
+            gMouseAdjustingCameraAngle = false;
+            gMouseAdjustingCameraRadius = false;
+        }
+
+        // if the mouse button has just been pushed down
+        if (state == GLUT_DOWN)
+        {
+            // names for relevant values of "button" and "state"
+            const int  mods       = glutGetModifiers ();
+            const bool modNone    = (mods == 0);
+            const bool modCtrl    = (mods == GLUT_ACTIVE_CTRL);
+            const bool modAlt     = (mods == GLUT_ACTIVE_ALT);
+            const bool modCtrlAlt = (mods == (GLUT_ACTIVE_CTRL | GLUT_ACTIVE_ALT));
+            const bool mouseL     = (button == GLUT_LEFT_BUTTON);
+            const bool mouseM     = (button == GLUT_MIDDLE_BUTTON);
+            const bool mouseR     = (button == GLUT_RIGHT_BUTTON);
+
+    #if __APPLE__ && __MACH__
+            const bool macosx = true;
+    #else
+            const bool macosx = false;
+    #endif
+
+            // mouse-left (with no modifiers): select vehicle
+            if (modNone && mouseL)
+            {
+                OpenSteer::OpenSteerDemo::selectVehicleNearestScreenPosition (x, y);
+            }
+
+            // control-mouse-left: begin adjusting camera angle (on Mac OS X
+            // control-mouse maps to mouse-right for "context menu", this makes
+            // OpenSteerDemo's control-mouse work work the same on OS X as on Linux
+            // and Windows, but it precludes using a mouseR context menu)
+            if ((modCtrl && mouseL) ||
+               (modNone && mouseR && macosx))
+            {
+                gMouseAdjustingCameraLastX = x;
+                gMouseAdjustingCameraLastY = y;
+                gMouseAdjustingCameraAngle = true;
+            }
+
+            // control-mouse-middle: begin adjusting camera radius
+            // (same for: control-alt-mouse-left and control-alt-mouse-middle,
+            // and on Mac OS X it is alt-mouse-right)
+            if ((modCtrl    && mouseM) ||
+                (modCtrlAlt && mouseL) ||
+                (modCtrlAlt && mouseM) ||
+                (modAlt     && mouseR && macosx))
+            {
+                gMouseAdjustingCameraLastX = x;
+                gMouseAdjustingCameraLastY = y;
+                gMouseAdjustingCameraRadius = true;
+            }
+        }
+    }
+
+
+    // ----------------------------------------------------------------------------
+    // called when mouse moves and any buttons are down
+
+
+    void 
+    mouseMotionFunc (int x, int y)
+    {
+        // are we currently in the process of mouse-adjusting the camera?
+        if (gMouseAdjustingCameraAngle || gMouseAdjustingCameraRadius)
+        {
+            // speed factors to map from mouse movement in pixels to 3d motion
+            const float dSpeed = 0.005f;
+            const float rSpeed = 0.01f;
+
+            // XY distance (in pixels) that mouse moved since last update
+            const float dx = x - gMouseAdjustingCameraLastX;
+            const float dy = y - gMouseAdjustingCameraLastY;
+            gMouseAdjustingCameraLastX = x;
+            gMouseAdjustingCameraLastY = y;
+
+            OpenSteer::Vec3 cameraAdjustment;
+
+            // set XY values according to mouse motion on screen space
+            if (gMouseAdjustingCameraAngle)
+            {
+                cameraAdjustment.x = dx * -dSpeed;
+                cameraAdjustment.y = dy * +dSpeed;
+            }
+
+            // set Z value according vertical to mouse motion
+            if (gMouseAdjustingCameraRadius)
+            {
+                cameraAdjustment.z = dy * rSpeed;
+            }
+
+            // pass adjustment vector to camera's mouse adjustment routine
+            OpenSteer::OpenSteerDemo::camera.mouseAdjustOffset (cameraAdjustment);
+        }
+    }
+
+
+    // ----------------------------------------------------------------------------
+    // called when mouse moves and no buttons are down
+
+
+    void 
+    mousePassiveMotionFunc (int x, int y)
+    {
+        OpenSteer::OpenSteerDemo::mouseX = x;
+        OpenSteer::OpenSteerDemo::mouseY = y;
+    }
+
+
+    // ----------------------------------------------------------------------------
+    // called when mouse enters or exits the window
+
+
+    void 
+    mouseEnterExitWindowFunc (int state)
+    {
+        if (state == GLUT_ENTERED) OpenSteer::OpenSteerDemo::mouseInWindow = true;
+        if (state == GLUT_LEFT)    OpenSteer::OpenSteerDemo::mouseInWindow = false;
+    }
+
+
+    // ----------------------------------------------------------------------------
+    // draw PlugI name in upper lefthand corner of screen
+
+
+    void 
+    drawDisplayPlugInName (void)
+    {
+        const float h = glutGet (GLUT_WINDOW_HEIGHT);
+        const OpenSteer::Vec3 screenLocation (10, h-20, 0);
+        draw2dTextAt2dLocation (*OpenSteer::OpenSteerDemo::nameOfSelectedPlugIn (),
+                                screenLocation,
+                                OpenSteer::gWhite, OpenSteer::drawGetWindowWidth(), OpenSteer::drawGetWindowHeight());
+    }
+
+
+    // ----------------------------------------------------------------------------
+    // draw camera mode name in lower lefthand corner of screen
+
+
+    void 
+    drawDisplayCameraModeName (void)
+    {
+        std::ostringstream message;
+        message << "Camera: " << OpenSteer::OpenSteerDemo::camera.modeName () << std::ends;
+        const OpenSteer::Vec3 screenLocation (10, 10, 0);
+        OpenSteer::draw2dTextAt2dLocation (message, screenLocation, OpenSteer::gWhite, OpenSteer::drawGetWindowWidth(), OpenSteer::drawGetWindowHeight());
+    }
+
+
+    // ----------------------------------------------------------------------------
+    // helper for drawDisplayFPS
+
+
+
+    void 
+    writePhaseTimerReportToStream (float phaseTimer,
+                                              std::ostringstream& stream)
+    {
+        // write the timer value in seconds in floating point
+        stream << std::setprecision (5) << std::setiosflags (std::ios::fixed);
+        stream << phaseTimer;
+
+        // restate value in another form
+        stream << std::setprecision (0) << std::setiosflags (std::ios::fixed);
+        stream << " (";
+
+        // different notation for variable and fixed frame rate
+        if (OpenSteer::OpenSteerDemo::clock.getVariableFrameRateMode())
+        {
+            // express as FPS (inverse of phase time)
+            stream << 1 / phaseTimer;
+            stream << " fps)\n";
+        }
+        else
+        {
+            // quantify time as a percentage of frame time
+            const int fps = OpenSteer::OpenSteerDemo::clock.getFixedFrameRate ();
+            stream << ((100 * phaseTimer) / (1.0f / fps));
+            stream << "% of 1/";
+            stream << fps;
+            stream << "sec)\n";
+        }
+    }
+
+
+    // ----------------------------------------------------------------------------
+    // draw text showing (smoothed, rounded) "frames per second" rate
+    // (and later a bunch of related stuff was dumped here, a reorg would be nice)
+    //
+    // XXX note: drawDisplayFPS has morphed considerably and should be called
+    // something like displayClockStatus, and that it should be part of
+    // OpenSteerDemo instead of Draw  (cwr 11-23-04)
+
+    float gSmoothedTimerDraw = 0;
+    float gSmoothedTimerUpdate = 0;
+    float gSmoothedTimerOverhead = 0;
+
+    void
+    drawDisplayFPS (void)
+    {
+        // skip several frames to allow frame rate to settle
+        static int skipCount = 10;
+        if (skipCount > 0)
+        {
+            skipCount--;
+        }
+        else
+        {
+            // keep track of font metrics and start of next line
+            const int lh = 16; // xxx line height
+            const int cw = 9; // xxx character width
+            OpenSteer::Vec3 screenLocation (10, 10, 0);
+
+            // target and recent average frame rates
+            const int targetFPS = OpenSteer::OpenSteerDemo::clock.getFixedFrameRate ();
+            const float smoothedFPS = OpenSteer::OpenSteerDemo::clock.getSmoothedFPS ();
+
+            // describe clock mode and frame rate statistics
+            screenLocation.y += lh;
+            std::ostringstream clockStr;
+            clockStr << "Clock: ";
+            if (OpenSteer::OpenSteerDemo::clock.getAnimationMode ())
+            {
+                clockStr << "animation mode (";
+                clockStr << targetFPS << " fps,";
+                clockStr << " display "<< OpenSteer::round(smoothedFPS) << " fps, ";
+                const float ratio = smoothedFPS / targetFPS;
+                clockStr << (int) (100 * ratio) << "% of nominal speed)";
+            }
+            else
+            {
+                clockStr << "real-time mode, ";
+                if (OpenSteer::OpenSteerDemo::clock.getVariableFrameRateMode ())
+                {
+                    clockStr << "variable frame rate (";
+                    clockStr << OpenSteer::round(smoothedFPS) << " fps)";
+                }
+                else
+                {
+                    clockStr << "fixed frame rate (target: " << targetFPS;
+                    clockStr << " actual: " << OpenSteer::round(smoothedFPS) << ", ";
+
+                    OpenSteer::Vec3 sp;
+                    sp = screenLocation;
+                    sp.x += cw * (int) clockStr.tellp ();
+
+                    // create usage description character string
+                    std::ostringstream xxxStr;
+                    xxxStr << std::setprecision (0)
+                           << std::setiosflags (std::ios::fixed)
+                           << "usage: " << OpenSteer::OpenSteerDemo::clock.getSmoothedUsage ()
+                           << "%"
+                           << std::ends;
+
+                    const int usageLength = ((int) xxxStr.tellp ()) - 1;
+                    for (int i = 0; i < usageLength; i++) clockStr << " ";
+                    clockStr << ")";
+
+                    // display message in lower left corner of window
+                    // (draw in red if the instantaneous usage is 100% or more)
+                    const float usage = OpenSteer::OpenSteerDemo::clock.getUsage ();
+                    const OpenSteer::Vec3 color = (usage >= 100) ? OpenSteer::gRed : OpenSteer::gWhite;
+                    draw2dTextAt2dLocation (xxxStr, sp, color, OpenSteer::drawGetWindowWidth(), OpenSteer::drawGetWindowHeight());
+                }
+            }
+            if (OpenSteer::OpenSteerDemo::clock.getPausedState ())
+                clockStr << " [paused]";
+            clockStr << std::ends;
+            draw2dTextAt2dLocation (clockStr, screenLocation, OpenSteer::gWhite, OpenSteer::drawGetWindowWidth(), OpenSteer::drawGetWindowHeight());
+
+            // get smoothed phase timer information
+            const float ptd = OpenSteer::OpenSteerDemo::phaseTimerDraw();
+            const float ptu = OpenSteer::OpenSteerDemo::phaseTimerUpdate();
+            const float pto = OpenSteer::OpenSteerDemo::phaseTimerOverhead();
+            const float smoothRate = OpenSteer::OpenSteerDemo::clock.getSmoothingRate ();
+            OpenSteer::blendIntoAccumulator (smoothRate, ptd, gSmoothedTimerDraw);
+            OpenSteer::blendIntoAccumulator (smoothRate, ptu, gSmoothedTimerUpdate);
+            OpenSteer::blendIntoAccumulator (smoothRate, pto, gSmoothedTimerOverhead);
+
+            // display phase timer information
+            screenLocation.y += lh * 4;
+            std::ostringstream timerStr;
+            timerStr << "update: ";
+            writePhaseTimerReportToStream (gSmoothedTimerUpdate, timerStr);
+            timerStr << "draw:   ";
+            writePhaseTimerReportToStream (gSmoothedTimerDraw, timerStr);
+            timerStr << "other:  ";
+            writePhaseTimerReportToStream (gSmoothedTimerOverhead, timerStr);
+            timerStr << std::ends;
+            draw2dTextAt2dLocation (timerStr, screenLocation, OpenSteer::gGreen, OpenSteer::drawGetWindowWidth(), OpenSteer::drawGetWindowHeight());
+        }
+    }
+
+
+    // ------------------------------------------------------------------------
+    // cycle through frame rate presets  (XXX move this to OpenSteerDemo)
+
+
+    void 
+    selectNextPresetFrameRate (void)
+    {
+        // note that the cases are listed in reverse order, and that 
+        // the default is case 0 which causes the index to wrap around
+        static int frameRatePresetIndex = 0;
+        switch (++frameRatePresetIndex)
+        {
+        case 3: 
+            // animation mode at 60 fps
+            OpenSteer::OpenSteerDemo::clock.setFixedFrameRate (60);
+            OpenSteer::OpenSteerDemo::clock.setAnimationMode (true);
+            OpenSteer::OpenSteerDemo::clock.setVariableFrameRateMode (false);
+            break;
+        case 2: 
+            // real-time fixed frame rate mode at 60 fps
+            OpenSteer::OpenSteerDemo::clock.setFixedFrameRate (60);
+            OpenSteer::OpenSteerDemo::clock.setAnimationMode (false);
+            OpenSteer::OpenSteerDemo::clock.setVariableFrameRateMode (false);
+            break;
+        case 1: 
+            // real-time fixed frame rate mode at 24 fps
+            OpenSteer::OpenSteerDemo::clock.setFixedFrameRate (24);
+            OpenSteer::OpenSteerDemo::clock.setAnimationMode (false);
+            OpenSteer::OpenSteerDemo::clock.setVariableFrameRateMode (false);
+            break;
+        case 0:
+        default:
+            // real-time variable frame rate mode ("as fast as possible")
+            frameRatePresetIndex = 0;
+            OpenSteer::OpenSteerDemo::clock.setFixedFrameRate (0);
+            OpenSteer::OpenSteerDemo::clock.setAnimationMode (false);
+            OpenSteer::OpenSteerDemo::clock.setVariableFrameRateMode (true);
+            break;
+        }
+    }
+
+
+    // ------------------------------------------------------------------------
+    // This function is called (by GLUT) each time a key is pressed.
+    //
+    // XXX the bulk of this should be moved to OpenSteerDemo
+    //
+    // parameter names commented out to prevent compiler warning from "-W"
+
+
+    void 
+    keyboardFunc (unsigned char key, int /*x*/, int /*y*/) 
+    {
+        std::ostringstream message;
+
+        // ascii codes
+        const int tab = 9;
+        const int space = 32;
+        const int esc = 27; // escape key
+
+        switch (key)
+        {
+        // reset selected PlugIn
+        case 'r':
+            OpenSteer::OpenSteerDemo::resetSelectedPlugIn ();
+            message << "reset PlugIn "
+                    << '"' << OpenSteer::OpenSteerDemo::nameOfSelectedPlugIn () << '"'
+                    << std::ends;
+            OpenSteer::OpenSteerDemo::printMessage (message);
+            break;
+
+        // cycle selection to next vehicle
+        case 's':
+            OpenSteer::OpenSteerDemo::printMessage ("select next vehicle/agent");
+            OpenSteer::OpenSteerDemo::selectNextVehicle ();
+            break;
+
+        // camera mode cycle
+        case 'c':
+            OpenSteer::OpenSteerDemo::camera.selectNextMode ();
+            message << "select camera mode "
+                    << '"' << OpenSteer::OpenSteerDemo::camera.modeName () << '"' << std::ends;
+            OpenSteer::OpenSteerDemo::printMessage (message);
+            break;
+
+        // select next PlugIn
+        case tab:
+            OpenSteer::OpenSteerDemo::selectNextPlugIn ();
+            message << "select next PlugIn: "
+                    << '"' << OpenSteer::OpenSteerDemo::nameOfSelectedPlugIn () << '"'
+                    << std::ends;
+            OpenSteer::OpenSteerDemo::printMessage (message);
+            break;
+
+        // toggle annotation state
+        case 'a':
+            OpenSteer::OpenSteerDemo::printMessage (OpenSteer::toggleAnnotationState () ?
+                                                    "annotation ON" : "annotation OFF");
+            break;
+
+        // toggle run/pause state
+        case space:
+            OpenSteer::OpenSteerDemo::printMessage (OpenSteer::OpenSteerDemo::clock.togglePausedState () ?
+                                                    "pause" : "run");
+            break;
+
+        // cycle through frame rate (clock mode) presets
+        case 'f':
+            selectNextPresetFrameRate ();
+            message << "set clock to ";
+            if (OpenSteer::OpenSteerDemo::clock.getAnimationMode ())
+                message << "animation mode, fixed frame rate ("
+                        << OpenSteer::OpenSteerDemo::clock.getFixedFrameRate () << " fps)";
+            else
+            {
+                message << "real-time mode, ";
+                if (OpenSteer::OpenSteerDemo::clock.getVariableFrameRateMode ())
+                    message << "variable frame rate";
+                else
+                    message << "fixed frame rate ("
+                            << OpenSteer::OpenSteerDemo::clock.getFixedFrameRate () << " fps)";
+            }
+            message << std::ends;
+            OpenSteer::OpenSteerDemo::printMessage (message);
+            break;
+
+        // print minimal help for single key commands
+        case '?':
+            OpenSteer::OpenSteerDemo::keyboardMiniHelp ();
+            break;
+
+        // exit application with normal status 
+        case esc:
+            glutDestroyWindow (windowID);
+            OpenSteer::OpenSteerDemo::printMessage ("exit.");
+            OpenSteer::OpenSteerDemo::exit (0);
+
+        default:
+            message << "unrecognized single key command: " << key;
+            message << " (" << (int)key << ")";//xxx perhaps only for debugging?
+            message << std::ends;
+            OpenSteer::OpenSteerDemo::printMessage ("");
+            OpenSteer::OpenSteerDemo::printMessage (message);
+            OpenSteer::OpenSteerDemo::keyboardMiniHelp ();
+        }
+    }
+
+
+    // ------------------------------------------------------------------------
+    // handles "special" keys,
+    // function keys are handled by the PlugIn
+    //
+    // parameter names commented out to prevent compiler warning from "-W"
+
+    void 
+    specialFunc (int key, int /*x*/, int /*y*/)
+    {
+        std::ostringstream message;
+
+        switch (key)
+        {
+        case GLUT_KEY_F1:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (1);  break;
+        case GLUT_KEY_F2:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (2);  break;
+        case GLUT_KEY_F3:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (3);  break;
+        case GLUT_KEY_F4:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (4);  break;
+        case GLUT_KEY_F5:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (5);  break;
+        case GLUT_KEY_F6:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (6);  break;
+        case GLUT_KEY_F7:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (7);  break;
+        case GLUT_KEY_F8:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (8);  break;
+        case GLUT_KEY_F9:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (9);  break;
+        case GLUT_KEY_F10: OpenSteer::OpenSteerDemo::functionKeyForPlugIn (10); break;
+        case GLUT_KEY_F11: OpenSteer::OpenSteerDemo::functionKeyForPlugIn (11); break;
+        case GLUT_KEY_F12: OpenSteer::OpenSteerDemo::functionKeyForPlugIn (12); break;
+
+        case GLUT_KEY_RIGHT:
+            OpenSteer::OpenSteerDemo::clock.setPausedState (true);
+            message << "single step forward (frame time: "
+                    << OpenSteer::OpenSteerDemo::clock.advanceSimulationTimeOneFrame ()
+                    << ")"
+                    << std::endl;
+            OpenSteer::OpenSteerDemo::printMessage (message);
+            break;
+        }
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Main drawing function for OpenSteerDemo application,
+    // drives simulation as a side effect
+
+
+    void 
+    displayFunc (void)
+    {
+        // clear color and depth buffers
+        glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // run simulation and draw associated graphics
+        OpenSteer::OpenSteerDemo::updateSimulationAndRedraw ();
+
+        // draw text showing (smoothed, rounded) "frames per second" rate
+        drawDisplayFPS ();
+
+        // draw the name of the selected PlugIn
+        drawDisplayPlugInName ();
+
+        // draw the name of the camera's current mode
+        drawDisplayCameraModeName ();
+
+        // draw crosshairs to indicate aimpoint (xxx for debugging only?)
+        // drawReticle ();
+
+        // check for errors in drawing module, if so report and exit
+        OpenSteer::checkForDrawError ("OpenSteerDemo::updateSimulationAndRedraw");
+
+        // double buffering, swap back and front buffers
+        glFlush ();
+        glutSwapBuffers();
+    }
+
+
+} // annonymous namespace
+
+
+
+// ----------------------------------------------------------------------------
+// do all initialization related to graphics
+
+
+void 
+OpenSteer::initializeGraphics (int argc, char **argv)
+{
+    // initialize GLUT state based on command line arguments
+    glutInit (&argc, argv);  
+
+    // display modes: RGB+Z and double buffered
+    GLint mode = GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE;
+    glutInitDisplayMode (mode);
+
+    // create and initialize our window with GLUT tools
+    // (center window on screen with size equal to "ws" times screen size)
+    const int sw = glutGet (GLUT_SCREEN_WIDTH);
+    const int sh = glutGet (GLUT_SCREEN_HEIGHT);
+    const float ws = 0.8f; // window_size / screen_size
+    const int ww = (int) (sw * ws);
+    const int wh = (int) (sh * ws);
+    glutInitWindowPosition ((int) (sw * (1-ws)/2), (int) (sh * (1-ws)/2));
+    glutInitWindowSize (ww, wh);
+    windowID = glutCreateWindow (appVersionName);
+    reshapeFunc (ww, wh);
+    initGL ();
+
+    // register our display function, make it the idle handler too
+    glutDisplayFunc (&displayFunc);  
+    glutIdleFunc (&displayFunc);
+
+    // register handler for window reshaping
+    glutReshapeFunc (&reshapeFunc);
+
+    // register handler for keyboard events
+    glutKeyboardFunc (&keyboardFunc);
+    glutSpecialFunc (&specialFunc);
+
+    // register handler for mouse button events
+    glutMouseFunc (&mouseButtonFunc);
+
+    // register handler to track mouse motion when any button down
+    glutMotionFunc (mouseMotionFunc);
+
+    // register handler to track mouse motion when no buttons down
+    glutPassiveMotionFunc (mousePassiveMotionFunc);
+
+    // register handler for when mouse enters or exists the window
+    glutEntryFunc (mouseEnterExitWindowFunc);
+}
+
+
+// ----------------------------------------------------------------------------
+// run graphics event loop
+
+
+void 
+OpenSteer::runGraphics (void)
+{
+    glutMainLoop ();  
+}
+
+
+
+// ----------------------------------------------------------------------------
+// accessors for GLUT's window dimensions
+
+
+float 
+OpenSteer::drawGetWindowHeight (void) 
+{
+    return glutGet (GLUT_WINDOW_HEIGHT);
+}
+
+
+float 
+OpenSteer::drawGetWindowWidth  (void) 
+{
+    return glutGet (GLUT_WINDOW_WIDTH);
+}
+
+

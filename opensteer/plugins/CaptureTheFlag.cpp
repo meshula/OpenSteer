@@ -686,7 +686,7 @@ void CtfSeeker::draw (void)
     annote << seekerStateString << std::endl;
     annote << std::setprecision(2) << std::setiosflags(std::ios::fixed)
            << speed() << std::ends;
-    draw2dTextAt3dLocation (annote, textOrigin, gWhite);
+    draw2dTextAt3dLocation (annote, textOrigin, gWhite, drawGetWindowWidth(), drawGetWindowHeight());
 
     // display status in the upper left corner of the window
     std::ostringstream status;
@@ -695,7 +695,7 @@ void CtfSeeker::draw (void)
     status << resetCount << " restarts" << std::ends;
     const float h = drawGetWindowHeight ();
     const Vec3 screenLocation (10, h-50, 0);
-    draw2dTextAt2dLocation (status, screenLocation, gGray80);
+    draw2dTextAt2dLocation (status, screenLocation, gGray80, drawGetWindowWidth(), drawGetWindowHeight());
 }
 
 

@@ -393,7 +393,7 @@ public:
         status << std::endl;
         const float h = drawGetWindowHeight ();
         const Vec3 screenLocation (10, h-50, 0);
-        draw2dTextAt2dLocation (status, screenLocation, gGray80);
+        draw2dTextAt2dLocation (status, screenLocation, gGray80, drawGetWindowWidth(), drawGetWindowHeight());
 
         drawObstacles ();
     }

@@ -99,6 +99,8 @@ namespace OpenSteer {
 
     // hosting application must provide this bool. It's true when updating and not drawing,
     // false otherwise.
+    // it has been externed as a first step in making the Draw library useful from
+    // other applications besides OpenSteerDemo
     extern bool updatePhaseActive;
 
     inline void warnIfInUpdatePhase (const char* name)
@@ -109,17 +111,13 @@ namespace OpenSteer {
         }
     }
 
-
+    // ----------------------------------------------------------------------------
+    // this is a typedef for a triangle draw routine which can be passed in
+    // when using rendering API's of the user's choice.
     typedef void (*drawTriangleRoutine) (const Vec3& a,
                                          const Vec3& b,
                                          const Vec3& c,
                                          const Vec3& color);
-
-    void draw2dLine (const Vec3& startPoint,
-                    const Vec3& endPoint,
-                    const Vec3& color,
-                    float w, float h);
-
 
     // ------------------------------------------------------------------------
     // draw the three axes of a LocalSpace: three lines parallel to the
@@ -294,6 +292,25 @@ namespace OpenSteer {
     void drawBasic3dSphericalVehicle (drawTriangleRoutine, const AbstractVehicle& bv,
                                       const Vec3& color);
 
+    // ------------------------------------------------------------------------
+    // 2d text drawing requires w, h since retrieving viewport w and h differs
+    // for every graphics API
+
+    void draw2dTextAt3dLocation (const char& text,
+                                 const Vec3& location,
+                                 const Vec3& color, float w, float h);
+
+    void draw2dTextAt3dLocation (const std::ostringstream& text,
+                                 const Vec3& location,
+                                 const Vec3& color, float w, float h);
+
+    void draw2dTextAt2dLocation (const char& text,
+                                 const Vec3 location,
+                                 const Vec3 color, float w, float h);
+
+    void draw2dTextAt2dLocation (const std::ostringstream& text,
+                                 const Vec3 location,
+                                 const Vec3 color, float w, float h);
 
     // ------------------------------------------------------------------------
     // emit an OpenGL vertex based on a Vec3
@@ -309,6 +326,15 @@ namespace OpenSteer {
     void drawLine (const Vec3& startPoint,
                    const Vec3& endPoint,
                    const Vec3& color);
+
+
+    // ----------------------------------------------------------------------------
+    // draw 2d lines in screen space: x and y are the relevant coordinates
+    // w and h are the dimensions of the viewport in pixels
+    void draw2dLine (const Vec3& startPoint,
+                    const Vec3& endPoint,
+                    const Vec3& color,
+                    float w, float h);
 
 
     // ----------------------------------------------------------------------------

@@ -289,35 +289,6 @@ namespace OpenSteer {
     float drawGetWindowHeight (void);
     float drawGetWindowWidth (void);
 
-    
-    // ----------------------------------------------------------------------------
-    // draw 2d lines in screen space: x and y are the relevant coordinates
-
-
-    void draw2dLine (const Vec3& startPoint,
-                     const Vec3& endPoint,
-                     const Vec3& color);
-
-    // ------------------------------------------------------------------------
-
-
-    void draw2dTextAt3dLocation (const char& text,
-                                 const Vec3& location,
-                                 const Vec3& color);
-
-    void draw2dTextAt3dLocation (const std::ostringstream& text,
-                                 const Vec3& location,
-                                 const Vec3& color);
-
-    void draw2dTextAt2dLocation (const char& text,
-                                 const Vec3 location,
-                                 const Vec3 color);
-
-    void draw2dTextAt2dLocation (const std::ostringstream& text,
-                                 const Vec3 location,
-                                 const Vec3 color);
-
-
 } // namespace OpenSteer
     
     
