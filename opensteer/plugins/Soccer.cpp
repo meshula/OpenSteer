@@ -197,7 +197,7 @@ public:
 					{
 					if( distHomeToBall < 12)
 						{
-						float Z = m_Ball->position().z - position().z > 0 ? -1:1;
+						float Z = m_Ball->position().z - position().z > 0 ? -1.0f : 1.0f;
 						Vec3 behindBall = m_Ball->position() + (b_ImTeamA ? Vec3(2,0,Z) : Vec3(-2,0,Z));
 						Vec3 behindBallForce = xxxsteerForSeek(behindBall);
 //						drawLineAlpha(position(), behindBall , Vec3(0,1,0), 1.0f);
