@@ -543,6 +543,8 @@ steerToAvoidNeighbors (const float minTimeToCollision,
 
 // Given two vehicles, based on their current positions and velocities,
 // determine the time until nearest approach
+//
+// XXX should this return zero if they are already in contact?
 
 template<class Super>
 float
@@ -555,6 +557,10 @@ predictNearestApproachTime (AbstractVehicle& other)
     const Vec3 otherVelocity = other.velocity();
     const Vec3 relVelocity = otherVelocity - myVelocity;
     const float relSpeed = relVelocity.length();
+
+    // for parallel paths, the vehicles will always be at the same distance,
+    // so return 0 (aka "now") since "there is no time like the present"
+    if (relSpeed == 0) return 0;
 
     // Now consider the path of the other vehicle in this relative
     // space, a line defined by the relative position and velocity.
