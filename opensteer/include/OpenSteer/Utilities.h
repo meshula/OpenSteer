@@ -262,9 +262,9 @@ void inline blendIntoAccumulator (const float smoothRate,
 inline float round (float x)
 {
   if (x < 0)
-      return -floor (0.5 - x);
+      return -std::floor (0.5 - x);
   else
-      return  floor (0.5 + x);
+      return  std::floor (0.5 + x);
 }
 
 #endif
