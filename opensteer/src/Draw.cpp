@@ -887,6 +887,8 @@ OpenSteer::drawReticle (float w, float h)
 
 
 // ------------------------------------------------------------------------
+
+
 // code (from main.cpp) used to draw "forward ruler" on vehicle
 
 //     // xxx --------------------------------------------------
@@ -903,8 +905,6 @@ OpenSteer::drawReticle (float w, float h)
 //     // xxx --------------------------------------------------
 
 
-    
-    
 // ------------------------------------------------------------------------
 // check for errors during redraw, report any and then exit
 
@@ -916,9 +916,6 @@ OpenSteer::checkForDrawError (const char * locationDescription)
 }
 
 
-
-
-    
 // ----------------------------------------------------------------------------
 // return a normalized direction vector pointing from the camera towards a
 // given point on the screen: the ray that would be traced for that pixel
@@ -954,8 +951,6 @@ namespace {
     //
     // For use during simulation phase.
     // Stores description of lines to be drawn later.
-    //
-    // XXX This should be rewritten using STL container classes
 
 
     class DeferredLine
@@ -966,31 +961,30 @@ namespace {
                                  const OpenSteer::Vec3& e,
                                  const OpenSteer::Vec3& c)
         {
-            if (index < size)
-            {
-                deferredLineArray[index].startPoint = s;
-                deferredLineArray[index].endPoint = e;
-                deferredLineArray[index].color = c;
-                index++;
-            }
-            else
-            {
-                std::cerr << "overflow in deferredDrawLine buffer";
-            }
+            DeferredLine dl;
+            dl.startPoint = s;
+            dl.endPoint = e;
+            dl.color = c;
+
+            lines.push_back (dl);
         }
 
         static void drawAll (void)
         {
-            // draw all lines in the buffer
-            for (int i = 0; i < index; i++)
+            // draw all deferred lines
+            for (DeferredLines::iterator i = lines.begin();
+                 i < lines.end();
+                 i++)
             {
-                DeferredLine& dl = deferredLineArray[i];
+                DeferredLine& dl = *i;
                 iDrawLine (dl.startPoint, dl.endPoint, dl.color);
             }
 
-            // reset buffer index
-            index = 0;
+            // clear list of deferred lines
+            lines.clear ();
         }
+
+        typedef std::vector<DeferredLine> DeferredLines;
 
     private:
 
@@ -998,17 +992,12 @@ namespace {
         OpenSteer::Vec3 endPoint;
         OpenSteer::Vec3 color;
 
-        static int index;
-        static const int size;
-        static DeferredLine deferredLineArray [];
+        static DeferredLines lines;
     };
 
 
-    int DeferredLine::index = 0;
-    // const int DeferredLine::size = 1000;
-    // const int DeferredLine::size = 2000;
-    const int DeferredLine::size = 3000;
-    DeferredLine DeferredLine::deferredLineArray [DeferredLine::size];
+DeferredLine::DeferredLines DeferredLine::lines;
+
 
 } // anonymous namespace
 
@@ -1037,8 +1026,6 @@ namespace {
     //
     // For use during simulation phase.
     // Stores description of circles to be drawn later.
-    //
-    // XXX This should be rewritten using STL container classes
 
 
     class DeferredCircle
@@ -1053,36 +1040,34 @@ namespace {
                                  const bool filled,
                                  const bool in3d)
         {
-            if (index < size)
-            {
-                deferredCircleArray[index].radius   = radius;
-                deferredCircleArray[index].axis     = axis;
-                deferredCircleArray[index].center   = center;
-                deferredCircleArray[index].color    = color;
-                deferredCircleArray[index].segments = segments;
-                deferredCircleArray[index].filled   = filled;
-                deferredCircleArray[index].in3d     = in3d;
-                index++;
-            }
-            else
-            {
-                std::cerr << "overflow in deferredDrawCircle buffer";
-            }
+            DeferredCircle dc;
+            dc.radius   = radius;
+            dc.axis     = axis;
+            dc.center   = center;
+            dc.color    = color;
+            dc.segments = segments;
+            dc.filled   = filled;
+            dc.in3d     = in3d;
+            circles.push_back (dc);
         }
 
         static void drawAll (void)
         {
-            // draw all circles in the buffer
-            for (int i = 0; i < index; i++)
+            // draw all deferred circles
+            for (DeferredCircles::iterator i = circles.begin();
+                 i < circles.end();
+                 i++)
             {
-                DeferredCircle& dc = deferredCircleArray[i];
+                DeferredCircle& dc = *i;
                 drawCircleOrDisk (dc.radius, dc.axis, dc.center, dc.color,
                                   dc.segments, dc.filled, dc.in3d);
             }
 
-            // reset buffer index
-            index = 0;
+            // clear list of deferred circles
+            circles.clear ();
         }
+
+        typedef std::vector<DeferredCircle> DeferredCircles;
 
     private:
 
@@ -1094,15 +1079,12 @@ namespace {
         bool filled;
         bool in3d;
 
-        static int index;
-        static const int size;
-        static DeferredCircle deferredCircleArray [];
+        static DeferredCircles circles;
     };
 
 
-    int DeferredCircle::index = 0;
-    const int DeferredCircle::size = 500;
-    DeferredCircle DeferredCircle::deferredCircleArray [DeferredCircle::size];
+DeferredCircle::DeferredCircles DeferredCircle::circles;
+
 
 } // anonymous namesopace
 
