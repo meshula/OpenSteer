@@ -37,8 +37,6 @@
 
 
 #include "OpenSteer/Obstacle.h"
-// XXXQQQ debug annotation
-#include <OpenSteer/SimpleVehicle.h>
 
 
 // ----------------------------------------------------------------------------
@@ -201,16 +199,6 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
         vehicle.position() + (vehicle.forward() * pi.distance);
     pi.surfaceNormal = (pi.surfacePoint-center).normalize();
     pi.steerHint = pi.surfaceNormal;
-    {
-        // XXXQQQ debug annotation
-        SimpleVehicle v;
-        const Vec3 vp = vehicle.position ();
-
-        const Vec3 sp = pi.surfacePoint;
-        const Vec3 sh = pi.steerHint;
-        v.annotationLine (vp, sp, gCyan);
-        v.annotationLine (sp, sp + sh, gCyan);
-    }
 }
 
 
@@ -264,16 +252,6 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
     pi.steerHint = opposingNormal + gpin;
     pi.surfacePoint = globalizePosition (planeIntersection);
     pi.surfaceNormal = opposingNormal;
-    {
-        // XXXQQQ debug annotation
-        SimpleVehicle v;
-        const Vec3 vp = vehicle.position ();
-
-        const Vec3 sp = pi.surfacePoint;
-        const Vec3 sh = pi.steerHint;
-        v.annotationLine (vp, sp, gCyan);
-        v.annotationLine (sp, sp + sh, gCyan);
-    }
 }
 
 
