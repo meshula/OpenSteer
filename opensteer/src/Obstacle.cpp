@@ -142,13 +142,13 @@ steerToAvoidIfNeeded (const AbstractVehicle& vehicle,
 
 
 // ----------------------------------------------------------------------------
-// SphericalObstacle
+// SphereObstacle
 // find first intersection of a vehicle's path with this obstacle
 
 
 void 
 OpenSteer::
-SphericalObstacle::
+SphereObstacle::
 findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
                                  PathIntersection& pi) const
 {

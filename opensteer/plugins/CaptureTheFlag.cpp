@@ -56,16 +56,16 @@
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/OpenSteerDemo.h"
 
+using namespace OpenSteer;
 
-    
-    using namespace OpenSteer;
 
 // ----------------------------------------------------------------------------
-// short names for STL vectors (iterators) of SphericalObstacle pointers
+// short names for STL vectors (iterators) of SphereObstacle pointers
+// (obsolete? replace with ObstacleGroup/ObstacleIterator ?)
 
 
-typedef std::vector<SphericalObstacle*> SOG;  // spherical obstacle group
-typedef SOG::const_iterator SOI;              // spherical obstacle iterator
+typedef std::vector<SphereObstacle*> SOG;  // SphereObstacle group
+typedef SOG::const_iterator SOI;           // SphereObstacle iterator
 
 
 // ----------------------------------------------------------------------------
@@ -785,7 +785,7 @@ void CtfBase::addOneObstacle (void)
         while (minClearance < requiredClearance);
 
         // add new non-overlapping obstacle to registry
-        allObstacles.push_back (new SphericalObstacle (r, c));
+        allObstacles.push_back (new SphereObstacle (r, c));
         obstacleCount++;
     }
 }

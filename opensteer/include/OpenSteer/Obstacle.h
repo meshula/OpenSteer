@@ -28,9 +28,7 @@
 // ----------------------------------------------------------------------------
 //
 //
-// Obstacle and SphericalObstacle
-//
-// for use with obstacle avoidance
+// Obstacles for use with obstacle avoidance
 //
 // 10-04-04 bk:  put everything into the OpenSteer namespace
 // 09-05-02 cwr: created
@@ -145,18 +143,18 @@ namespace OpenSteer {
 
 
     // ----------------------------------------------------------------------------
-    // SphericalObstacle a simple ball-shaped obstacle
+    // SphereObstacle a simple ball-shaped obstacle
 
 
-    class SphericalObstacle : public Obstacle
+    class SphereObstacle : public Obstacle
     {
     public:
         float radius;
         Vec3 center;
 
         // constructors
-        SphericalObstacle (float r, Vec3 c) : radius(r), center (c) {}
-        SphericalObstacle (void) : radius(1), center (Vec3::zero) {}
+        SphereObstacle (float r, Vec3 c) : radius(r), center (c) {}
+        SphereObstacle (void) : radius(1), center (Vec3::zero) {}
 
         // find first intersection of a vehicle's path with this obstacle
         void findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,

@@ -63,8 +63,8 @@ typedef AbstractTokenForProximityDatabase<AbstractVehicle*> ProximityToken;
 // creates a path for the PlugIn
 PolylinePathway* getTestPath (void);
 PolylinePathway* gTestPath = NULL;
-SphericalObstacle gObstacle1;
-SphericalObstacle gObstacle2;
+SphereObstacle gObstacle1;
+SphereObstacle gObstacle2;
 ObstacleGroup gObstacles;
 Vec3 gEndpoint0;
 Vec3 gEndpoint1;
