@@ -185,9 +185,9 @@ lqClientProxy** lqBinForLocation (lqInternalDB* lq,
     if (z >= lq->originz + lq->sizez) return &(lq->other);
 
     /* if point inside super-brick, compute the bin coordinates */
-    ix = ((x - lq->originx) / lq->sizex) * lq->divx;
-    iy = ((y - lq->originy) / lq->sizey) * lq->divy;
-    iz = ((z - lq->originz) / lq->sizez) * lq->divz;
+    ix = (int) (((x - lq->originx) / lq->sizex) * lq->divx);
+    iy = (int) (((y - lq->originy) / lq->sizey) * lq->divy);
+    iz = (int) (((z - lq->originz) / lq->sizez) * lq->divz);
 
     /* convert to linear bin number */
     i = lqBinCoordsToBinIndex (lq, ix, iy, iz);
@@ -455,12 +455,12 @@ void lqMapOverAllObjectsInLocality (lqInternalDB* lq,
     }
 
     /* compute min and max bin coordinates for each dimension */
-    minBinX = (((x - radius) - lq->originx) / lq->sizex) * lq->divx;
-    minBinY = (((y - radius) - lq->originy) / lq->sizey) * lq->divy;
-    minBinZ = (((z - radius) - lq->originz) / lq->sizez) * lq->divz;
-    maxBinX = (((x + radius) - lq->originx) / lq->sizex) * lq->divx;
-    maxBinY = (((y + radius) - lq->originy) / lq->sizey) * lq->divy;
-    maxBinZ = (((z + radius) - lq->originz) / lq->sizez) * lq->divz;
+    minBinX = (int) ((((x - radius) - lq->originx) / lq->sizex) * lq->divx);
+    minBinY = (int) ((((y - radius) - lq->originy) / lq->sizey) * lq->divy);
+    minBinZ = (int) ((((z - radius) - lq->originz) / lq->sizez) * lq->divz);
+    maxBinX = (int) ((((x + radius) - lq->originx) / lq->sizex) * lq->divx);
+    maxBinY = (int) ((((y + radius) - lq->originy) / lq->sizey) * lq->divy);
+    maxBinZ = (int) ((((z + radius) - lq->originz) / lq->sizez) * lq->divz);
 
     /* clip bin coordinates */
     if (minBinX < 0)         {partlyOut = 1; minBinX = 0;}
