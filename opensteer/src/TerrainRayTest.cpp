@@ -30,7 +30,7 @@
 
 
 // To include OpenSteer::maxXXX instead of using __max
-#include "Utilities.h"
+#include "OpenSteer/Utilities.h"
 
 
 using namespace std;
