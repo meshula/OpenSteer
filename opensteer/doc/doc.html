@@ -41,7 +41,7 @@ Documentation </big></big></b> <br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><small><br>
-October 18, 2004<br>
+October 19, 2004<br>
       <small>Version 0.8.2</small></small></td>
       <td style="vertical-align: top; text-align: right;"><a
  href="index.html"><img src="images/beta_250a.gif" alt="OpenSteer Logo"
@@ -911,7 +911,8 @@ OpenSteer 0.8.2 which contains these files: </p>
     </tr>
   </tbody>
 </table>
-<p>Otherwise, use CVS to obtain the most up-to-date version of the
+<p>Otherwise, use <a href="http://cvsbook.red-bean.com/cvsbook.html">CVS</a>
+to obtain the most up-to-date version of the
 OpenSteer source code. If you want to be a developer, or at least
 a serious kibitzer, or want to help by testing the newest version of
 the code, or frankly, as long as you feel comfortable doing a <a
@@ -920,14 +921,43 @@ the code, or frankly, as long as you feel comfortable doing a <a
 from <a href="http://sourceforge.net/">SourceForge</a> -- you should
 visit <a href="http://sourceforge.net/cvs/?group_id=77546">OpenSteer's
 CVS
-repository</a> and checkout the code. (Note: do a <span
- style="font-weight: bold;">cvs update -dP</span> to prune obsolete
-directories. If you are not a SourceForge
-member can do the checkout anonymously:&nbsp; <small><small>cvs -z3
--d:pserver:anonymous@cvs-pserver.sourceforge.net:80/cvsroot/opensteer
-co opensteer</small></small>). CVS client software is included with
+repository</a> and checkout the code<small><small></small></small>. CVS
+client software is included with
 Linux and Mac OS X systems. A free and easy-to-use Windows CVS
-client is<a href="http://www.tortoisecvs.org/"> TortoiseCVS</a>. This
+client is<a href="http://www.tortoisecvs.org/"> TortoiseCVS</a>.</p>
+<table align="center" border="0" cellpadding="0" cellspacing="3"
+ width="90%">
+  <tbody>
+    <tr>
+      <td class="graybox" style="padding: 10px;" width="25%">Check out
+a local
+working copy of
+OpenSteer from the CVS repository (assumes CVSROOT is set to
+:ext:yourusername@cvs.sourceforge.net:/cvsroot/opensteer):<br>
+      <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+ href="http://cvsbook.red-bean.com/cvsbook.html#Checking%20Out%20A%20Working%20Copy">cvs
+checkout opensteer</a><br>
+      <br>
+If you are not a SourceForge
+member, you can do an anonymous checkout:<br>
+      <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cvs -z3
+-d:pserver:anonymous@cvs-pserver.sourceforge.net:80/cvsroot/opensteer
+co opensteer<br>
+      <br>
+Update your local working copy with recent changes from the CVS
+repository (do it once after checkout to prune obsolete
+directories):<br>
+      <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+ href="http://cvsbook.red-bean.com/cvsbook.html#Finding%20Out%20What%20You%20%28And%20Others%29%20Did%20--%20update%20And%20diff">cvs
+update -dP</a><br>
+      <span style="font-weight: bold;"></span></td>
+    </tr>
+  </tbody>
+</table>
+<p>This
 is the
 directory structure
 of OpenSteer:&nbsp;<br>
@@ -1114,8 +1144,8 @@ demo application. It currently does not. <small>[<a
 thread</a>.]</small></p>
   </li>
   <li>
-    <p>When OpenSteerDemo is launched from the desktop (not from a
-command line, say by double-clicking on an icon) printed messages may
+    <p>When OpenSteerDemo is launched from the desktop (say by
+double-clicking on an icon) printed messages may
 be lost, or at
 least not be seen immediately by the user. <small>[<a
  href="http://sourceforge.net/forum/message.php?msg_id=2801351">forum
@@ -1136,12 +1166,12 @@ generating API docs.<br>
     <p>Stupidly, the various <span style="font-style: italic;">annotation</span>
 (deferred graphics) types
 (lines, circles) are currently limited to a fixed number of
-objects. OpenSteerDemo complains incessantly when these limits
+objects. OpenSteerDemo incessantly prints complaints when these limits
 are exceeded.<br>
     </p>
   </li>
   <li>
-    <p>There should be sample code (a PlugIn) showing how to use
+    <p>There should be sample code (in a PlugIn) showing how to use
 OpenSteer in a more traditional, non-mixin, HAS-A architecture. <small>[<a
  href="https://sourceforge.net/forum/message.php?msg_id=2799598">forum
 thread</a>]</small><br>
@@ -1172,7 +1202,8 @@ question, should OpenSteer define a "time" type? XXX)</p>
 <a name="RelatedLinks"></a>
 Related Links:
 </b></big></big><small>&nbsp;&nbsp;
-(Please feel free to suggest new links for this section)
+(Please feel free to <a href="contact.html">suggest</a> new links for
+this section)
 </small>
 <ul>
   <li>
@@ -1180,19 +1211,15 @@ Related Links:
  href="http://www.sourceforge.net/">SourceForge.Net</a></p>
   </li>
   <li>
-    <p><a href="http://www.igda.org/ai/ai_committee.php">AI Interface
-Standards Committee</a> of the <a href="http://www.igda.org/">IGDA</a>
-which includes a Steering Working Group</p>
-  </li>
-  <li>
     <p><a href="http://www.red3d.com/cwr/papers/1999/gdc99steer.html">Steering
 Behaviors For Autonomous Characters</a> the GDC 1999 paper on steering
 behaviors, and this companion page with <a
  href="http://www.red3d.com/cwr/steer/">background, updates and </a><a
- href="http://www.red3d.com/cwr/steer/">Java demos</a>.<a
- href="http://www.red3d.com/cwr/steer/"><br>
-    </a></p>
+ href="http://www.red3d.com/cwr/steer/">Java demos</a>.</p>
   </li>
+  <li> <a href="http://www.igda.org/ai/ai_committee.php">AI Interface
+Standards Committee</a> of the <a href="http://www.igda.org/">IGDA</a>
+which includes a Steering Working Group</li>
   <li>
     <p>Systems that use OpenSteer:</p>
     <ul>
@@ -1252,7 +1279,7 @@ driven by steering behaviors.</p>
   <li>
     <p><a href="http://sourceforge.net/forum/message.php?msg_id=2721305">Steering,
 planning and learning</a>, a forum thread on advanced steering
-archetectures which cites several recent publications.<br>
+architectures which cites several recent publications.<br>
     </p>
   </li>
 </ul>
@@ -1263,7 +1290,7 @@ archetectures which cites several recent publications.<br>
 comments or suggestions.
 <br>
 <br>
-<!-- CHANGE DATE AT TOP OF FILE TOO -->Last update: October 18, 2004 <br>
+<!-- CHANGE DATE AT TOP OF FILE TOO -->Last update: October 19, 2004 <br>
 </p>
 <a href="http://sourceforge.net">
 <img src="http://sourceforge.net/sflogo.php?group_id=77546&amp;type=1"
