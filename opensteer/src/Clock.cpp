@@ -257,7 +257,7 @@ float Clock::realTimeSinceFirstClockUpdate (void)
             // method of storing time as two integers instead of a float.
             double dtime = (double)time / (double)freq;
             int sec = (int)dtime;
-            int usec = (dtime - sec) * 1000000;
+            int usec = ((int)dtime - sec) * 1000000;
 			
             if (baseRealTimeSec == 0)
             {

@@ -93,7 +93,7 @@ public:
         setMaxSpeed (9);
 
         // initial slow speed
-        setSpeed (maxSpeed() * 0.3);
+        setSpeed (maxSpeed() * 0.3f);
 
         // randomize initial orientation
         regenerateOrthonormalBasisUF (RandomUnitVector ());
@@ -367,9 +367,9 @@ public:
         case 0:
             {
                 const Vec3 center;
-                const int div = 10;
+                const float div = 10.0f;
                 const Vec3 divisions (div, div, div);
-                const float diameter = Boid::worldRadius * 1.1 * 2;
+                const float diameter = Boid::worldRadius * 1.1f * 2;
                 const Vec3 dimensions (diameter, diameter, diameter);
                 typedef LQProximityDatabase<AbstractVehicle*> LQPDAV;
                 pd = new LQPDAV (center, dimensions, divisions);

@@ -285,7 +285,7 @@ void CtfEnemy::update (const float currentTime, const float elapsedTime)
     const float seekerToGoalTime = ((adjustedDistance < 0 ) ?
                                     0 :
                                     (adjustedDistance/gSeeker->speed()));
-    const float maxPredictionTime = seekerToGoalTime * 0.9;
+    const float maxPredictionTime = seekerToGoalTime * 0.9f;
 
     // determine steering (pursuit, obstacle avoidance, or braking)
     Vec3 steer (0, 0, 0);
@@ -341,8 +341,8 @@ void CtfEnemy::update (const float currentTime, const float elapsedTime)
 
 bool CtfSeeker::clearPathToGoal (void)
 {
-    const float sideThreshold = radius() * 8.0;
-    const float behindThreshold = radius() * 2;
+    const float sideThreshold = radius() * 8.0f;
+    const float behindThreshold = radius() * 2.0f;
 
     const Vec3 goalOffset = gHomeBaseCenter - position();
     const float goalDistance = goalOffset.length ();
@@ -359,7 +359,7 @@ bool CtfSeeker::clearPathToGoal (void)
         // short name for this enemy
         const CtfEnemy& e = *ctfEnemies[i];
         const float eDistance = Vec3::distance (position(), e.position());
-        const float timeEstimate = 0.3 * eDistance / e.speed(); //xxx
+        const float timeEstimate = 0.3f * eDistance / e.speed(); //xxx
         const Vec3 eFuture = e.predictFuturePosition (timeEstimate);
         const Vec3 eOffset = eFuture - position();
         const float alongCorridor = goalDirection.dot (eOffset);
@@ -478,8 +478,8 @@ Vec3 CtfSeeker::steerToEvadeAllDefenders (void)
         {
             if (eDistance < (goalDistance * 1.2)) //xxx
             {
-                // const float timeEstimate = 0.5 * eDistance / e.speed;//xxx
-                const float timeEstimate = 0.15 * eDistance / e.speed();//xxx
+                // const float timeEstimate = 0.5f * eDistance / e.speed;//xxx
+                const float timeEstimate = 0.15f * eDistance / e.speed();//xxx
                 const Vec3 future =
                     e.predictFuturePosition (timeEstimate);
 
@@ -508,7 +508,7 @@ Vec3 CtfSeeker::XXXsteerToEvadeAllDefenders (void)
         const float eDistance = eOffset.length();
 
         // xxx maybe this should take into account e's heading? xxx
-        const float timeEstimate = 0.5 * eDistance / e.speed(); //xxx
+        const float timeEstimate = 0.5f * eDistance / e.speed(); //xxx
         const Vec3 eFuture = e.predictFuturePosition (timeEstimate);
 
         // annotation
@@ -522,7 +522,7 @@ Vec3 CtfSeeker::XXXsteerToEvadeAllDefenders (void)
 
         const float distanceWeight = 4 / eDistance;
         const float forwardWeight = ((eForwardDistance > behindThreshold) ?
-                                     1 : 0.5);
+                                     1.0f : 0.5f);
 
         const Vec3 adjustedFlee = flee * distanceWeight * forwardWeight;
 

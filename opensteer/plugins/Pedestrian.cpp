@@ -294,7 +294,7 @@ public:
                                 const Vec3& ourFuture,
                                 const Vec3& threatFuture)
     {
-        const Vec3 green (0.15, 0.6, 0);
+        const Vec3 green (0.15f, 0.6f, 0.0f);
 
         annotationLine (position(), ourFuture, green);
         annotationLine (threat.position(), threatFuture, green);
@@ -384,7 +384,7 @@ PolylinePathway* getTestPath (void)
         const int pathPointCount = 7;
         const float size = 30;
         const float top = 2 * size;
-        const float gap = 1.2 * size;
+        const float gap = 1.2f * size;
         const float out = 2 * size;
         const float h = 0.5;
         const Vec3 pathPoints[pathPointCount] =
@@ -661,9 +661,9 @@ public:
         case 0:
             {
                 const Vec3 center;
-                const int div = 20;
-                const Vec3 divisions (div, 1, div);
-                const float diameter = 80; // XXX need a better way to get this
+                const float div = 20.0f;
+                const Vec3 divisions (div, 1.0f, div);
+                const float diameter = 80.0f; //XXX need better way to get this
                 const Vec3 dimensions (diameter, diameter, diameter);
                 typedef LQProximityDatabase<AbstractVehicle*> LQPDAV;
                 pd = new LQPDAV (center, dimensions, divisions);

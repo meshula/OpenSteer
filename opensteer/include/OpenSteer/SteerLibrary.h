@@ -641,7 +641,7 @@ steerToAvoidNeighbors (const float minTimeToCollision,
             // steer away from future threat position
             Vec3 offset = xxxThreatPositionAtNearestApproach - position();
             float sideDot = offset.dot(side());
-            steer = (sideDot > 0) ? -1 : 1;
+            steer = (sideDot > 0) ? -1.0f : 1.0f;
         }
         else
         {
@@ -650,7 +650,7 @@ steerToAvoidNeighbors (const float minTimeToCollision,
                 // parallel paths: steer away from threat
                 Vec3 offset = threat->position() - position();
                 float sideDot = offset.dot(side());
-                steer = (sideDot > 0) ? -1 : 1;
+                steer = (sideDot > 0) ? -1.0f : 1.0f;
             }
             else
             {
@@ -659,7 +659,7 @@ steerToAvoidNeighbors (const float minTimeToCollision,
                 if (threat->speed() <= speed())
                 {
                     float sideDot = side().dot(threat->velocity());
-                    steer = (sideDot > 0) ? -1 : 1;
+                    steer = (sideDot > 0) ? -1.0f : 1.0f;
                 }
             }
         }
@@ -855,7 +855,7 @@ steerForSeparation (const float maxDistance,
     }
 
     // divide by neighbors, then normalize to pure direction
-    if (neighbors > 0) steering = (steering / neighbors).normalize();
+    if (neighbors > 0) steering = (steering / (float)neighbors).normalize();
 
     return steering;
 }
@@ -891,7 +891,7 @@ steerForAlignment (const float maxDistance,
 
     // divide by neighbors, subtract off current heading to get error-
     // correcting direction, then normalize to pure direction
-    if (neighbors > 0) steering = ((steering/neighbors)-forward()).normalize();
+    if (neighbors > 0) steering = ((steering / (float)neighbors) - forward()).normalize();
 
     return steering;
 }
@@ -928,7 +928,7 @@ steerForCohesion (const float maxDistance,
 
     // divide by neighbors, subtract off current position to get error-
     // correcting direction, then normalize to pure direction
-    if (neighbors > 0) steering =((steering/neighbors)-position()).normalize();
+    if (neighbors > 0) steering = ((steering / (float)neighbors) - position()).normalize();
 
     return steering;
 }
