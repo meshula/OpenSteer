@@ -300,6 +300,13 @@ namespace OpenSteer {
           return  floorXXX (0.5f + x);
     }
 
+    #else 
+    
+    inline float round( float x )
+    {
+        return ::round( x );
+    }
+    
     #endif
 
 } // namespace OpenSteer

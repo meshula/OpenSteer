@@ -66,6 +66,8 @@
 
 #include "OpenSteer/OpenSteerDemo.h"
 
+// To include OpenSteer::round.
+#include "OpenSteer/Utilities.h"
 
 // ----------------------------------------------------------------------------
 
@@ -388,7 +390,7 @@ namespace {
             {
                 fooStr << "animation mode (";
                 fooStr << targetFPS << " fps,";
-                fooStr << " display "<< round (smoothedFPS) << " fps, ";
+                fooStr << " display "<< OpenSteer::round(smoothedFPS) << " fps, ";
                 const float ratio = smoothedFPS / targetFPS;
                 fooStr << (int) (100 * ratio) << "% of nominal speed)";
             }
@@ -398,12 +400,12 @@ namespace {
                 if (OpenSteer::OpenSteerDemo::clock.getVariableFrameRateMode ())
                 {
                     fooStr << "variable frame rate (";
-                    fooStr << round (smoothedFPS) << " fps)";
+                    fooStr << OpenSteer::round(smoothedFPS) << " fps)";
                 }
                 else
                 {
                     fooStr << "fixed frame rate (target: " << targetFPS;
-                    fooStr << " actual: " << round (smoothedFPS) << ", ";
+                    fooStr << " actual: " << OpenSteer::round(smoothedFPS) << ", ";
 
                     OpenSteer::Vec3 sp;
                     sp = screenLocation;
