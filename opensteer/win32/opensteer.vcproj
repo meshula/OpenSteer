@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="OpenSteerDemo"
+	Name="opensteer"
 	ProjectGUID="{2FCB5399-059F-405F-A19B-3ACBE92057A9}"
 	RootNamespace="opensteer"
 	Keyword="Win32Proj">
@@ -15,7 +15,7 @@
 			Name="Debug|Win32"
 			OutputDirectory="Debug"
 			IntermediateDirectory="Debug"
-			ConfigurationType="1"
+			ConfigurationType="4"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
@@ -33,14 +33,13 @@
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="opensteerd.lib"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)\lib&quot;"
-				GenerateDebugInformation="TRUE"/>
+				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)/$(ProjectName)d.lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="copy $(TargetPath) $(ProjectDir)\lib"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -52,8 +51,6 @@
 			<Tool
 				Name="VCXMLDataGeneratorTool"/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
 				Name="VCManagedWrapperGeneratorTool"/>
 			<Tool
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
@@ -62,7 +59,7 @@
 			Name="Release|Win32"
 			OutputDirectory="Release"
 			IntermediateDirectory="Release"
-			ConfigurationType="1"
+			ConfigurationType="4"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
@@ -81,20 +78,12 @@
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="opensteer.lib"
-				OutputFile="$(OutDir)/opensteer.exe"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)\lib&quot;"
-				GenerateDebugInformation="TRUE"
-				SubSystem="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="1"/>
+				Name="VCLibrarianTool"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="copy $(TargetPath) $(ProjectDir)\lib"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -105,8 +94,6 @@
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
 			<Tool
 				Name="VCManagedWrapperGeneratorTool"/>
 			<Tool
@@ -120,53 +107,82 @@
 			Name="src"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm">
 			<File
-				RelativePath="..\plugins\Boids.cpp">
+				RelativePath="..\src\Camera.cpp">
 			</File>
 			<File
-				RelativePath="..\src\main.cpp">
+				RelativePath="..\src\Clock.cpp">
 			</File>
 			<File
-				RelativePath="..\src\SteerTest.cpp">
+				RelativePath="..\src\Draw.cpp">
+			</File>
+			<File
+				RelativePath="..\src\lq.c">
+			</File>
+			<File
+				RelativePath="..\src\Pathway.cpp">
+			</File>
+			<File
+				RelativePath="..\src\PlugIn.cpp">
+			</File>
+			<File
+				RelativePath="..\src\SimpleVehicle.cpp">
+			</File>
+			<File
+				RelativePath="..\src\Vec3.cpp">
 			</File>
 		</Filter>
 		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
+			Name="include"
+			Filter="h;hpp;hxx;hm;inl;inc">
 			<File
-				RelativePath=".\SteerTest.ico">
+				RelativePath="..\include\OpenSteer\AbstractVehicle.h">
 			</File>
 			<File
-				RelativePath=".\SteerTest.rc">
+				RelativePath="..\include\OpenSteer\Annotation.h">
+			</File>
+			<File
+				RelativePath="..\include\OpenSteer\Camera.h">
+			</File>
+			<File
+				RelativePath="..\include\OpenSteer\Clock.h">
+			</File>
+			<File
+				RelativePath="..\include\OpenSteer\Draw.h">
+			</File>
+			<File
+				RelativePath="..\include\OpenSteer\LocalSpace.h">
+			</File>
+			<File
+				RelativePath="..\include\OpenSteer\lq.h">
+			</File>
+			<File
+				RelativePath="..\include\OpenSteer\Obstacle.h">
+			</File>
+			<File
+				RelativePath="..\include\OpenSteer\Pathway.h">
+			</File>
+			<File
+				RelativePath="..\include\OpenSteer\PlugIn.h">
+			</File>
+			<File
+				RelativePath="..\include\OpenSteer\Proximity.h">
+			</File>
+			<File
+				RelativePath="..\include\OpenSteer\SimpleVehicle.h">
+			</File>
+			<File
+				RelativePath="..\include\OpenSteer\SteerLibrary.h">
+			</File>
+			<File
+				RelativePath="..\include\OpenSteer\SteerTest.h">
+			</File>
+			<File
+				RelativePath="..\include\OpenSteer\Utilities.h">
+			</File>
+			<File
+				RelativePath="..\include\OpenSteer\Vec3.h">
 			</File>
 		</Filter>
-		<Filter
-			Name="plugins"
-			Filter="">
-			<File
-				RelativePath="..\plugins\CaptureTheFlag.cpp">
-			</File>
-			<File
-				RelativePath="..\plugins\LowSpeedTurn.cpp">
-			</File>
-			<File
-				RelativePath="..\plugins\MapDrive.cpp">
-			</File>
-			<File
-				RelativePath="..\plugins\MultiplePursuit.cpp">
-			</File>
-			<File
-				RelativePath="..\plugins\OneTurning.cpp">
-			</File>
-			<File
-				RelativePath="..\plugins\Pedestrian.cpp">
-			</File>
-			<File
-				RelativePath="..\plugins\Soccer.cpp">
-			</File>
-		</Filter>
-		<File
-			RelativePath=".\resource.h">
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
