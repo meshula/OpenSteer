@@ -198,9 +198,9 @@ public:
             const Vec3 textPosition = agent.position() + textOffset;
             std::ostrstream annote;
             annote << std::setprecision (2)
-                   << std::setiosflags (ios::fixed)
+                   << std::setiosflags (std::ios::fixed)
                    << agent.speed()
-                   << ends;
+                   << std::ends;
             draw2dTextAt3dLocation (*annote.str(), textPosition, textColor);
         }
 

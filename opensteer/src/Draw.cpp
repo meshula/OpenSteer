@@ -273,7 +273,7 @@ void drawDisplayPlugInName (void)
 void drawDisplayCameraModeName (void)
 {
     std::ostrstream message;
-    message << "Camera: " << SteerTest::camera.modeName () << ends;
+    message << "Camera: " << SteerTest::camera.modeName () << std::ends;
     const Vec3 screenLocation (10, 10, 0);
     draw2dTextAt2dLocation (*message.str(), screenLocation, gWhite);
 }
@@ -286,11 +286,11 @@ void drawDisplayCameraModeName (void)
 void writePhaseTimerReportToStream (float phaseTimer, std::ostrstream& stream)
 {
     // write the timer value in seconds in floating point
-    stream << std::setprecision (5) << std::setiosflags (ios::fixed);
+    stream << std::setprecision (5) << std::setiosflags (std::ios::fixed);
     stream << phaseTimer;
 
     // restate value in another form
-    stream << std::setprecision (0) << std::setiosflags (ios::fixed);
+    stream << std::setprecision (0) << std::setiosflags (std::ios::fixed);
     stream << " (";
 
     // is there a "fixed frame rate target"?
@@ -349,7 +349,7 @@ void drawDisplayFPS (void)
         std::ostrstream fpsStr;
         fpsStr << "fps: " << (int) roundf (gSmoothedFPS);
         if (SteerTest::clock.paused) fpsStr << " Paused";
-        fpsStr << ends;
+        fpsStr << std::ends;
 
         // draw the string in white at the lower left corner of the window
         const int lh = 16; // xxx
@@ -369,9 +369,11 @@ void drawDisplayFPS (void)
 
             // create usage description character string
             std::ostrstream usageStr;
-            usageStr << std::setprecision (0) << std::setiosflags (ios::fixed);
+            usageStr << std::setprecision (0);
+            usageStr << std::setiosflags (std::ios::fixed);
             usageStr << gSmoothedUsage << "% usage of 1/";
-            usageStr << SteerTest::clock.targetFPS << " time step" << ends;
+            usageStr << SteerTest::clock.targetFPS << " time step";
+            usageStr << std::ends;
 
             // display message in lower left corner of window
             // (draw in red if the instantaneous usage is 100% or more)
@@ -396,7 +398,7 @@ void drawDisplayFPS (void)
         writePhaseTimerReportToStream (gSmoothedTimerDraw, timerStr);
         timerStr << "other:  ";
         writePhaseTimerReportToStream (gSmoothedTimerOverhead, timerStr);
-        timerStr << ends;
+        timerStr << std::ends;
         const Vec3 screenLocation3 (10, lh * 7, 0);
         draw2dTextAt2dLocation (*timerStr.str(), screenLocation3, gGreen);
     }
@@ -440,7 +442,8 @@ void keyboardFunc (unsigned char key, int x, int y)
     case 'r':
         SteerTest::resetSelectedPlugIn ();
         message << "reset PlugIn "
-                << '"' << SteerTest::nameOfSelectedPlugIn () << '"' << ends;
+                << '"' << SteerTest::nameOfSelectedPlugIn () << '"'
+                << std::ends;
         SteerTest::printMessage (message.str());
         break;
 
@@ -454,7 +457,7 @@ void keyboardFunc (unsigned char key, int x, int y)
     case 'c':
         SteerTest::camera.selectNextMode ();
         message << "select camera mode "
-                << '"' << SteerTest::camera.modeName () << '"' << ends;
+                << '"' << SteerTest::camera.modeName () << '"' << std::ends;
         SteerTest::printMessage (message.str());
         break;
 
@@ -462,7 +465,8 @@ void keyboardFunc (unsigned char key, int x, int y)
     case tab:
         SteerTest::selectNextPlugIn ();
         message << "select next PlugIn: "
-                << '"' << SteerTest::nameOfSelectedPlugIn () << '"' << ends;
+                << '"' << SteerTest::nameOfSelectedPlugIn () << '"'
+                << std::ends;
         SteerTest::printMessage (message.str());
         break;
 
@@ -475,7 +479,7 @@ void keyboardFunc (unsigned char key, int x, int y)
     // cycle through frame rate presets
     case 'f':
         message << "set frame rate to "
-                << selectNextPresetFrameRate () << ends;
+                << selectNextPresetFrameRate () << std::ends;
         SteerTest::printMessage (message.str());
         break;
 
@@ -493,7 +497,7 @@ void keyboardFunc (unsigned char key, int x, int y)
     default:
         message << "unrecognized single key command: " << key;
         message << " (" << (int)key << ")";//xxx perhaps only for debugging?
-        message << ends;
+        message << std::ends;
         SteerTest::printMessage ("");
         SteerTest::printMessage (message.str());
         SteerTest::keyboardMiniHelp ();
@@ -532,7 +536,7 @@ void specialFunc (int key, int x, int y)
         const float frameTime = 1 / FPS;
         SteerTest::clock.advanceSimulationTime (frameTime);
         message << "single step forward (frame time: "
-                << frameTime << ")" << endl;
+                << frameTime << ")" << std::endl;
         SteerTest::printMessage (message.str());
         break;
     }
@@ -580,7 +584,7 @@ void displayFunc (void)
 //     // XXX display the total number of AbstractVehicles created
 //     {
 //         std::ostrstream s;
-//         s << "vehicles: " << xxx::SerialNumberCounter << ends;
+//         s << "vehicles: " << xxx::SerialNumberCounter << std::ends;
 
 //         // draw string s right-justified in the upper righthand corner
 //         const int h = glutGet (GLUT_WINDOW_HEIGHT);
@@ -675,7 +679,7 @@ void warnIfInUpdatePhase2 (const char* name)
     message << "use annotation (during simulation update, do not call ";
     message << name;
     message << ")";
-    message << ends;
+    message << std::ends;
     SteerTest::printWarning (message.str());
 }
 
@@ -1240,7 +1244,7 @@ void checkForGLError (const char* locationDescription)
     if (lastGlError == GL_NO_ERROR) return;
 
     // otherwise print vaguely descriptive error message, then exit
-    cerr << endl << "SteerTest: OpenGL error ";
+    cerr << std::endl << "SteerTest: OpenGL error ";
     switch (lastGlError)
     {
     case GL_INVALID_ENUM:      cerr << "GL_INVALID_ENUM";      break;
@@ -1254,7 +1258,7 @@ void checkForGLError (const char* locationDescription)
 #endif
     }
     if (locationDescription) cerr << " in " << locationDescription;
-    cerr << endl << endl << flush;
+    cerr << std::endl << std::endl << flush;
     SteerTest::exit (1);
 }
 

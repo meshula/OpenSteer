@@ -51,7 +51,7 @@
 
 
 #include <math.h>       // for sqrtf, etc.
-#include <iostream.h>   // for ostream (for <<)
+#include <iostream>     // for ostream (for <<)
 #include "Utilities.h"  // for interpolate, etc.
 
 

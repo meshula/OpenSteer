@@ -103,7 +103,7 @@ const int SteerTest::drawPhase = 2;
 // initialize SteerTest application
 
 
-void printPlugIn (PlugIn& pi) {cout << " " << pi << endl;} // XXX
+void printPlugIn (PlugIn& pi) {cout << " " << pi << std::endl;} // XXX
 
 
 void SteerTest::initialize (void)
@@ -115,15 +115,15 @@ void SteerTest::initialize (void)
         // XXX this block is for debugging purposes,
         // XXX should it be replaced with something permanent?
 
-        cout << endl << "Known plugins:" << endl;   // xxx?
-        PlugIn::applyToAll (printPlugIn);           // xxx?
-        cout << endl;                               // xxx?
+        cout << std::endl << "Known plugins:" << std::endl;   // xxx?
+        PlugIn::applyToAll (printPlugIn);                     // xxx?
+        cout << std::endl;                                    // xxx?
 
         // identify default PlugIn
         if (!selectedPlugIn) errorExit ("no default PlugIn");
-        cout << endl << "Default plugin:" << endl;  // xxx?
-        cout << " " << *selectedPlugIn << endl;     // xxx?
-        cout << endl;                               // xxx?
+        cout << std::endl << "Default plugin:" << std::endl;  // xxx?
+        cout << " " << *selectedPlugIn << std::endl;          // xxx?
+        cout << std::endl;                                    // xxx?
     }
 
     // initialize the default PlugIn
@@ -605,13 +605,13 @@ void SteerTest::drawCircleHighlightOnVehicle (const AbstractVehicle& v,
 
 void SteerTest::printMessage (const char* message)
 {
-    cout << "SteerTest: " <<  message << endl << flush;
+    cout << "SteerTest: " <<  message << std::endl << flush;
 }
 
 
 void SteerTest::printWarning (const char* message)
 {
-    cout << "SteerTest: Warning: " <<  message << endl << flush;
+    cout << "SteerTest: Warning: " <<  message << std::endl << flush;
 }
 
 

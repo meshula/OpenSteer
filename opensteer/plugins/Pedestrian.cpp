@@ -316,11 +316,11 @@ public:
                                                   camPosition);
         const char* spacer = "      ";
         std::ostrstream annote;
-        annote << std::setprecision (2) << std::setiosflags (ios::fixed);
-        annote << spacer << "1: speed: " << selected.speed() << endl;
+        annote << std::setprecision (2) << std::setiosflags (std::ios::fixed);
+        annote << spacer << "1: speed: " << selected.speed() << std::endl;
         annote << std::setprecision (1);
-        annote << spacer << "2: cam dist: " << camDistance << endl;
-        annote << spacer << "3: no third thing" << ends;
+        annote << spacer << "2: cam dist: " << camDistance << std::endl;
+        annote << spacer << "3: no third thing" << std::ends;
         draw2dTextAt3dLocation (*annote.str(), textPosition, color);
     }
 
@@ -342,7 +342,9 @@ public:
                     (&nearMouse && (Vec3::distance (vp, np) < nearDistance)))
                 {
                     std::ostrstream sn;
-                    sn << "#" << ((Pedestrian*)vehicle)->serialNumber << ends;
+                    sn << "#"
+                       << ((Pedestrian*)vehicle)->serialNumber
+                       << std::ends;
                     const Vec3 textColor (0.8f, 1, 0.8f);
                     const Vec3 textOffset (0, 0.25f, 0);
                     const Vec3 textPos = vehicle->position() + textOffset;
@@ -395,7 +397,7 @@ public:
     {
         std::ostrstream message;
         message << "Function keys handled by ";
-        message << '"' << name() << '"' << ':' << ends;
+        message << '"' << name() << '"' << ':' << std::ends;
         SteerTest::printMessage (message.str());
         SteerTest::printMessage ("  F1     toggle wander component on/off.");
         SteerTest::printMessage ("");

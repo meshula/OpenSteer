@@ -119,8 +119,8 @@ public:
 
         // textual annotation (following the test vehicle's screen position)
         std::ostrstream annote;
-        annote << std::setprecision (2) << std::setiosflags (ios::fixed);
-        annote << "      speed: " << gOneTurning->speed() << ends;
+        annote << std::setprecision (2) << std::setiosflags (std::ios::fixed);
+        annote << "      speed: " << gOneTurning->speed() << std::ends;
         draw2dTextAt3dLocation (*annote.str(), gOneTurning->position(), gRed);
         draw2dTextAt3dLocation (*"start", Vec3::zero, gGreen);
 

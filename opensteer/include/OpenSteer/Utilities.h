@@ -209,7 +209,7 @@ float inline MAX (float a, float b)
 // and the value of the expression.  For example "angle = 35.6"
 
 
-#define debugPrint(e) (cout << #e" = " << (e) << endl << flush)
+#define debugPrint(e) (cout << #e" = " << (e) << std::endl << flush)
 
 
 // ----------------------------------------------------------------------------
