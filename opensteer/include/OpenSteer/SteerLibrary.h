@@ -141,12 +141,12 @@ namespace OpenSteer {
 
         // Given two vehicles, based on their current positions and velocities,
         // determine the time until nearest approach
-        float predictNearestApproachTime (AbstractVehicle& other);
+        float predictNearestApproachTime (AbstractVehicle& otherVehicle);
 
         // Given the time until nearest approach (predictNearestApproachTime)
         // determine position of each vehicle at that time, and the distance
         // between them
-        float computeNearestApproachPositions (AbstractVehicle& other,
+        float computeNearestApproachPositions (AbstractVehicle& otherVehicle,
                                                float time);
 
 
@@ -171,7 +171,7 @@ namespace OpenSteer {
         // used by boid behaviors
 
 
-        bool inBoidNeighborhood (const AbstractVehicle& other,
+        bool inBoidNeighborhood (const AbstractVehicle& otherVehicle,
                                  const float minDistance,
                                  const float maxDistance,
                                  const float cosMaxAngle);
@@ -643,12 +643,12 @@ steerToAvoidNeighbors (const float minTimeToCollision,
 template<class Super>
 float
 OpenSteer::SteerLibraryMixin<Super>::
-predictNearestApproachTime (AbstractVehicle& other)
+predictNearestApproachTime (AbstractVehicle& otherVehicle)
 {
     // imagine we are at the origin with no velocity,
     // compute the relative velocity of the other vehicle
     const Vec3 myVelocity = velocity();
-    const Vec3 otherVelocity = other.velocity();
+    const Vec3 otherVelocity = otherVehicle.velocity();
     const Vec3 relVelocity = otherVelocity - myVelocity;
     const float relSpeed = relVelocity.length();
 
@@ -666,7 +666,7 @@ predictNearestApproachTime (AbstractVehicle& other)
 
     // find distance from its path to origin (compute offset from
     // other to us, find length of projection onto path)
-    const Vec3 relPosition = position() - other.position();
+    const Vec3 relPosition = position() - otherVehicle.position();
     const float projection = relTangent.dot(relPosition);
 
     return projection / relSpeed;
@@ -681,14 +681,14 @@ predictNearestApproachTime (AbstractVehicle& other)
 template<class Super>
 float
 OpenSteer::SteerLibraryMixin<Super>::
-computeNearestApproachPositions (AbstractVehicle& other,
+computeNearestApproachPositions (AbstractVehicle& otherVehicle,
                                  float time)
 {
     const Vec3    myTravel =       forward () *       speed () * time;
-    const Vec3 otherTravel = other.forward () * other.speed () * time;
+    const Vec3 otherTravel = otherVehicle.forward () * otherVehicle.speed () * time;
 
     const Vec3    myFinal =       position () +    myTravel;
-    const Vec3 otherFinal = other.position () + otherTravel;
+    const Vec3 otherFinal = otherVehicle.position () + otherTravel;
 
     // xxx for annotation
     ourPositionAtNearestApproach = myFinal;
@@ -744,18 +744,18 @@ steerToAvoidCloseNeighbors (const float minSeparationDistance,
 template<class Super>
 bool
 OpenSteer::SteerLibraryMixin<Super>::
-inBoidNeighborhood (const AbstractVehicle& other,
+inBoidNeighborhood (const AbstractVehicle& otherVehicle,
                     const float minDistance,
                     const float maxDistance,
                     const float cosMaxAngle)
 {
-    if (&other == this)
+    if (&otherVehicle == this)
     {
         return false;
     }
     else
     {
-        const Vec3 offset = other.position() - position();
+        const Vec3 offset = otherVehicle.position() - position();
         const float distanceSquared = offset.lengthSquared ();
 
         // definitely in neighborhood if inside minDistance sphere
@@ -798,14 +798,14 @@ steerForSeparation (const float maxDistance,
     int neighbors = 0;
 
     // for each of the other vehicles...
-    for (AVIterator other = flock.begin(); other != flock.end(); other++)
+    for (AVIterator otherVehicle = flock.begin(); otherVehicle != flock.end(); otherVehicle++)
     {
-        if (inBoidNeighborhood (**other, radius()*3, maxDistance, cosMaxAngle))
+        if (inBoidNeighborhood (**otherVehicle, radius()*3, maxDistance, cosMaxAngle))
         {
             // add in steering contribution
             // (opposite of the offset direction, divided once by distance
             // to normalize, divided another time to get 1/d falloff)
-            const Vec3 offset = (**other).position() - position();
+            const Vec3 offset = (**otherVehicle).position() - position();
             const float distanceSquared = offset.dot(offset);
             steering += (offset / -distanceSquared);
 
@@ -837,12 +837,12 @@ steerForAlignment (const float maxDistance,
     int neighbors = 0;
 
     // for each of the other vehicles...
-    for (AVIterator other = flock.begin(); other != flock.end(); other++)
+    for (AVIterator otherVehicle = flock.begin(); otherVehicle != flock.end(); otherVehicle++)
     {
-        if (inBoidNeighborhood (**other, radius()*3, maxDistance, cosMaxAngle))
+        if (inBoidNeighborhood (**otherVehicle, radius()*3, maxDistance, cosMaxAngle))
         {
             // accumulate sum of neighbor's heading
-            steering += (**other).forward();
+            steering += (**otherVehicle).forward();
 
             // count neighbors
             neighbors++;
@@ -874,12 +874,12 @@ steerForCohesion (const float maxDistance,
     int neighbors = 0;
 
     // for each of the other vehicles...
-    for (AVIterator other = flock.begin(); other != flock.end(); other++)
+    for (AVIterator otherVehicle = flock.begin(); otherVehicle != flock.end(); otherVehicle++)
     {
-        if (inBoidNeighborhood (**other, radius()*3, maxDistance, cosMaxAngle))
+        if (inBoidNeighborhood (**otherVehicle, radius()*3, maxDistance, cosMaxAngle))
         {
             // accumulate sum of neighbor's positions
-            steering += (**other).position();
+            steering += (**otherVehicle).position();
 
             // count neighbors
             neighbors++;
