@@ -5,17 +5,26 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>OpenSteer Preliminary Documentation</title>
 <style type="text/css">
-  td.graybox { padding: 2px 8px 2px 8px;
-               background-color: #e0e0e0;
-               vertical-align: top; }
-  span.sourcecode { font-family: monospace; }
-  td.boxVM { vertical-align: middle;
-             padding: 0 0 0 0;
-             color: black;
-             background-color: white; }
-  body     { color: black;
-             background-color: white; }
-  .nowrap  { white-space: nowrap; }
+  .graybox    { vertical-align: top;
+                padding: 2px 8px 2px 8px;
+                color: black;
+                background-color: #e0e0e0; }
+  .boxVM      { vertical-align: middle;
+                padding: 0 0 0 0;
+                color: black;
+                background-color: white; }
+  .boxVMxxx   { vertical-align: middle;
+                padding: 0 0 0 0;
+                color: black;
+                background-color: yellow; }
+  .boxVT      { vertical-align: top;
+                padding: 0 0 0 0;
+                color: black;
+                background-color: white;}
+  .sourcecode { font-family: monospace; }
+  .nowrap     { white-space: nowrap; }
+  body        { color: black;
+                background-color: white; }
 </style>
   <!-- I should define a span-level style for code (and one for pathnames,
        "vocabulary" words (like "scare quotes") -->
@@ -26,13 +35,16 @@
 <tr>
 <td class=boxVM align=left>
 <small>
-May 28, 2003  <!-- CHANGE DATE AT BOTTOM OF FILE TOO -->
+May 29, 2003  <!-- CHANGE DATE AT BOTTOM OF FILE TOO -->
 <br>
 <small>
 Version 0.7
 </small>
 </small>
 
+<br>
+<br>
+<br>
 <br>
 <br>
 
@@ -53,12 +65,14 @@ Documentation
 <br>
 <br>
 <br>
+<br>
+<br>
 by
 <br><a href="http://www.red3d.com/cwr/">Craig Reynolds</a>
 <br><a href="http://www.research.scea.com/">Research and Development</a>
 <br><a href="http://www.scea.com/">Sony Computer Entertainment America</a>
 </td>
-<td class=boxVM align=right>
+<td class=boxVT align=right>
 <a href="index.html">
 <img src="images/beta_250a.gif"
  width="250" height="250" border="0" alt="OpenSteer Logo"></a>
@@ -68,13 +82,12 @@ by
 
 <br>
 <br>
-
-<!-- rule -->
-<table border=0 cellspacing=0 cellpadding=0 width="100%" 
-height=2 bgcolor="#f0f0f0"><tr><td></td></tr></table>
-
+<br>
 <br>
 
+<table border=0 cellspacing=0 cellpadding=0 width="100%" align=center>
+<tr>
+<td class=graybox>
 <big>
 <big>
 <b>
@@ -99,7 +112,12 @@ Table of Contents
 <br><a href="#RelatedLinks"       >Related Links</a>
 <br>
 <br>
+</td>
+</tr>
+</table>
+
 <br>
+
 
 <big>
 <big>
@@ -856,8 +874,8 @@ Installing OpenSteer
 
 
 <p><i>Note: this section is preliminary and subject to change.
-OpenSteer uses two external libraries: OpenGL and GLUT, you may need
-to install them before you can build OpenSteer.</i></p>
+OpenSteer 0.7 uses two external libraries: OpenGL and GLUT, you
+may need to install them before you can build OpenSteer.</i></p>
 
 <p>You can download software at
 
@@ -1066,7 +1084,7 @@ which includes a Steering Working Group</p>
 comments or suggestions.
 <br>
 <br>
-Last update: May 28, 2003  <!-- CHANGE DATE AT TOP OF FILE TOO -->
+Last update: May 29, 2003  <!-- CHANGE DATE AT TOP OF FILE TOO -->
 <br>
 </p>
 
