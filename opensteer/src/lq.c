@@ -73,6 +73,12 @@
 #include "OpenSteer/debuglq.c"
 #endif
 
+#ifndef WIN32
+#define USUSED_PARAM __attribute__ ((unused))
+#else
+#define USUSED_PARAM
+#endif
+
 
 /* ------------------------------------------------------------------ */
 /* This structure represents the spatial database.  Typically one of
@@ -606,8 +612,8 @@ void lqMapOverAllObjects (lqInternalDB* lq,
 
 #ifndef NO_LQ_BIN_STATS
 
-void lqgbpsCounter (void* clientObject    __attribute__ ((unused)),
-                    float distanceSquared __attribute__ ((unused)),
+void lqgbpsCounter (void* clientObject    USUSED_PARAM,
+                    float distanceSquared USUSED_PARAM,
                     void* clientQueryState)
 {
     (*(int*)clientQueryState)++;
