@@ -299,6 +299,7 @@ void drawDisplayCameraModeName (void)
 // helper for drawDisplayFPS
 
 
+
 void writePhaseTimerReportToStream (float phaseTimer,
                                     std::ostringstream& stream)
 {
@@ -310,21 +311,21 @@ void writePhaseTimerReportToStream (float phaseTimer,
     stream << std::setprecision (0) << std::setiosflags (std::ios::fixed);
     stream << " (";
 
-    // is there a "fixed frame rate target"?
-    const int fps = absXXX (SteerTest::clock.targetFPS);
-    if (fps > 0)
-    {
-        // quantify time as a percentage of frame time
-        stream << ((100 * phaseTimer) / (1.0f / fps));
-        stream << "% of 1/";
-        stream << fps;
-        stream << "sec)\n";
-    }
-    else
+    // different notation for variable and fixed frame rate
+    if (SteerTest::clock.getVariableFrameRateMode())
     {
         // express as FPS (inverse of phase time)
         stream << 1 / phaseTimer;
         stream << " fps)\n";
+    }
+    else
+    {
+        // quantify time as a percentage of frame time
+        const int fps = SteerTest::clock.getFixedFrameRate ();
+        stream << ((100 * phaseTimer) / (1.0f / fps));
+        stream << "% of 1/";
+        stream << fps;
+        stream << "sec)\n";
     }
 }
 
@@ -334,9 +335,6 @@ void writePhaseTimerReportToStream (float phaseTimer,
 // (and later a bunch of related stuff was dumped here, a reorg would be nice)
 
 
-float gSmoothedFPS = 0;
-float gSmoothedUsage = 0;
-
 float gSmoothedTimerDraw = 0;
 float gSmoothedTimerUpdate = 0;
 float gSmoothedTimerOverhead = 0;
@@ -344,10 +342,6 @@ float gSmoothedTimerOverhead = 0;
 
 void drawDisplayFPS (void)
 {
-    const float elapsedTime = SteerTest::clock.elapsedRealTime;
-    const float fps = (elapsedTime > 0) ? 1 / elapsedTime : 0;
-    const float smoothRate = (gSmoothedFPS == 0) ? 1 : (elapsedTime * 0.4f);
-
     // skip several frames to allow frame rate to settle
     static int skipCount = 10;
     if (skipCount > 0)
@@ -361,56 +355,46 @@ void drawDisplayFPS (void)
         const int cw = 9; // xxx character width
         Vec3 screenLocation (10, 10, 0);
 
-        // "smooth" instantaneous FPS rate: start at current fps the first
-        // time through, then blend fps into a running average thereafter
-        blendIntoAccumulator (smoothRate, fps, gSmoothedFPS);
-
-        // target frame rate
-        const int targetFPS = absXXX (SteerTest::clock.targetFPS);
+        // target and recent average frame rates
+        const int targetFPS = SteerTest::clock.getFixedFrameRate ();
+        const float smoothedFPS = SteerTest::clock.getSmoothedFPS ();
 
         // describe clock mode and frame rate statistics
         screenLocation.y += lh;
         std::ostringstream fooStr;
         fooStr << "Clock: ";
-        if (SteerTest::clock.targetFPS < 0)
+        if (SteerTest::clock.getAnimationMode ())
         {
             fooStr << "animation mode (";
             fooStr << targetFPS << " fps,";
-            fooStr << " display "<< round (gSmoothedFPS) << " fps, ";
-            const float ratio = gSmoothedFPS / targetFPS;
-            fooStr << (int) (100 * ratio) << "%)";
+            fooStr << " display "<< round (smoothedFPS) << " fps, ";
+            const float ratio = smoothedFPS / targetFPS;
+            fooStr << (int) (100 * ratio) << "% of nominal speed)";
         }
         else
         {
             fooStr << "real-time mode, ";
-            if (SteerTest::clock.targetFPS == 0)
+            if (SteerTest::clock.getVariableFrameRateMode ())
             {
                 fooStr << "variable frame rate (";
-                fooStr << round (gSmoothedFPS) << " fps)";
+                fooStr << round (smoothedFPS) << " fps)";
             }
             else
             {
                 fooStr << "fixed frame rate (target: " << targetFPS;
-                fooStr << " actual: " << round (gSmoothedFPS) << ", ";
+                fooStr << " actual: " << round (smoothedFPS) << ", ";
 
                 Vec3 sp;
                 sp = screenLocation;
                 sp.x += cw * (int) fooStr.tellp ();
 
-                // run time per frame over target frame time (as a percentage)
-                const float usage =
-                    ((100 * SteerTest::clock.elapsedNonWaitRealTime) /
-                     (1.0f / targetFPS));
-
-                // blend new usage value into running average
-                blendIntoAccumulator (smoothRate, usage, gSmoothedUsage);
-
                 // create usage description character string
                 std::ostringstream xxxStr;
-                xxxStr << std::setprecision (0);
-                xxxStr << std::setiosflags (std::ios::fixed);
-                xxxStr << "usage: " << gSmoothedUsage << "%";
-                xxxStr << std::ends;
+                xxxStr << std::setprecision (0)
+                       << std::setiosflags (std::ios::fixed)
+                       << "usage: " << SteerTest::clock.getSmoothedUsage ()
+                       << "%"
+                       << std::ends;
 
                 const int usageLength = ((int) xxxStr.tellp ()) - 1;
                 for (int i = 0; i < usageLength; i++) fooStr << " ";
@@ -418,6 +402,7 @@ void drawDisplayFPS (void)
 
                 // display message in lower left corner of window
                 // (draw in red if the instantaneous usage is 100% or more)
+                const float usage = SteerTest::clock.getUsage ();
                 const Vec3 color = (usage >= 100) ? gRed : gWhite;
                 draw2dTextAt2dLocation (xxxStr, sp, color);
             }
@@ -430,6 +415,7 @@ void drawDisplayFPS (void)
         const float ptd = SteerTest::phaseTimerDraw();
         const float ptu = SteerTest::phaseTimerUpdate();
         const float pto = SteerTest::phaseTimerOverhead();
+        const float smoothRate = SteerTest::clock.getSmoothingRate ();
         blendIntoAccumulator (smoothRate, ptd, gSmoothedTimerDraw);
         blendIntoAccumulator (smoothRate, ptu, gSmoothedTimerUpdate);
         blendIntoAccumulator (smoothRate, pto, gSmoothedTimerOverhead);
@@ -453,15 +439,40 @@ void drawDisplayFPS (void)
 // cycle through frame rate presets  (XXX move this to SteerTest)
 
 
-int selectNextPresetFrameRate (void)
+void selectNextPresetFrameRate (void)
 {
-    // cycle through this list of frame rate presets on each subsequent call
-    int frameRatePresets[] = {0, 24, 60, -60};
+    // note that the cases are listed in reverse order, and that 
+    // the default is case 0 which causes the index to wrap around
     static int frameRatePresetIndex = 0;
-    frameRatePresetIndex = (frameRatePresetIndex + 1) % 4;
-
-    // set SteerTest's clock's target frame rate, return that value
-    return SteerTest::clock.targetFPS = frameRatePresets[frameRatePresetIndex];
+    switch (++frameRatePresetIndex)
+    {
+    case 3: 
+        // animation mode at 60 fps
+        SteerTest::clock.setFixedFrameRate (60);
+        SteerTest::clock.setAnimationMode (true);
+        SteerTest::clock.setVariableFrameRateMode (false);
+        break;
+    case 2: 
+        // real-time fixed frame rate mode at 60 fps
+        SteerTest::clock.setFixedFrameRate (60);
+        SteerTest::clock.setAnimationMode (false);
+        SteerTest::clock.setVariableFrameRateMode (false);
+        break;
+    case 1: 
+        // real-time fixed frame rate mode at 24 fps
+        SteerTest::clock.setFixedFrameRate (24);
+        SteerTest::clock.setAnimationMode (false);
+        SteerTest::clock.setVariableFrameRateMode (false);
+        break;
+    case 0:
+    default:
+        // real-time variable frame rate mode ("as fast as possible")
+        frameRatePresetIndex = 0;
+        SteerTest::clock.setFixedFrameRate (0);
+        SteerTest::clock.setAnimationMode (false);
+        SteerTest::clock.setVariableFrameRateMode (true);
+        break;
+    }
 }
 
 
@@ -526,10 +537,23 @@ void keyboardFunc (unsigned char key, int x, int y)
                                  "pause" : "run");
         break;
 
-    // cycle through frame rate presets
+    // cycle through frame rate (clock mode) presets
     case 'f':
-        message << "set frame rate to "
-                << selectNextPresetFrameRate () << std::ends;
+        selectNextPresetFrameRate ();
+        message << "set clock to ";
+        if (SteerTest::clock.getAnimationMode ())
+            message << "animation mode, fixed frame rate ("
+                    << SteerTest::clock.getFixedFrameRate () << " fps)";
+        else
+        {
+            message << "real-time mode, ";
+            if (SteerTest::clock.getVariableFrameRateMode ())
+                message << "variable frame rate";
+            else
+                message << "fixed frame rate ("
+                        << SteerTest::clock.getFixedFrameRate () << " fps)";
+        }
+        message << std::ends;
         SteerTest::printMessage (message);
         break;
 
@@ -580,13 +604,11 @@ void specialFunc (int key, int x, int y)
     case GLUT_KEY_F12: SteerTest::functionKeyForPlugIn (12); break;
 
     case GLUT_KEY_RIGHT:
-        SteerTest::clock.paused = true;
-        const int targetFPS = absXXX (SteerTest::clock.targetFPS);
-        const float FPS = ((targetFPS == 0) ? gSmoothedFPS : targetFPS);
-        const float frameTime = 1 / FPS;
-        SteerTest::clock.advanceSimulationTime (frameTime);
+        SteerTest::clock.setPausedState (true);
         message << "single step forward (frame time: "
-                << frameTime << ")" << std::endl;
+                << SteerTest::clock.advanceSimulationTimeOneFrame ()
+                << ")"
+                << std::endl;
         SteerTest::printMessage (message);
         break;
     }

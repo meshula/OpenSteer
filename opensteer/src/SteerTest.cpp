@@ -146,11 +146,12 @@ void SteerTest::updateSimulationAndRedraw (void)
     initPhaseTimers ();
 
     // run selected PlugIn (with simulation's current time and step size)
-    updateSelectedPlugIn (clock.totalSimulationTime,
-                          clock.elapsedSimulationTime);
+    updateSelectedPlugIn (clock.getTotalSimulationTime (),
+                          clock.getElapsedSimulationTime ());
 
     // redraw selected PlugIn (based on real time)
-    redrawSelectedPlugIn (clock.totalRealTime, clock.elapsedRealTime);
+    redrawSelectedPlugIn (clock.getTotalRealTime (),
+                          clock.getElapsedRealTime ());
 }
 
 
@@ -524,7 +525,7 @@ void SteerTest::updateCamera (const float currentTime,
                               const AbstractVehicle& selected)
 {
     camera.vehicleToTrack = &selected;
-    camera.update (currentTime, elapsedTime, clock.paused);
+    camera.update (currentTime, elapsedTime, clock.getPausedState ());
 }
 
 
@@ -728,7 +729,7 @@ void SteerTest::initPhaseTimers (void)
     phaseTimers[drawPhase] = 0;
     phaseTimers[updatePhase] = 0;
     phaseTimers[overheadPhase] = 0;
-    phaseTimerBase = clock.totalRealTime;
+    phaseTimerBase = clock.getTotalRealTime ();
 }
 
 

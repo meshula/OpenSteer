@@ -130,9 +130,11 @@ public:
     // XXX get around shortcomings in current implementation, see note
     // XXX in updateSimulationAndRedraw
     //static float phaseTimerOverhead(void){return phaseTimers[overheadPhase];}
-    static float phaseTimerOverhead (void){return (clock.elapsedRealTime -
-                                                   (phaseTimerDraw() +
-                                                    phaseTimerUpdate()));}
+    static float phaseTimerOverhead (void)
+    {
+        return (clock.getElapsedRealTime() -
+                (phaseTimerDraw() + phaseTimerUpdate()));
+    }
 
     // ------------------------------------------------------ delayed reset XXX
 

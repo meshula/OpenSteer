@@ -71,12 +71,11 @@
 
 Clock::Clock (void)
 {
-    // is simulation running or paused?
-    paused = false;
-
-    // the desired rate of frames per second,
-    // or zero to mean "as fast as possible"
-    targetFPS = 0;
+    // default is "real time, variable frame rate" and not paused
+    setFixedFrameRate (0);
+    setPausedState (false);
+    setAnimationMode (false);
+    setVariableFrameRateMode (true);
 
     // real "wall clock" time since launch
     totalRealTime = 0;
@@ -110,6 +109,13 @@ Clock::Clock (void)
     baseRealTimeSec = 0;         // from gettimeofday on Linux and Mac OS X
     baseRealTimeUsec = 0;
 #endif
+
+    // clock keeps track of "smoothed" running average of recent frame rates.
+    // When a fixed frame rate is used, a running average of "CPU load" is
+    // kept (aka "non-wait time", the percentage of each frame time (time
+    // step) that the CPU is busy).
+    smoothedFPS = 0;
+    smoothedUsage = 0;
 }
 
 
@@ -124,7 +130,11 @@ Clock::Clock (void)
 
 void Clock::update (void)
 {
+    // keep track of average frame rate and average usage percentage
+    updateSmoothedRegisters ();
+
     // wait for next frame time (when targetFPS>0)
+    // XXX should this be at the end of the update function?
     frameRateSync ();
 
     // save previous real time to measure elapsed time
@@ -143,10 +153,10 @@ void Clock::update (void)
     const float previousSimulationTime = totalSimulationTime;
 
     // update total simulation time
-    if (targetFPS < 0)
+    if (getAnimationMode ())
     {
         // for "animation mode" use fixed frame time, ignore real time
-        const float frameDuration = -1.0f / targetFPS;
+        const float frameDuration = 1.0f / getFixedFrameRate ();
         totalSimulationTime += paused ? newAdvanceTime : frameDuration;
         if (!paused) newAdvanceTime += frameDuration - elapsedRealTime;
     }
@@ -182,12 +192,12 @@ void Clock::update (void)
 
 void Clock::frameRateSync (void)
 {
-    // when we are have a fixed target update rate (versus as-fast-as-possible
-    // (targetFPS==0) or "animation mode" (targetFPS<0))
-    if (targetFPS > 0)
+    // when in real time fixed frame rate mode
+    // (not animation mode and not variable frame rate mode)
+    if ((! getAnimationMode ()) && (! getVariableFrameRateMode ()))
     {
         // find next (real time) frame start time
-        const float targetStepSize = 1.0f / targetFPS;
+        const float targetStepSize = 1.0f / getFixedFrameRate ();
         const float now = realTimeSinceFirstClockUpdate ();
         const int lastFrameCount = (int) (now / targetStepSize);
         const float nextFrameTime = (lastFrameCount + 1) * targetStepSize;
@@ -202,8 +212,24 @@ void Clock::frameRateSync (void)
 
 
 // ----------------------------------------------------------------------------
-// ("manually") force simulation time ahead, unrelated to the passage of
-// real time, currently used only for SteerTest's "single step forward"
+// force simulation time ahead, ignoring passage of real time.
+// Used for SteerTest's "single step forward" and animation mode
+
+
+float Clock::advanceSimulationTimeOneFrame (void)
+{
+    // decide on what frame time is (use fixed rate, average for variable rate)
+    const float fps = (getVariableFrameRateMode () ?
+                       getSmoothedFPS () :
+                       getFixedFrameRate ());
+    const float frameTime = 1 / fps;
+
+    // bump advance time
+    advanceSimulationTime (frameTime);
+
+    // return the time value used (for SteerTest)
+    return frameTime; 
+}
 
 
 void Clock::advanceSimulationTime (const float seconds)
