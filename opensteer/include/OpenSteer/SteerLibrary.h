@@ -47,10 +47,10 @@
 #define OPENSTEER_STEERLIBRARY_H
 
 
-#include "AbstractVehicle.h"
-#include "Pathway.h"
-#include "Obstacle.h"
-#include "Utilities.h"
+#include "OpenSteer/AbstractVehicle.h"
+#include "OpenSteer/Pathway.h"
+#include "OpenSteer/Obstacle.h"
+#include "OpenSteer/Utilities.h"
 
 
 

@@ -50,10 +50,10 @@
 #define OPENSTEER_OBSTACLE_H
 
 
-#include "Vec3.h"
+#include "OpenSteer/Vec3.h"
 
 // XXX 4-23-03: Temporary work around (see comment above)
-#include "AbstractVehicle.h"
+#include "OpenSteer/AbstractVehicle.h"
 
 
 namespace OpenSteer {

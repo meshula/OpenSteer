@@ -64,7 +64,7 @@
 #define OPENSTEER_LOCALSPACE_H
 
 
-#include "Vec3.h"
+#include "OpenSteer/Vec3.h"
 
 
 // ----------------------------------------------------------------------------

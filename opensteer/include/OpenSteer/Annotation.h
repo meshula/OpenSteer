@@ -46,7 +46,7 @@
 #define OPENSTEER_ANNOTATION_H
 
 
-#include "OpenSteerDemo.h"
+#include "OpenSteer/OpenSteerDemo.h"
 
 
 // ----------------------------------------------------------------------------

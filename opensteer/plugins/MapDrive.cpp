@@ -58,7 +58,7 @@
 // to use local version of the map class
 #define OLDTERRAINMAP
 #ifndef OLDTERRAINMAP
-#include "TerrainMap.h"
+#include "OpenSteer/TerrainMap.h"
 #endif
 
 // ----------------------------------------------------------------------------

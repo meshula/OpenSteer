@@ -52,8 +52,8 @@
 #define OPENSTEER_DRAW_H
 
 
-#include "Vec3.h"
-#include "AbstractVehicle.h"
+#include "OpenSteer/Vec3.h"
+#include "OpenSteer/AbstractVehicle.h"
 
 
 // ------------------------------------------------------------------------
@@ -63,6 +63,7 @@
 namespace OpenSteer {
 
 
+    
     const Vec3 gBlack   (0, 0, 0);
     const Vec3 gWhite   (1, 1, 1);
 

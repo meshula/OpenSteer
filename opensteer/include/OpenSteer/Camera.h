@@ -44,8 +44,8 @@
 #define OPENSTEER_CAMERA_H
 
 
-#include "LocalSpace.h"
-#include "AbstractVehicle.h"
+#include "OpenSteer/LocalSpace.h"
+#include "OpenSteer/AbstractVehicle.h"
 
 
 // ----------------------------------------------------------------------------

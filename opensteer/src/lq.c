@@ -69,7 +69,7 @@
 
 /* for debugging and graphical annotation (normally unused) */
 #ifdef BOIDS_LQ_DEBUG
-#include "debuglq.c"
+#include "OpenSteer/debuglq.c"
 #endif
 
 
