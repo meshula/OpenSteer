@@ -85,14 +85,15 @@ PolylinePathway::PolylinePathway (const int _pointCount,
 
 
 // ----------------------------------------------------------------------------
-// Given an arbitrary point ("A"), returns the nearest point ("P") on this
-// path.  Also returns, via output arguments, the path tangent at P and a flag
-// indicating whether or not A was already inside the Pathway "tube".
+// Given an arbitrary point ("A"), returns the nearest point ("P") on
+// this path.  Also returns, via output arguments, the path tangent at
+// P and a measure of how far A is outside the Pathway's "tube".  Note
+// that a negative distance indicates A is inside the Pathway.
 
 
 Vec3 PolylinePathway::mapPointToPath (const Vec3& point,
                                       Vec3& tangent,
-                                      bool& inside)
+                                      float& outside)
 {
     float d;
     float minDistance = FLT_MAX;
@@ -112,8 +113,8 @@ Vec3 PolylinePathway::mapPointToPath (const Vec3& point,
         }
     }
 
-    // was original point inside Pathway "tube"?
-    inside = Vec3::distance (onPath, point) < radius;
+    // measure how far original point is outside the Pathway's "tube"
+    outside = Vec3::distance (onPath, point) - radius;
 
     // return point on path
     return onPath;
@@ -163,8 +164,8 @@ Vec3 PolylinePathway::mapPathDistanceToPoint (float pathDistance)
     }
     else
     {
-        if (pathDistance < 0) remaining = 0;
-        if (pathDistance > totalPathLength) remaining = totalPathLength;
+        if (pathDistance < 0) return points[0];
+        if (pathDistance >= totalPathLength) return points [pointCount-1];
     }
 
     // step through segments, subtracting off segment lengths until

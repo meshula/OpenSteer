@@ -251,11 +251,12 @@ void SimpleVehicle::regenerateLocalSpaceForBanking (const Vec3& newVelocity,
 // draw lines from vehicle's position showing its velocity and acceleration
 
 
-void SimpleVehicle::annotationVelocityAcceleration (float maxLength)
+void SimpleVehicle::annotationVelocityAcceleration (float maxLengthA, 
+                                                    float maxLengthV)
 {
     const float desat = 0.4f;
-    const float aScale = maxLength / maxForce ();
-    const float vScale = maxLength / maxSpeed ();
+    const float aScale = maxLengthA / maxForce ();
+    const float vScale = maxLengthV / maxSpeed ();
     const Vec3& p = position();
     const Vec3 aColor (desat, desat, 1); // bluish
     const Vec3 vColor (    1, desat, 1); // pinkish

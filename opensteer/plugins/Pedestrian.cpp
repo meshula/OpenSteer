@@ -52,6 +52,9 @@ PolylinePathway* getTestPath (void);
 PolylinePathway* gTestPath = NULL;
 SphericalObstacle gObstacle1;
 SphericalObstacle gObstacle2;
+Vec3 gEndpoint0;
+Vec3 gEndpoint1;
+bool gUseDirectedPathFollowing = true;
 
 // this was added for debugging tool, but I might as well leave it in
 bool gWanderSwitch = true;
@@ -105,19 +108,39 @@ public:
         // randomize 2D heading
         randomizeHeadingOnXZPlane ();
 
+        // pick a random direction for path following (upstream or downstream)
+        pathDirection = (frandom01() > 0.5) ? -1 : +1;
+
         // trail parameters: 3 seconds with 60 points along the trail
         setTrailParameters (3, 60);
     }
 
     // per frame simulation update
-    void update (const float currentTime,
-                 const float elapsedTime)
+    void update (const float currentTime, const float elapsedTime)
     {
         // apply steering force to our momentum
         applySteeringForce (determineCombinedSteering (elapsedTime),
                             elapsedTime);
+
+        // reverse direction when we reach an endpoint
+        if (gUseDirectedPathFollowing)
+        {
+            const Vec3 darkRed (0.7f, 0, 0);
+
+            if (Vec3::distance (position(), gEndpoint0) < path->radius)
+            {
+                pathDirection = +1;
+                annotationXZCircle (path->radius, gEndpoint0, darkRed, 20);
+            }
+            if (Vec3::distance (position(), gEndpoint1) < path->radius)
+            {
+                pathDirection = -1;
+                annotationXZCircle (path->radius, gEndpoint1, darkRed, 20);
+            }
+        }
+
         // annotation
-        annotationVelocityAcceleration ();
+        annotationVelocityAcceleration (5, 0);
         recordTrailVertex (currentTime, position());
     }
 
@@ -163,17 +186,26 @@ public:
             }
             else
             {
-                // otherwise wander and path follow
-                const float pfLeadTime = 3;
-                steeringForce += steerForPathFollowing (pfLeadTime, *path)*0.5;
+                // add in wander component (according to user switch)
                 if (gWanderSwitch)
                     steeringForce += steerForWander (elapsedTime);
+
+                // do (interactively) selected type of path following
+                const float pfLeadTime = 3;
+                const Vec3 pathFollow =
+                    (gUseDirectedPathFollowing ?
+                     steerToFollowPath (pathDirection, pfLeadTime, *path) :
+                     steerToStayOnPath (pfLeadTime, *path));
+
+                // add in to steeringForce
+                steeringForce += pathFollow * 0.5;
             }
         }
 
         // return steering constrained to global XZ "ground" plane
         return steeringForce.setYtoZero ();
     }
+
 
     // draw this pedestrian into scene
     void draw (void)
@@ -182,8 +214,74 @@ public:
         drawTrail ();
     }
 
+
+    // called when steerToFollowPath decides steering is required
+    void annotatePathFollowing (const Vec3& future,
+                                const Vec3& onPath,
+                                const Vec3& target,
+                                const float outside)
+    {
+        const Vec3 yellow (1, 1, 0);
+        const Vec3 lightOrange (1.0f, 0.5f, 0.0f);
+        const Vec3 darkOrange  (0.6f, 0.3f, 0.0f);
+        const Vec3 yellowOrange (1.0f, 0.75f, 0.0f);
+
+        // draw line from our position to our predicted future position
+        annotationLine (position(), future, yellow);
+
+        // draw line from our position to our steering target on the path
+        annotationLine (position(), target, yellowOrange);
+
+        // draw a two-toned line between the future test point and its
+        // projection onto the path, the change from dark to light color
+        // indicates the boundary of the tube.
+        const Vec3 boundaryOffset = (onPath - future).normalize() * outside;
+        const Vec3 onPathBoundary = future + boundaryOffset;
+        annotationLine (onPath, onPathBoundary, darkOrange);
+        annotationLine (onPathBoundary, future, lightOrange);
+    }
+
+
+    // called when steerToAvoidCloseNeighbors decides steering is required
+    void annotateAvoidCloseNeighbor (const AbstractVehicle& other,
+                                     const float additionalDistance)
+    {
+        // draw the word "Ouch!" above colliding vehicles
+        const float headOn = forward().dot(other.forward()) < 0;
+        const Vec3 green (0.4f, 0.8f, 0.1f);
+        const Vec3 red (1, 0.1f, 0);
+        const Vec3 color = headOn ? red : green;
+        const char* string = headOn ? "OUCH!" : "pardon me";
+        const Vec3 location = position() + Vec3 (0, 0.5f, 0);
+        draw2dTextAt3dLocation (*string, location, color);
+    }
+
+
+    void annotateAvoidNeighbor (const AbstractVehicle& threat,
+                                const float steer,
+                                const Vec3& ourFuture,
+                                const Vec3& threatFuture)
+    {
+        const Vec3 green (0.15, 0.6, 0);
+
+        annotationLine (position(), ourFuture, green);
+        annotationLine (threat.position(), threatFuture, green);
+        annotationLine (ourFuture, threatFuture, gRed);
+        annotationXZCircle (radius(), ourFuture,    green, 12);
+        annotationXZCircle (radius(), threatFuture, green, 12);
+    }
+
+
     // path to be followed by this pedestrian
-    PolylinePathway* path; // (xxx ideally this should be a generic Pathway)
+    // XXX Ideally this should be a generic Pathway, but we use the
+    // XXX getTotalPathLength and radius methods (currently defined only
+    // XXX on PolylinePathway) to set random initial positions.  Could
+    // XXX there be a "random position inside path" method on Pathway?
+    PolylinePathway* path;
+
+
+    // direction for path following (upstream or downstream)
+    int pathDirection;
 };
 
 
@@ -235,6 +333,9 @@ PolylinePathway* getTestPath (void)
         gObstacle2.center = interpolate (0.5f, pathPoints[2], pathPoints[3]);
         gObstacle1.radius = 3;
         gObstacle2.radius = 5;
+
+        gEndpoint0 = pathPoints[0];
+        gEndpoint1 = pathPoints[pathPointCount-1];
 
         gTestPath = new PolylinePathway (pathPointCount,
                                          pathPoints,
@@ -322,7 +423,22 @@ public:
         annote << spacer << "2: cam dist: " << camDistance << std::endl;
         annote << spacer << "3: no third thing" << std::ends;
         draw2dTextAt3dLocation (annote, textPosition, color);
+
+        // display status in the upper left corner of the window
+        std::ostringstream status;
+        status << "[F4] ";
+        if (gUseDirectedPathFollowing)
+            status << "Directed path following.";
+        else
+            status << "Stay on the path.";
+        status << "\n[F5] Wander: ";
+        if (gWanderSwitch) status << "yes"; else status << "no";
+        status << std::endl;
+        const float h = drawGetWindowHeight ();
+        const Vec3 screenLocation (10, h-50, 0);
+        draw2dTextAt2dLocation (status, screenLocation, gGray80);
     }
+
 
     void serialNumberAnnotationUtility (const AbstractVehicle& selected,
                                         const AbstractVehicle& nearMouse)
@@ -389,7 +505,8 @@ public:
     {
         switch (keyNumber)
         {
-        case 1: gWanderSwitch = !gWanderSwitch; break;
+        case 4: gUseDirectedPathFollowing = !gUseDirectedPathFollowing; break;
+        case 5: gWanderSwitch = !gWanderSwitch; break;
         }
     }
 
@@ -399,7 +516,8 @@ public:
         message << "Function keys handled by ";
         message << '"' << name() << '"' << ':' << std::ends;
         SteerTest::printMessage (message);
-        SteerTest::printMessage ("  F1     toggle wander component on/off.");
+        SteerTest::printMessage ("  F4     toggle directed path follow.");
+        SteerTest::printMessage ("  F5     toggle wander component on/off.");
         SteerTest::printMessage ("");
     }
 

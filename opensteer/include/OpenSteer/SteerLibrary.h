@@ -95,8 +95,11 @@ public:
     Vec3 xxxsteerForFlee (const Vec3& target);
     Vec3 xxxsteerForSeek (const Vec3& target);
 
-    // Path Following behavior
-    Vec3 steerForPathFollowing (const float predictionTime, Pathway& path);
+    // Path Following behaviors
+    Vec3 steerToFollowPath (const int direction,
+                            const float predictionTime,
+                            Pathway& path);
+    Vec3 steerToStayOnPath (const float predictionTime, Pathway& path);
 
     // ------------------------------------------------------------------------
     // Obstacle Avoidance behavior
@@ -262,19 +265,35 @@ public:
 
     // ------------------------------------------------ graphical annotation
 
-    void annotationForPathFollowing (const Vec3& futurePosition,
-                                     const Vec3& onPath,
-                                     const bool withinPath);
-
     void annotationForAvoidSphere (const float minDistanceToCollision);
 
-    void annotationForAvoidNeighbor (const AbstractVehicle& threat,
-                                     const float steer,
-                                     const Vec3& ourFuture,
-                                     const Vec3& threatFuture);
 
-    void annotationForAvoidCloseNeighbor (const AbstractVehicle& other,
-                                          const float additionalDistance);
+    // called when steerToFollowPath decides steering is required
+    // (default action is to do nothing, layered classes can overload it)
+    virtual void annotatePathFollowing (const Vec3& future,
+                                        const Vec3& onPath,
+                                        const Vec3& target,
+                                        const float outside)
+    {
+    }
+
+
+    // called when steerToAvoidCloseNeighbors decides steering is required
+    // (default action is to do nothing, layered classes can overload it)
+    virtual void annotateAvoidCloseNeighbor (const AbstractVehicle& other,
+                                             const float additionalDistance)
+    {
+    }
+
+
+    // called when steerToAvoidNeighbors decides steering is required
+    // (default action is to do nothing, layered classes can overload it)
+    virtual void annotateAvoidNeighbor (const AbstractVehicle& threat,
+                                        const float steer,
+                                        const Vec3& ourFuture,
+                                        const Vec3& threatFuture)
+    {
+    }
 };
 
 
@@ -353,27 +372,25 @@ xxxsteerForSeek (const Vec3& target)
 
 
 // ----------------------------------------------------------------------------
-// Path Following behavior
+// Path Following behaviors
 
 
 template<class Super>
 Vec3
 SteerLibraryMixin<Super>::
-steerForPathFollowing (const float predictionTime, Pathway& path)
+steerToStayOnPath (const float predictionTime, Pathway& path)
 {
     // predict our future position
     const Vec3 futurePosition = predictFuturePosition (predictionTime);
 
     // find the point on the path nearest the predicted future position
     Vec3 tangent;
-    bool withinPath;
+    float outside;
     const Vec3 onPath = path.mapPointToPath (futurePosition,
                                              tangent,     // output argument
-                                             withinPath); // output argument
+                                             outside);    // output argument
 
-    annotationForPathFollowing (futurePosition, onPath, withinPath);
-
-    if (withinPath)
+    if (outside < 0)
     {
         // our predicted future position was in the path,
         // return zero steering.
@@ -382,15 +399,67 @@ steerForPathFollowing (const float predictionTime, Pathway& path)
     else
     {
         // our predicted future position was outside the path, need to
-        // steer towards it.  Decide whether we are going up or down
-        // the path.  Choose a target point on the path, somewhat
-        // "ahead: of our current position.
-        const Vec3 nextPosition = position () + forward ();
-        float thisPathDistance = path.mapPointToPathDistance (position ());
-        float nextPathDistance = path.mapPointToPathDistance (nextPosition);
-        // xxx!:
-        float nudge = (thisPathDistance < nextPathDistance) ? 10 : -10;
-        Vec3 target = path.mapPathDistanceToPoint (thisPathDistance + nudge);
+        // steer towards it.  Use onPath projection of futurePosition
+        // as seek target
+        annotatePathFollowing (futurePosition, onPath, onPath, outside);
+        return steerForSeek (onPath);
+    }
+}
+
+
+template<class Super>
+Vec3
+SteerLibraryMixin<Super>::
+steerToFollowPath (const int direction,
+                   const float predictionTime,
+                   Pathway& path)
+{
+    // our goal will be offset from our path distance by this amount
+    const float pathDistanceOffset = direction * predictionTime * speed();
+
+    // predict our future position
+    const Vec3 futurePosition = predictFuturePosition (predictionTime);
+
+    // measure distance along path of our current and predicted positions
+    const float nowPathDistance =
+        path.mapPointToPathDistance (position ());
+    const float futurePathDistance =
+        path.mapPointToPathDistance (futurePosition);
+
+    // are we facing in the correction direction?
+    const bool rightway = ((pathDistanceOffset > 0) ?
+                           (nowPathDistance < futurePathDistance) :
+                           (nowPathDistance > futurePathDistance));
+
+    // find the point on the path nearest the predicted future position
+    // XXX need to improve calling sequence, maybe change to return a
+    // XXX special path-defined object which includes two Vec3s and a 
+    // XXX bool (onPath,tangent (ignored), withinPath)
+    Vec3 tangent;
+    float outside;
+    const Vec3 onPath = path.mapPointToPath (futurePosition,
+                                             // output arguments:
+                                             tangent,
+                                             outside);
+
+    // no steering is required if (a) our future position is inside
+    // the path tube and (b) we are facing in the correct direction
+    if ((outside < 0) && rightway)
+    {
+        // all is well, return zero steering
+        return Vec3::zero;
+    }
+    else
+    {
+        // otherwise we need to steer towards a target point obtained
+        // by adding pathDistanceOffset to our current path position
+
+        float targetPathDistance = nowPathDistance + pathDistanceOffset;
+        Vec3 target = path.mapPathDistanceToPoint (targetPathDistance);
+
+        annotatePathFollowing (futurePosition, onPath, target, outside);
+
+        // return steering to seek target on path
         return steerForSeek (target);
     }
 }
@@ -528,10 +597,10 @@ steerToAvoidNeighbors (const float minTimeToCollision,
             }
         }
 
-        annotationForAvoidNeighbor (*threat,
-                                    steer,
-                                    xxxOurPositionAtNearestApproach,
-                                    xxxThreatPositionAtNearestApproach);
+        annotateAvoidNeighbor (*threat,
+                               steer,
+                               xxxOurPositionAtNearestApproach,
+                               xxxThreatPositionAtNearestApproach);
     }
 
     return side() * steer;
@@ -630,7 +699,7 @@ steerToAvoidCloseNeighbors (const float minSeparationDistance,
 
             if (currentDistance < minCenterToCenter)
             {
-                annotationForAvoidCloseNeighbor (other, minSeparationDistance);
+                annotateAvoidCloseNeighbor (other, minSeparationDistance);
                 return (-offset).perpendicularComponent (forward());
             }
         }
@@ -1022,26 +1091,6 @@ findNextIntersectionWithSphere (SphericalObstacle& obs,
 template<class Super>
 void
 SteerLibraryMixin<Super>::
-annotationForPathFollowing (const Vec3& futurePosition,
-                            const Vec3& onPath,
-                            const bool withinPath)
-{
-    const Vec3 yellow (1, 1, 0);
-    const Vec3 lightOrange (1.0f, 0.5f, 0.0f);
-    const Vec3 darkOrange  (0.5f, 0.2f, 0.0f);
-    const Vec3 orange (withinPath ? darkOrange : lightOrange);
-
-    annotationLine (futurePosition, position(), yellow);
-    annotationLine (futurePosition, onPath, orange);
-}
-
-
-// ----------------------------------------------------------------------------
-
-
-template<class Super>
-void
-SteerLibraryMixin<Super>::
 annotationForAvoidSphere (const float minDistanceToCollision)
 {
     const Vec3 boxSide = side() * radius();
@@ -1055,52 +1104,6 @@ annotationForAvoidSphere (const float minDistanceToCollision)
     annotationLine (FL, BL, white);
     annotationLine (BL, BR, white);
     annotationLine (BR, FR, white);
-}
-
-
-// ----------------------------------------------------------------------------
-
-
-template<class Super>
-void
-SteerLibraryMixin<Super>::
-annotationForAvoidNeighbor (const AbstractVehicle& threat,
-                            const float steer,
-                            const Vec3& ourFuture,
-                            const Vec3& threatFuture)
-{
-    const Vec3 red (1,0,0);
-    const Vec3 cyan (0,1,1);
-    const Vec3 white (1,1,1);
-    const Vec3 magenta (1,0,1);
-    annotationLine (position(), threat.position(), magenta);
-    annotationLine (position(), position() + (side() * steer * 3), cyan);
-    annotationLine (position(), ourFuture, white);
-    annotationLine (threat.position(), threatFuture, white);
-    annotationLine (ourFuture, threatFuture, red);
-}
-
-
-// ----------------------------------------------------------------------------
-// XXX This is misplaced, this annotation is specific to the Pedestrian PlugIn
-// XXX but it need to be called from inside the steering behavior.  This all
-// XXX needs to be redesigned.
-
-
-template<class Super>
-void
-SteerLibraryMixin<Super>::
-annotationForAvoidCloseNeighbor (const AbstractVehicle& other,
-                                 const float additionalDistance)
-{
-    // draw the word "Ouch!" above colliding vehicles
-    const float headOn = forward().dot(other.forward()) < 0;
-    const Vec3 green (0.4f, 0.8f, 0.1f);
-    const Vec3 red (1, 0.1f, 0);
-    const Vec3 color = headOn ? red : green;
-    const char* string = headOn ? "OUCH!" : "pardon me";
-    const Vec3 location = position() + Vec3 (0, 0.5f, 0);
-    draw2dTextAt3dLocation (*string, location, color);
 }
 
 

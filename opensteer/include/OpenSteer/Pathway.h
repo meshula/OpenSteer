@@ -51,12 +51,13 @@
 class Pathway
 {
 public:
-    // Given an arbitrary point ("A"), returns the nearest point ("P") on this
-    // path.  Also returns, via output arguments, the path tangent at P and a
-    // flag indicating whether or not A was already inside the Pathway "tube".
+    // Given an arbitrary point ("A"), returns the nearest point ("P") on
+    // this path.  Also returns, via output arguments, the path tangent at
+    // P and a measure of how far A is outside the Pathway's "tube".  Note
+    // that a negative distance indicates A is inside the Pathway.
     virtual Vec3 mapPointToPath (const Vec3& point,
                                  Vec3& tangent,
-                                 bool& inside) = 0;
+                                 float& outside) = 0;
 
     // given a distance along the path, convert it to a point on the path
     virtual Vec3 mapPathDistanceToPoint (float pathDistance) = 0;
@@ -89,12 +90,12 @@ public:
                      const float _radius,
                      const bool _cyclic);
 
-    // Given an arbitrary point ("A"), returns the nearest point ("P") on this
-    // path.  Also returns, via output arguments, the path tangent at P and a
-    // flag indicating whether or not A was already inside the Pathway "tube".
-    Vec3 mapPointToPath (const Vec3& point,
-                         Vec3& tangent,
-                         bool& inside);
+    // Given an arbitrary point ("A"), returns the nearest point ("P") on
+    // this path.  Also returns, via output arguments, the path tangent at
+    // P and a measure of how far A is outside the Pathway's "tube".  Note
+    // that a negative distance indicates A is inside the Pathway.
+    Vec3 mapPointToPath (const Vec3& point, Vec3& tangent, float& outside);
+
 
     // given an arbitrary point, convert it to a distance along the path
     float mapPointToPathDistance (const Vec3& point);
