@@ -29,20 +29,19 @@ SteerTest quick reference guide
 </big>
 </td>
 <td class=titlebox align=right>
-May 5, 2003<br>
-OpenSteer 0.7
+October 7, 2003<br>
+OpenSteer 0.8
 </td>
 </tr>
 </table>
 
-<p>After installation 
-<small><a href="doc.html#InstallingOpenSteer">[see doc section
-"Installing OpenSteer"]</a></small> change to the <b>opensteer</b>
-directory and run the <b>steertest</b> command.  The application will
-open a single window labeled "SteerTest". SteerTest has a single
-<i>selected</i> vehicle which the camera normally tracks.  The user
-can select another vehicle by clicking on it with the left mouse
-button.  SteerTest recognizes several single key commands:</p>
+<p>After installation <small><a
+href="doc.html#InstallingOpenSteer">[see doc section "Installing
+OpenSteer"]</a></small> launch the SteerTest application which opens a
+window labeled "SteerTest 0.8". SteerTest has a single <i>selected</i>
+vehicle which the camera normally tracks.  The user can select another
+vehicle by clicking on it with the left mouse button.  SteerTest
+recognizes several single key commands:</p>
 
 
 <table border=0 cellspacing=0 cellpadding=0 width="90%" align=center>
@@ -67,6 +66,10 @@ button.  SteerTest recognizes several single key commands:</p>
 <td class=titlebox>f</td>
 <td class=titlebox>select next preset frame rate&nbsp;
                    (as-fast-as-possible, 24fps, 60fps)</td>
+</tr>
+<tr>
+<td class=titlebox>a</td>
+<td class=titlebox>toggle annotation on/off</td>
 </tr>
 <tr>
 <td class=titlebox>Space</td>
@@ -134,23 +137,37 @@ a one- or two-button mouse (hence no middle button) you can adjust the
 radius by holding down both the Ctrl and Alt ("control-meta-") keys
 while dragging the mouse with its left button held down.</p>
 
-
-
 <p>Sample PlugIns:
 
 <b>Capture the Flag:</b> a single (bluish) attacker attempts to reach
 a central goal while four (reddish) defenders try to intercept ("tag")
 the attacker before it gets to the goal.  Press F1 to add an obstacle
-(up to 100 of them), F2 to remove one. <b>Pedestrians:</b> 70 agents
-follow a path (the red line) while avoiding collisions with each other
-and two large spherical obstacles.  They also wander as they move.
-Press F1 to toggle the wander component on and off. <b>Boids:</b> 100
-simulated flocking "bird like objects". <b>Multiple Pursuit:</b> a
-"test fixture" for the <i>pursue</i> behavior.  30 pursuers chase one
-wandering quarry. <b>Low Speed Turn:</b> a "test fixture" for
-evaluating the response of a vehicle to backward-pointing steering
-force while moving at low speed. <b>One Turning Away:</b> this is the
-first one, I'm just keeping it for old time sake right now.</p>
+(up to 100 of them), F2 to remove one.
+
+<b>Pedestrians:</b> 100 agents follow a path (the red line) while
+avoiding collisions with each other and two large spherical obstacles.
+
+Press F1 to add a Pedestrian and F2 to remove one. F3 cycles among
+types of proximity databases. F4 toggles between two versions of path
+following. F5 toggles a Pedestrian's wander component on and off.
+
+<b>Boids:</b> 200 simulated flocking "bird like objects". Press F1 to
+add a Boid and F2 to remove one. F3 cycles among types of proximity
+databases. F4 toggles between two boundary conditions.
+
+<b>Soccer:</b> a simple soccer game, blue and red teams of 8 Players
+each, a green Ball and yellow field and goals. As play proceeds the
+PlugIn keeps score.
+
+<b>Multiple Pursuit:</b> a "test fixture" for the <i>pursue</i>
+behavior.  30 pursuers chase one wandering quarry.
+
+<b>Low Speed Turn:</b> a "test fixture" for evaluating the response of
+a vehicle to backward-pointing steering force while moving at low
+speed.
+
+<b>One Turning Away:</b> this was the first one, now it serves as a
+minimal example of a PlugIn.</p>
 
 </body>
 </html>
