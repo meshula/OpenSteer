@@ -65,16 +65,18 @@ namespace OpenSteer {
         virtual Vec3 steerToAvoid (const AbstractVehicle& v,
                                    const float minTimeToCollision) const = 0;
 
-        // PathIntersection object used internally to analyze intersections
+        // PathIntersection object: used internally to analyze and store
+		// information about intersections of vehicle paths and obstacles.
         class PathIntersection
         {
         public:
-            bool intersect;
-            float distance;
-            Vec3 surfacePoint; // not currently used, should it be supported?
-            Vec3 surfaceNormal;// not currently used, should it be supported?
-            Vec3 steerHint;
-            const AbstractObstacle* obstacle;
+            bool intersect; // was an intersection found?
+            float distance; // how far was intersection point from vehicle?
+            Vec3 surfacePoint; // position of intersection
+            Vec3 surfaceNormal; // unit normal at point of intersection
+            Vec3 steerHint; // where to steer away from intersection
+			bool vehicleOutside; // is the vehicle outside the obstacle?
+            const AbstractObstacle* obstacle; // obstacle the path intersects
 
             // determine steering based on path intersection tests
             Vec3 steerToAvoidIfNeeded (const AbstractVehicle& vehicle,
@@ -250,9 +252,15 @@ namespace OpenSteer {
         // constructors
         RectangleObstacle (float w, float h) : width(w), height(h) {}
         RectangleObstacle (void) :  width(1.0f), height(1.0f) {}
-        RectangleObstacle (float w, float h, const Vec3& s, const Vec3& u,
-                           const Vec3& f, const Vec3& p) : width(w), height(h)
-        {setSide (s); setUp (u); setForward (f); setPosition (p);}
+        RectangleObstacle (float w, float h, const Vec3& s,
+						   const Vec3& u, const Vec3& f, const Vec3& p,
+						   seenFromState sf) : width(w), height(h)
+        {
+			setSide (s);
+			setUp (u);
+			setForward (f);
+			setPosition (p);
+			setSeenFrom (sf);}
 
         // determines if a given point on XY plane is inside obstacle shape
         bool xyPointInsideShape (const Vec3& point, float radius) const;
