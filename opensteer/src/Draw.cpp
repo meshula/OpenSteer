@@ -69,7 +69,7 @@
 // ----------------------------------------------------------------------------
 
 
-char* appVersionName = "SteerTest 0.7";
+char* appVersionName = "SteerTest 0.8";
 
 
 // The number of our GLUT window
