@@ -41,7 +41,7 @@ Documentation </big></big></b> <br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><small><br>
-October 15, 2004<br>
+October 18, 2004<br>
       <small>Version 0.8.2</small></small></td>
       <td style="vertical-align: top; text-align: right;"><a
  href="index.html"><img src="images/beta_250a.gif" alt="OpenSteer Logo"
@@ -750,7 +750,7 @@ calling sequence may be changed or removed in the future.<br>
   <p>Returns a steering force to avoid colliding with other nearby
 vehicles moving in unconstrained directions. Determine which (if any)
 other other vehicle we would collide with first, then steers to avoid
-the site of that potential collision. (The current version only
+the site of that potential collision. (The current (2D) version only
 steers laterally, it does not speed up or slow down, as described in
 the <a href="http://www.red3d.com/cwr/papers/1999/gdc99steer.html">GDC
 1999 paper</a>.) Returns a steering force vector of zero length if
@@ -920,7 +920,9 @@ the code, or frankly, as long as you feel comfortable doing a <a
 from <a href="http://sourceforge.net/">SourceForge</a> -- you should
 visit <a href="http://sourceforge.net/cvs/?group_id=77546">OpenSteer's
 CVS
-repository</a> and checkout the code. (If you are not a SourceForge
+repository</a> and checkout the code. (Note: do a <span
+ style="font-weight: bold;">cvs update -dP</span> to prune obsolete
+directories. If you are not a SourceForge
 member can do the checkout anonymously:&nbsp; <small><small>cvs -z3
 -d:pserver:anonymous@cvs-pserver.sourceforge.net:80/cvsroot/opensteer
 co opensteer</small></small>). CVS client software is included with
@@ -1065,7 +1067,11 @@ your opponent. Perhaps obstacle avoidance should take an argument
 representing the steering that would be used in the absence of an
 obstacle. This can be used to bias the choice of a path around the
 obstacle. There is an underlying suggestion that effective blending of
-behaviors cannot be cleanly separated from the behaviors themselves.</p>
+behaviors cannot be cleanly separated from the behaviors themselves.
+(See also <a href="http://citeseer.org/benamor03fast.html">Fast, Neat
+and Under Control: Inverse Steering Behaviors for Physical Autonomous
+Agents</a>.)<br>
+    </p>
   </li>
   <li>
     <p> Currently the Pedestrians always move forward at full speed and
@@ -1197,17 +1203,32 @@ Look-Ahead Predictor</a> by <a href="http://www.cs.ubc.ca/%7Ebforsyth/">Ben
 Forsyth</a> .&nbsp; In his Master's thesis, Ben used OpenSteer as a
 framework for his experiments, used path following behavior in a novel
 application, and invented a new and more realistic model of a steerable
-wheeled vehicle.<br>
-        </p>
+wheeled vehicle.</p>
+      </li>
+      <li>
+        <p><a href="http://pizzagame.sourceforge.net/">Pizza Game</a></p>
+      </li>
+      <li><a href="http://tmema.org/messa/messa.html">Messa di Voce</a><br>
       </li>
     </ul>
   </li>
   <li>
-    <p>Systems similar to OpenSteer:</p>
+    <p>Systems similar to OpenSteer (see also this <a
+ href="http://cs.gmu.edu/%7Eeclab/projects/mason/#Other">list of
+related simulators</a>):</p>
     <ul>
-      <li><a href="http://www.spiderland.org/breve/">breve</a>: a 3d
-Simulation Environment for Decentralized Simulations and Artificial Life<br>
+      <li>
+        <p><a href="http://www.spiderland.org/breve/">breve</a>: a 3d
+Simulation Environment for Decentralized Simulations and Artificial Life</p>
       </li>
+      <li>
+        <p><a href="http://cs.gmu.edu/%7Eeclab/projects/mason/">MASON</a>
+is a fast discrete-event multiagent simulation library core in
+Java.&nbsp; <br>
+        </p>
+      </li>
+      <li><a href="http://crowd.webhop.org/">Crowd Simulation Framework</a>
+based on steering behaviors</li>
     </ul>
   </li>
   <li>
@@ -1228,6 +1249,12 @@ driven by steering behaviors.</p>
       </li>
     </ul>
   </li>
+  <li>
+    <p><a href="http://sourceforge.net/forum/message.php?msg_id=2721305">Steering,
+planning and learning</a>, a forum thread on advanced steering
+archetectures which cites several recent publications.<br>
+    </p>
+  </li>
 </ul>
 <br>
 <hr>
@@ -1236,7 +1263,7 @@ driven by steering behaviors.</p>
 comments or suggestions.
 <br>
 <br>
-<!-- CHANGE DATE AT TOP OF FILE TOO -->Last update: October 15, 2004 <br>
+<!-- CHANGE DATE AT TOP OF FILE TOO -->Last update: October 18, 2004 <br>
 </p>
 <a href="http://sourceforge.net">
 <img src="http://sourceforge.net/sflogo.php?group_id=77546&amp;type=1"
