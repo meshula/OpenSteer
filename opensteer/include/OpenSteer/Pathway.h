@@ -99,7 +99,7 @@ public:
     float radius;
     bool cyclic;
 
-    PolylinePathway (void) {};
+    PolylinePathway (void) {}
 
     // construct a PolylinePathway given the number of points (vertices),
     // an array of points, and a path radius.
