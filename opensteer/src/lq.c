@@ -627,13 +627,13 @@ void lqGetBinPopulationStats (lqInternalDB* lq,
 
     for (i=0; i<bincount; i++)
     {
-        // clear the counter
+        /* clear the counter */
         int objectCount = 0;
 
-        // apply counting function to each object in bin[i]
+        /* apply counting function to each object in bin[i] */
 	lqMapOverAllObjectsInBin (lq->bins[i], lqgbpsCounter, &objectCount);
 
-        // collect data: max and min population, count objects and non-empty bins
+        /* collect data: max and min population, count objects and non-empty bins */
         if (objectCount > 0)
         {
             nonEmptyBinCount++;
@@ -643,7 +643,7 @@ void lqGetBinPopulationStats (lqInternalDB* lq,
         }
     }
 
-    // set return values
+    /* set return values */
     *min = minPop;
     *max = maxPop;
     *average = ((float) totalCount) / ((float) nonEmptyBinCount);
