@@ -1521,7 +1521,9 @@ private:
 
 
 int DeferredLine::index = 0;
-const int DeferredLine::size = 1000;
+// const int DeferredLine::size = 1000;
+// const int DeferredLine::size = 2000;
+const int DeferredLine::size = 3000;
 DeferredLine DeferredLine::deferredLineArray [DeferredLine::size];
 
 
