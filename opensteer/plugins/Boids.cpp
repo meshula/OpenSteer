@@ -41,6 +41,12 @@
 #include "OpenSteer/OpenSteerDemo.h"
 #include "OpenSteer/Proximity.h"
 
+#ifdef WIN32
+// Windows defines these as macros :(
+#undef min
+#undef max
+#endif
+
 #ifndef NO_LQ_BIN_STATS
 #include <iomanip> // for setprecision
 #include <limits> // for numeric_limits::max()
