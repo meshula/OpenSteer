@@ -37,6 +37,8 @@
 
 
 #include "OpenSteer/Obstacle.h"
+// XXXQQQ debug annotation
+#include <OpenSteer/SimpleVehicle.h>
 
 
 // ----------------------------------------------------------------------------
@@ -199,7 +201,6 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
         vehicle.position() + (vehicle.forward() * pi.distance);
     pi.surfaceNormal = (pi.surfacePoint-center).normalize();
     pi.steerHint = pi.surfaceNormal;
-	pi.vehicleOutside = lc.length() > radius;
 }
 
 
@@ -225,8 +226,8 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
     const Vec3 hw = s * (0.5f * width); // offsets for face centers
     const Vec3 hh = u * (0.5f * height);
     const Vec3 hd = f * (0.5f * depth);
-	const seenFromState sf = seenFrom ();
-	
+    const seenFromState sf = seenFrom ();
+
     // the box's six rectangular faces
     RectangleObstacle r1 (w, h,  s,  u,  f, p + hd, sf); // front
     RectangleObstacle r2 (w, h, -s,  u, -f, p - hd, sf); // back
@@ -248,10 +249,10 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
     PathIntersection next;
     firstPathIntersectionWithObstacleGroup (vehicle, faces, pi, next);
 
-	// adjust PathIntersection for the box case
-	pi.obstacle = this;
-	pi.steerHint = ((pi.surfacePoint - position ()).normalize () *
-					(pi.vehicleOutside ? 1.0f : -1.0f));
+    // adjust PathIntersection for the box case
+    pi.obstacle = this;
+    pi.steerHint = ((pi.surfacePoint - position ()).normalize () *
+                    (pi.vehicleOutside ? 1.0f : -1.0f));
 }
 
 
@@ -302,7 +303,6 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
     pi.steerHint = opposingNormal + radial; // should have "toward edge" term?
     pi.surfacePoint = globalizePosition (planeIntersection);
     pi.surfaceNormal = opposingNormal;
-	pi.vehicleOutside = lp.z > 0.0f;
 }
 
 

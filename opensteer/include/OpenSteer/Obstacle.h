@@ -66,7 +66,7 @@ namespace OpenSteer {
                                    const float minTimeToCollision) const = 0;
 
         // PathIntersection object: used internally to analyze and store
-		// information about intersections of vehicle paths and obstacles.
+        // information about intersections of vehicle paths and obstacles.
         class PathIntersection
         {
         public:
@@ -75,7 +75,7 @@ namespace OpenSteer {
             Vec3 surfacePoint; // position of intersection
             Vec3 surfaceNormal; // unit normal at point of intersection
             Vec3 steerHint; // where to steer away from intersection
-			bool vehicleOutside; // is the vehicle outside the obstacle?
+            bool vehicleOutside; // is the vehicle outside the obstacle?
             const AbstractObstacle* obstacle; // obstacle the path intersects
 
             // determine steering based on path intersection tests
@@ -253,14 +253,14 @@ namespace OpenSteer {
         RectangleObstacle (float w, float h) : width(w), height(h) {}
         RectangleObstacle (void) :  width(1.0f), height(1.0f) {}
         RectangleObstacle (float w, float h, const Vec3& s,
-						   const Vec3& u, const Vec3& f, const Vec3& p,
-						   seenFromState sf) : width(w), height(h)
+                           const Vec3& u, const Vec3& f, const Vec3& p,
+                           seenFromState sf) : width(w), height(h)
         {
-			setSide (s);
-			setUp (u);
-			setForward (f);
-			setPosition (p);
-			setSeenFrom (sf);}
+            setSide (s);
+            setUp (u);
+            setForward (f);
+            setPosition (p);
+            setSeenFrom (sf);}
 
         // determines if a given point on XY plane is inside obstacle shape
         bool xyPointInsideShape (const Vec3& point, float radius) const;
