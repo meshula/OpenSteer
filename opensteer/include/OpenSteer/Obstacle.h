@@ -61,7 +61,7 @@ namespace OpenSteer {
     {
     public:
 
-        // compute steering to avoid this obstacle, if needed 
+        // compute steering for a vehicle to avoid this obstacle, if needed
         virtual Vec3 steerToAvoid (const AbstractVehicle& v,
                                    const float minTimeToCollision) const = 0;
 
@@ -86,7 +86,7 @@ namespace OpenSteer {
         // (this must be specialized for each new obstacle shape class)
         virtual void
         findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
-                                         PathIntersection& intersection)
+                                         PathIntersection& pi)
             const
             = 0 ;
 
@@ -116,16 +116,24 @@ namespace OpenSteer {
 
         Obstacle (void) : _seenFrom (outside) {}
 
+        // compute steering for a vehicle to avoid this obstacle, if needed 
+        Vec3 steerToAvoid (const AbstractVehicle& v,
+                           const float minTimeToCollision)
+            const;
+
         // static method to apply steerToAvoid to nearest obstacle in an
         // ObstacleGroup
         static Vec3 steerToAvoidObstacles (const AbstractVehicle& vehicle,
                                            const float minTimeToCollision,
                                            const ObstacleGroup& obstacles);
 
-        // compute steering to avoid this obstacle, if needed 
-        Vec3 steerToAvoid (const AbstractVehicle& v,
-                           const float minTimeToCollision)
-            const;
+        // static method to find first vehicle path intersection in an
+        // ObstacleGroup
+        static void
+        firstPathIntersectionWithObstacleGroup (const AbstractVehicle& vehicle,
+                                                const ObstacleGroup& obstacles,
+                                                PathIntersection& nearest,
+                                                PathIntersection& next);
 
         seenFromState seenFrom (void) const {return _seenFrom;}
         void setSeenFrom (seenFromState s) {_seenFrom = s;}
@@ -150,9 +158,16 @@ namespace OpenSteer {
 
         // find first intersection of a vehicle's path with this obstacle
         void findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
-                                              PathIntersection& intersection)
+                                              PathIntersection& pi)
             const;
     };
+
+
+    // ----------------------------------------------------------------------------
+    // LocalSpaceObstacle: a mixture of LocalSpace and Obstacle methods
+
+
+     typedef LocalSpaceMixin<Obstacle> LocalSpaceObstacle;
 
 
     // ----------------------------------------------------------------------------
@@ -161,23 +176,46 @@ namespace OpenSteer {
     // side/up) plane of a local space.
 
 
-    // A mixture of LocalSpace and Obstacle
-    typedef LocalSpaceMixin<Obstacle> LocalSpaceObstacle;
-
-
     class RectangleObstacle : public LocalSpaceObstacle
     {
     public:
-        float width;  // width of rectangle centered on local X (side) axis
-        float height; // height of rectangle centered on local Y (up) axis
+        float width;  // width  of rectangle centered on local X (side) axis
+        float height; // height of rectangle centered on local Y (up)   axis
 
         // constructors
         RectangleObstacle (float w, float h) : width(w), height(h) {}
         RectangleObstacle (void) :  width(1.0f), height(1.0f) {}
+        RectangleObstacle (float w, float h, const Vec3& s, const Vec3& u,
+                           const Vec3& f, const Vec3& p) : width(w), height(h)
+        {setSide (s); setUp (u); setForward (f); setPosition (p);}
 
         // find first intersection of a vehicle's path with this obstacle
         void findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
-                                              PathIntersection& intersection)
+                                              PathIntersection& pi)
+            const;
+    };
+
+
+    // ----------------------------------------------------------------------------
+    // BoxObstacle: a box-shaped (cuboid) obstacle of a given height, width,
+    // depth, position and orientation.  The box is centered on and oriented by
+    // a local space.
+
+
+    class BoxObstacle : public LocalSpaceObstacle
+    {
+    public:
+        float width;  // width  of box centered on local X (side)    axis
+        float height; // height of box centered on local Y (up)      axis
+        float depth;  // depth  of box centered on local Z (forward) axis
+
+        // constructors
+        BoxObstacle (float w, float h, float d) : width(w), height(h), depth(d) {}
+        BoxObstacle (void) :  width(1.0f), height(1.0f), depth(1.0f) {}
+
+        // find first intersection of a vehicle's path with this obstacle
+        void findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
+                                              PathIntersection& pi)
             const;
     };
 

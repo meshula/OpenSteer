@@ -37,6 +37,24 @@
 
 
 #include "OpenSteer/Obstacle.h"
+// XXXQQQ debug annotation
+#include <OpenSteer/SimpleVehicle.h>
+
+
+// ----------------------------------------------------------------------------
+// Obstacle
+// compute steering for a vehicle to avoid this obstacle, if needed 
+
+
+OpenSteer::Vec3 
+OpenSteer::Obstacle::steerToAvoid (const AbstractVehicle& vehicle,
+                                   const float minTimeToCollision) const
+{
+    // if nearby intersection found, steer away from it, otherwise no steering
+    PathIntersection pi;
+    findIntersectionWithVehiclePath (vehicle, pi);
+    return pi.steerToAvoidIfNeeded (vehicle, minTimeToCollision);
+}
 
 
 // ----------------------------------------------------------------------------
@@ -54,6 +72,27 @@ steerToAvoidObstacles (const AbstractVehicle& vehicle,
 
     // test all obstacles in group for an intersection with the vehicle's
     // future path, select the one whose point of intersection is nearest
+    firstPathIntersectionWithObstacleGroup (vehicle, obstacles, nearest, next);
+
+    // if nearby intersection found, steer away from it, otherwise no steering
+    return nearest.steerToAvoidIfNeeded (vehicle, minTimeToCollision);
+}
+
+
+// ----------------------------------------------------------------------------
+// Obstacle
+// static method to find first vehicle path intersection in an ObstacleGroup
+
+
+void
+OpenSteer::Obstacle::
+firstPathIntersectionWithObstacleGroup (const AbstractVehicle& vehicle,
+                                        const ObstacleGroup& obstacles,
+                                        PathIntersection& nearest,
+                                        PathIntersection& next)
+{
+    // test all obstacles in group for an intersection with the vehicle's
+    // future path, select the one whose point of intersection is nearest
     next.intersect = false;
     nearest.intersect = false;
     for (ObstacleIterator o = obstacles.begin(); o != obstacles.end(); o++)
@@ -64,30 +103,11 @@ steerToAvoidObstacles (const AbstractVehicle& vehicle,
 
         // if this is the first intersection found, or it is the nearest found
         // so far, store it in PathIntersection object "nearest"
-        if ((nearest.intersect == false) ||
-            ((next.intersect != false) &&
-             (next.distance < nearest.distance)))
-            nearest = next;
+        const bool firstFound = !nearest.intersect;
+        const bool nearestFound = (next.intersect &&
+                                   (next.distance < nearest.distance));
+        if (firstFound || nearestFound) nearest = next;
     }
-
-    // if nearby intersection found, steer away from it, otherwise no steering
-    return nearest.steerToAvoidIfNeeded (vehicle, minTimeToCollision);
-}
-
-
-// ----------------------------------------------------------------------------
-// Obstacle
-// compute steering to avoid this obstacle, if needed 
-
-
-OpenSteer::Vec3 
-OpenSteer::Obstacle::steerToAvoid (const AbstractVehicle& vehicle,
-                                   const float minTimeToCollision) const
-{
-    // if nearby intersection found, steer away from it, otherwise no steering
-    PathIntersection pi;
-    findIntersectionWithVehiclePath (vehicle, pi);
-    return pi.steerToAvoidIfNeeded (vehicle, minTimeToCollision);
 }
 
 
@@ -127,7 +147,7 @@ void
 OpenSteer::
 SphericalObstacle::
 findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
-                                 PathIntersection& intersection) const
+                                 PathIntersection& pi) const
 {
     // This routine is based on the Paul Bourke's derivation in:
     //   Intersection of a Line and a Sphere (or circle)
@@ -139,7 +159,7 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
     Vec3 lc;
 
     // initialize pathIntersection object to "no intersection found"
-    intersection.intersect = false;
+    pi.intersect = false;
 
     // find sphere's "local center" (lc) in the vehicle's coordinate space
     lc = vehicle.localizePosition (center);
@@ -165,9 +185,9 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
 
     // at least one intersection is in front, so intersects our forward
     // path
-    intersection.intersect = true;
-    intersection.obstacle = this;
-    intersection.distance =
+    pi.intersect = true;
+    pi.obstacle = this;
+    pi.distance =
         ((p > 0) && (q > 0)) ?
         // both intersections are in front of us, find nearest one
         ((p < q) ? p : q) :
@@ -177,10 +197,20 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
          0.0f :
          // hollow obstacle (or "both"), pick point that is in front
          ((p > 0) ? p : q));
-    intersection.surfacePoint =
-        vehicle.position() + (vehicle.forward() * intersection.distance);
-    intersection.surfaceNormal = (intersection.surfacePoint-center).normalize();
-    intersection.steerHint = intersection.surfaceNormal;
+    pi.surfacePoint =
+        vehicle.position() + (vehicle.forward() * pi.distance);
+    pi.surfaceNormal = (pi.surfacePoint-center).normalize();
+    pi.steerHint = pi.surfaceNormal;
+    {
+        // XXXQQQ debug annotation
+        SimpleVehicle v;
+        const Vec3 vp = vehicle.position ();
+
+        const Vec3 sp = pi.surfacePoint;
+        const Vec3 sh = pi.steerHint;
+        v.annotationLine (vp, sp, gCyan);
+        v.annotationLine (sp, sp + sh, gCyan);
+    }
 }
 
 
@@ -193,10 +223,10 @@ void
 OpenSteer::
 RectangleObstacle::
 findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
-                                 PathIntersection& intersection) const
+                                 PathIntersection& pi) const
 {
     // initialize pathIntersection object to "no intersection found"
-    intersection.intersect = false;
+    pi.intersect = false;
 
     const Vec3 lp =  localizePosition (vehicle.position ());
     const Vec3 ld = localizeDirection (vehicle.forward ());
@@ -228,12 +258,68 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
     const Vec3 gpin = globalizeDirection (pin);
     const float sideSign = (lp.z > 0.0f) ? +1.0f : -1.0f;
     const Vec3 opposingNormal = forward () * sideSign;
-    intersection.intersect = true;
-    intersection.obstacle = this;
-    intersection.distance = (lp - planeIntersection).length ();
-    intersection.steerHint = opposingNormal + gpin;
-    intersection.surfacePoint = globalizePosition (planeIntersection);
-    intersection.surfaceNormal = opposingNormal;
+    pi.intersect = true;
+    pi.obstacle = this;
+    pi.distance = (lp - planeIntersection).length ();
+    pi.steerHint = opposingNormal + gpin;
+    pi.surfacePoint = globalizePosition (planeIntersection);
+    pi.surfaceNormal = opposingNormal;
+    {
+        // XXXQQQ debug annotation
+        SimpleVehicle v;
+        const Vec3 vp = vehicle.position ();
+
+        const Vec3 sp = pi.surfacePoint;
+        const Vec3 sh = pi.steerHint;
+        v.annotationLine (vp, sp, gCyan);
+        v.annotationLine (sp, sp + sh, gCyan);
+    }
+}
+
+
+// ----------------------------------------------------------------------------
+// BoxObstacle
+// find first intersection of a vehicle's path with this obstacle
+
+
+void 
+OpenSteer::
+BoxObstacle::
+findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
+                                 PathIntersection& pi) const
+{
+    // abbreviations
+    const float w = width; // dimensions
+    const float h = height;
+    const float d = depth;
+    const Vec3 s = side (); // local space
+    const Vec3 u = up ();
+    const Vec3 f = forward ();
+    const Vec3 p = position ();
+    const Vec3 hw = s * (0.5f * width); // offsets for face centers
+    const Vec3 hh = u * (0.5f * height);
+    const Vec3 hd = f * (0.5f * depth);
+
+    // the box's six rectangular faces
+    RectangleObstacle r1 (w, h,  s,  u,  f, p + hd); // front
+    RectangleObstacle r2 (w, h, -s,  u, -f, p - hd); // back
+    RectangleObstacle r3 (d, h, -f,  u,  s, p + hw); // side
+    RectangleObstacle r4 (d, h,  f,  u, -s, p - hw); // other side
+    RectangleObstacle r5 (w, d,  s, -f,  u, p + hh); // top
+    RectangleObstacle r6 (w, d, -s, -f, -u, p - hh); // bottom
+
+    // group the six RectangleObstacle faces together
+    ObstacleGroup faces;
+    faces.push_back (&r1);
+    faces.push_back (&r2);
+    faces.push_back (&r3);
+    faces.push_back (&r4);
+    faces.push_back (&r5);
+    faces.push_back (&r6);
+
+    // find first intersection of vehicle path with group of six faces
+    PathIntersection next;
+    firstPathIntersectionWithObstacleGroup (vehicle, faces, pi, next);
 }
 
 
