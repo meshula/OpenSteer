@@ -206,12 +206,44 @@ public:
     }
 
 
-    // make boids "bank" as they fly
+// ---------------------------------------------- xxxcwr111704_terrain_following
+    // control orientation for this boid
     void regenerateLocalSpace (const Vec3& newVelocity,
                                const float elapsedTime)
     {
+        // 3d flight with banking
         regenerateLocalSpaceForBanking (newVelocity, elapsedTime);
+
+        // // follow terrain surface
+        // regenerateLocalSpaceForTerrainFollowing (newVelocity, elapsedTime);
     }
+
+
+    // XXX experiment:
+    // XXX   herd with terrain following
+    // XXX   special case terrain: a sphere at the origin, radius 40
+    void regenerateLocalSpaceForTerrainFollowing  (const Vec3& newVelocity,
+                                                   const float /* elapsedTime */)
+    {
+
+        // XXX this is special case code, these should be derived from arguments //
+        const Vec3 surfaceNormal = position().normalize();                       //
+        const Vec3 surfacePoint = surfaceNormal * 40.0f;                         //
+        // XXX this is special case code, these should be derived from arguments //
+
+        const Vec3 newUp = surfaceNormal;
+        const Vec3 newPos = surfacePoint;
+        const Vec3 newVel = newVelocity.perpendicularComponent(newUp);
+        const float newSpeed = newVel.length();
+        const Vec3 newFor = newVel / newSpeed;
+
+        setSpeed (newSpeed);
+        setPosition (newPos);
+        setUp (newUp);
+        setForward (newFor);
+        setUnitSideFromForwardAndUp ();
+    }
+// ---------------------------------------------- xxxcwr111704_terrain_following
 
     // switch to new proximity database -- just for demo purposes
     void newPD (ProximityDatabase& pd)
@@ -347,8 +379,12 @@ public:
             status << "inside a sphere, outside another" ; break;
         case outsideSpheres:
             status << "inside a sphere, outside several" ; break;
+        case outsideSpheresNoBig:
+            status << "outside several spheres, with wrap-around" ; break;
         case rectangle:
             status << "inside a sphere, with a rectangle" ; break;
+        case rectangleNoBig:
+            status << "a rectangle, with wrap-around" ; break;
         case outsideBox:
             status << "inside a sphere, outside a box" ; break;
         case insideBox:
@@ -492,8 +528,10 @@ public:
     // --------------------------------------------------------
 
     // enumerate demos of various constraints on the flock
-    enum ConstraintType {none, insideSphere, outsideSphere, outsideSpheres,
-                         rectangle, outsideBox, insideBox};
+    enum ConstraintType {none, insideSphere,
+                         outsideSphere, outsideSpheres, outsideSpheresNoBig,
+                         rectangle, rectangleNoBig,
+                         outsideBox, insideBox};
 
     ConstraintType constraint;
 
@@ -504,17 +542,22 @@ public:
         updateObstacles ();
     }
 
+    class SO : public SphereObstacle
+    {void draw (const bool filled, const Vec3& color, const Vec3& vp) const
+        {drawSphereObstacle (*this, 10.0f, filled, color, vp);}};
 
-    SphereObstacle insideBigSphere;
-    SphereObstacle outsideSphere0;
-    SphereObstacle outsideSphere1;
-    SphereObstacle outsideSphere2;
-    SphereObstacle outsideSphere3;
-    SphereObstacle outsideSphere4;
-    SphereObstacle outsideSphere5;
-    SphereObstacle outsideSphere6;
-    RectangleObstacle bigRectangle;
-    BoxObstacle outsideBigBox, insideBigBox;
+    class RO : public RectangleObstacle
+    {void draw (const bool, const Vec3& color, const Vec3&) const
+        {tempDrawRectangle (*this, color);}};
+
+    class BO : public BoxObstacle
+    {void draw (const bool, const Vec3& color, const Vec3&) const
+        {tempDrawBox (*this, color);}};
+
+    RO bigRectangle;
+    BO outsideBigBox, insideBigBox;
+    SO insideBigSphere, outsideSphere0, outsideSphere1, outsideSphere2,
+       outsideSphere3, outsideSphere4, outsideSphere5, outsideSphere6;
 
 
     void initObstacles (void)
@@ -592,6 +635,7 @@ public:
             break;
         case outsideSpheres:
             Boid::obstacles.push_back (&insideBigSphere);
+        case outsideSpheresNoBig:
             Boid::obstacles.push_back (&outsideSphere1);
             Boid::obstacles.push_back (&outsideSphere2);
             Boid::obstacles.push_back (&outsideSphere3);
@@ -601,6 +645,8 @@ public:
             break;
         case rectangle:
             Boid::obstacles.push_back (&insideBigSphere);
+            Boid::obstacles.push_back (&bigRectangle);
+        case rectangleNoBig:
             Boid::obstacles.push_back (&bigRectangle);
             break;
         case outsideBox:
@@ -616,48 +662,20 @@ public:
 
     void drawObstacles (void)
     {
-        const float max = 10.0f;
-        const Vec3 vp = OpenSteerDemo::camera.position ();
-        const Vec3 light (0.2f, 0.2f, 0.4f);
-        const Vec3 dark (0.1f, 0.1f, 0.2f);
-        const bool fill = false; // draw in wireframe
-
-        switch (constraint)
+        for (ObstacleIterator o = Boid::obstacles.begin();
+             o != Boid::obstacles.end();
+             o++)
         {
-        case none:
-            break;
-        case insideSphere:
-            drawSphereObstacle (insideBigSphere, max, fill, light, vp);
-            break;
-        case outsideSphere:
-            drawSphereObstacle (insideBigSphere, max, fill, light, vp);
-            drawSphereObstacle (outsideSphere0,  max, fill, dark, vp);
-            break;
-        case outsideSpheres:
-            drawSphereObstacle (insideBigSphere, max, fill, light, vp);
-            drawSphereObstacle (outsideSphere1,  max, fill, dark, vp);
-            drawSphereObstacle (outsideSphere2,  max, fill, dark, vp);
-            drawSphereObstacle (outsideSphere3,  max, fill, dark, vp);
-            drawSphereObstacle (outsideSphere4,  max, fill, dark, vp);
-            drawSphereObstacle (outsideSphere5,  max, fill, dark, vp);
-            drawSphereObstacle (outsideSphere6,  max, fill, dark, vp);
-            break;
-        case rectangle:
-            drawSphereObstacle (insideBigSphere, max, fill, light, vp);
-            tempDrawRectangle (bigRectangle, dark);
-            break;
-        case outsideBox:
-            drawSphereObstacle (insideBigSphere, max, fill, light, vp);
-            tempDrawBox (outsideBigBox, dark);
-            break;
-        case insideBox:
-            tempDrawBox (insideBigBox, dark);
-            break;
+            (**o).draw (false, // draw in wireframe
+                        ((*o == &insideBigSphere) ?
+                         Vec3 (0.2f, 0.2f, 0.4f) :
+                         Vec3 (0.1f, 0.1f, 0.2f)),
+                        OpenSteerDemo::camera.position ());
         }
     }
 
 
-    void tempDrawRectangle (const RectangleObstacle& rect, const Vec3 color)
+    static void tempDrawRectangle (const RectangleObstacle& rect, const Vec3 color)
     {
         float w = rect.width / 2;
         float h = rect.height / 2;
@@ -674,7 +692,7 @@ public:
     }
 
 
-    void tempDrawBox (const BoxObstacle& box, const Vec3 color)
+    static void tempDrawBox (const BoxObstacle& box, const Vec3 color)
     {
         const float w = box.width / 2;
         const float h = box.height / 2;

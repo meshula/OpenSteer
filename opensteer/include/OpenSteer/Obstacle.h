@@ -90,6 +90,14 @@ namespace OpenSteer {
             const
             = 0 ;
 
+        // virtual function for drawing -- normally does nothing, can be
+        // specialized by derived types to provide graphics for obstacles
+        virtual void draw (const bool filled,
+                           const Vec3& color,
+                           const Vec3& viewpoint)
+            const
+            = 0 ;
+
         // seenFrom (eversion): does this obstacle contrain vehicle to stay
         // inside it or outside it (or both)?  "Inside" describes a clear space
         // within a solid (for example, the interior of a room inside its
@@ -134,6 +142,9 @@ namespace OpenSteer {
                                                 const ObstacleGroup& obstacles,
                                                 PathIntersection& nearest,
                                                 PathIntersection& next);
+
+        // default do-nothing draw function (derived class can overload this)
+        void draw (const bool, const Vec3&, const Vec3&) const {}
 
         seenFromState seenFrom (void) const {return _seenFrom;}
         void setSeenFrom (seenFromState s) {_seenFrom = s;}
