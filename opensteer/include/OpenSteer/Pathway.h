@@ -64,6 +64,22 @@ public:
 
     // Given an arbitrary point, convert it to a distance along the path.
     virtual float mapPointToPathDistance (const Vec3& point) = 0;
+
+    // is the given point inside the path tube?
+    bool isInsidePath (const Vec3& point)
+    {
+        float outside; Vec3 tangent;
+        mapPointToPath (point, tangent, outside);
+        return outside < 0;
+    }
+
+    // how far outside path tube is the given point?  (negative is inside)
+    float howFarOutsidePath (const Vec3& point)
+    {
+        float outside; Vec3 tangent;
+        mapPointToPath (point, tangent, outside);
+        return outside;
+    }
 };
 
 
@@ -83,9 +99,17 @@ public:
     float radius;
     bool cyclic;
 
+    PolylinePathway (void) {};
+
     // construct a PolylinePathway given the number of points (vertices),
     // an array of points, and a path radius.
     PolylinePathway (const int _pointCount,
+                     const Vec3 _points[],
+                     const float _radius,
+                     const bool _cyclic);
+
+    // utility for constructors in derived classes
+    void initialize (const int _pointCount,
                      const Vec3 _points[],
                      const float _radius,
                      const bool _cyclic);
@@ -113,7 +137,9 @@ public:
     // assessor for total path length;
     float getTotalPathLength (void) {return totalPathLength;};
 
-private:
+// XXX removed the "private" because it interfered with derived
+// XXX classes later this should all be rewritten and cleaned up
+// private:
 
     // xxx shouldn't these 5 just be local variables?
     // xxx or are they used to pass secret messages between calls?

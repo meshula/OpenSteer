@@ -49,6 +49,19 @@ PolylinePathway::PolylinePathway (const int _pointCount,
                                   const float _radius,
                                   const bool _cyclic)
 {
+    initialize (_pointCount, _points, _radius, _cyclic);
+}
+
+
+// ----------------------------------------------------------------------------
+// utility for constructors
+
+
+void PolylinePathway::initialize (const int _pointCount,
+                                  const Vec3 _points[],
+                                  const float _radius,
+                                  const bool _cyclic)
+{
     // set data members, allocate arrays
     radius = _radius;
     cyclic = _cyclic;
