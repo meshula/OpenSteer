@@ -356,9 +356,9 @@ public:
     {
         switch (keyNumber)
         {
-        case 1:  addBoidToFlock ();                           break;
-        case 2:  if (population > 0) removeBoidFromFlock ();  break;
-        case 3:  nextPD ();                                   break;
+        case 1:  addBoidToFlock ();       break;
+        case 2:  removeBoidFromFlock ();  break;
+        case 3:  nextPD ();               break;
         }
     }
 
@@ -384,17 +384,20 @@ public:
 
     void removeBoidFromFlock (void)
     {
-        // save a pointer to the last boid, then remove it from the flock
-        const Boid* boid = flock.back();
-        flock.pop_back();
-        population--;
+        if (population > 0)
+        {
+            // save a pointer to the last boid, then remove it from the flock
+            const Boid* boid = flock.back();
+            flock.pop_back();
+            population--;
 
-        // if it is SteerTest's selected vehicle, unselect it
-        if (boid == SteerTest::selectedVehicle)
-            SteerTest::selectedVehicle = NULL;
+            // if it is SteerTest's selected vehicle, unselect it
+            if (boid == SteerTest::selectedVehicle)
+                SteerTest::selectedVehicle = NULL;
 
-        // delete the Boid
-        delete boid;
+            // delete the Boid
+            delete boid;
+        }
     }
 
     // return an AVGroup containing each boid of the flock
