@@ -123,6 +123,9 @@ copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)\lib&quot;
 				RelativePath="..\src\lq.c">
 			</File>
 			<File
+				RelativePath="..\src\Obstacle.cpp">
+			</File>
+			<File
 				RelativePath="..\src\Pathway.cpp">
 			</File>
 			<File
