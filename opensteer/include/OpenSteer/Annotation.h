@@ -74,7 +74,8 @@ public:
     void recordTrailVertex (const float currentTime, const Vec3 position);
 
     // draw the trail as a dotted line, fading away with age
-    void drawTrail (void);
+    void drawTrail (void) {drawTrail (grayColor (0.7f), gWhite);}
+    void drawTrail  (const Vec3& trailColor, const Vec3& tickColor);
 
     // set trail parameters: the amount of time it represents and the
     // number of samples along its length.  re-allocates internal buffers.
@@ -304,13 +305,11 @@ void AnnotationMixin<Super>::recordTrailVertex (const float currentTime,
 
 
 template<class Super>
-void AnnotationMixin<Super>::drawTrail (void)
+void AnnotationMixin<Super>::drawTrail (const Vec3& trailColor,
+                                        const Vec3& tickColor)
 {
     if (SteerTest::annotationIsOn())
     {
-        const Vec3 trailColor = grayColor (0.7f);
-        const Vec3 tickColor = gWhite;
-
         int index = trailIndex;
         for (int j = 0; j < trailVertexCount; j++)
         {
