@@ -202,7 +202,7 @@ void SimpleVehicle::applySteeringForce (const Vec3& force,
 
 void SimpleVehicle::annotationVelocityAcceleration (float maxLength)
 {
-    const float desat = 0.4;
+    const float desat = 0.4f;
     const float aScale = maxLength / maxForce ();
     const float vScale = maxLength / maxSpeed ();
     const Vec3& p = position();

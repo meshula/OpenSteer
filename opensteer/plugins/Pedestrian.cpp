@@ -318,7 +318,7 @@ public:
         std::ostrstream annote;
         annote << std::setprecision (2) << std::setiosflags (ios::fixed);
         annote << spacer << "1: speed: " << selected.speed() << endl;
-        annote << setprecision (1);
+        annote << std::setprecision (1);
         annote << spacer << "2: cam dist: " << camDistance << endl;
         annote << spacer << "3: no third thing" << ends;
         draw2dTextAt3dLocation (*annote.str(), textPosition, color);

@@ -160,7 +160,7 @@ Vec3 PolylinePathway::mapPathDistanceToPoint (float pathDistance)
     float remaining = pathDistance;
     if (cyclic)
     {
-        remaining = fmod (pathDistance, totalPathLength);
+        remaining = (float) fmod (pathDistance, totalPathLength);
     }
     else
     {
