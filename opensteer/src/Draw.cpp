@@ -67,18 +67,13 @@
 
 
 // ----------------------------------------------------------------------------
-// XXX moved here from main.cpp 12-5-02
 
 
 char* appVersionName = "SteerTest 0.7";
 
 
 // The number of our GLUT window
-int windowID; 
-
-const int initialWindowWidth = 620;
-const int initialWindowHeight = 420;
-
+int windowID;
 
 bool gMouseAdjustingCameraAngle = false;
 bool gMouseAdjustingCameraRadius = false;
@@ -634,10 +629,16 @@ void initializeGraphics (int argc, char **argv)
     glutInitDisplayMode (mode);
 
     // create and initialize our window with GLUT tools
-    glutInitWindowPosition (0, 0);
-    glutInitWindowSize (initialWindowWidth, initialWindowHeight);
+    // (center window on screen with size equal to "ws" times screen size)
+    const int sw = glutGet (GLUT_SCREEN_WIDTH);
+    const int sh = glutGet (GLUT_SCREEN_HEIGHT);
+    const float ws = 0.8f; // window_size / screen_size
+    const int ww = (int) (sw * ws);
+    const int wh = (int) (sh * ws);
+    glutInitWindowPosition ((int) (sw * (1-ws)/2), (int) (sh * (1-ws)/2));
+    glutInitWindowSize (ww, wh);
     windowID = glutCreateWindow (appVersionName);
-    reshapeFunc (initialWindowWidth, initialWindowHeight);
+    reshapeFunc (ww, wh);
     initGL ();
 
     // register our display function, make it the idle handler too
