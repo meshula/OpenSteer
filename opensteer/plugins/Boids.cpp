@@ -59,6 +59,7 @@ public:
     // type for a flock: an STL vector of Boid pointers
     typedef std::vector<Boid*> groupType;
 
+
     // constructor
     Boid (ProximityDatabase& pd)
     {
@@ -70,12 +71,14 @@ public:
         reset ();
     }
 
+
     // destructor
     ~Boid ()
     {
         // delete this boid's token in the proximity database
         delete proximityToken;
     }
+
 
     // reset state
     void reset (void)
@@ -102,6 +105,7 @@ public:
         proximityToken->updateForNewPosition (position());
     }
 
+
     // draw this boid into the scene
     void draw (void)
     {
@@ -109,23 +113,12 @@ public:
         // drawTrail ();
     }
 
+
     // per frame simulation update
-    void update (const float currentTime,
-                 const float elapsedTime)
+    void update (const float currentTime, const float elapsedTime)
     {
-        // combined steering force: boids are always flocking, plus
-        // when near sphere boundary, gently seek toward the center
-        const Vec3 flocking = steerToFlock ();
-        if (position().length() < worldRadius)
-        {
-            applySteeringForce (flocking, elapsedTime);
-        }
-        else
-        {
-            const Vec3 seek = xxxsteerForSeek (Vec3::zero);
-            const Vec3 lateral = seek.perpendicularComponent (forward ());
-            applySteeringForce (flocking + lateral, elapsedTime);
-        }
+        // steer to flock and perhaps to stay within the spherical boundary
+        applySteeringForce (steerToFlock () + handleBoundary(), elapsedTime);
 
         // notify proximity database that our position has changed
         proximityToken->updateForNewPosition (position());
@@ -181,6 +174,36 @@ public:
     }
 
 
+    // Take action to stay within sphereical boundary.  Returns steering
+    // value (which is normally zero) and may take other side-effecting
+    // actions such as kinematically changing the Boid's position.
+    Vec3 handleBoundary (void)
+    {
+        // while inside the sphere do noting
+        if (position().length() < worldRadius) return Vec3::zero;
+
+        // once outside, select strategy
+        switch (boundaryCondition)
+        {
+        case 0:
+            {
+                // steer back when outside
+                const Vec3 seek = xxxsteerForSeek (Vec3::zero);
+                const Vec3 lateral = seek.perpendicularComponent (forward ());
+                return lateral;
+            }
+        case 1:
+            {
+                // wrap around (teleport)
+                setPosition (position().sphericalWrapAround (Vec3::zero,
+                                                             worldRadius));
+                return Vec3::zero;
+            }
+        }
+        return Vec3::zero; // should not reach here
+    }
+
+
     // make boids "bank" as they fly
     void regenerateLocalSpace (const Vec3& newVelocity,
                                const float elapsedTime)
@@ -198,6 +221,15 @@ public:
         proximityToken = pd.allocateToken (this);
     }
 
+
+    // cycle through various boundary conditions
+    static void nextBoundaryCondition (void)
+    {
+        const int max = 2;
+        boundaryCondition = (boundaryCondition + 1) % max;
+    }
+    static int boundaryCondition;
+
     // a pointer to this boid's interface object for the proximity database
     ProximityToken* proximityToken;
 
@@ -211,6 +243,7 @@ public:
 
 AVGroup Boid::neighbors;
 float Boid::worldRadius = 50.0f;
+int Boid::boundaryCondition = 0;
 
 
 // ----------------------------------------------------------------------------
@@ -277,20 +310,23 @@ public:
 
         // display status in the upper left corner of the window
         std::ostringstream status;
-        status << "Flock size: " << population << std::ends;
+        status << "[F1/F2] " << population << " boids";
+        status << "\n[F3]    PD type: ";
+        switch (cyclePD)
+        {
+        case 0: status << "LQ bin lattice"; break;
+        case 1: status << "brute force";    break;
+        }
+        status << "\n[F4]    Boundary: ";
+        switch (Boid::boundaryCondition)
+        {
+        case 0: status << "steer back when outside"; break;
+        case 1: status << "wrap around (teleport)";  break;
+        }
+        status << std::endl;
         const float h = drawGetWindowHeight ();
         const Vec3 screenLocation (10, h-50, 0);
         draw2dTextAt2dLocation (status, screenLocation, gGray80);
-        std::ostringstream status2;
-        status2 << "PD type: ";
-        switch (cyclePD)
-        {
-        case 0: status2 << "LQ bin lattice"; break;
-        case 1: status2 << "brute force";    break;
-        }
-        status2 << std::endl;
-        const Vec3 screenLocation2 (10, h-70, 0);
-        draw2dTextAt2dLocation (status2, screenLocation2, gGray80);
     }
 
     void close (void)
@@ -356,9 +392,10 @@ public:
     {
         switch (keyNumber)
         {
-        case 1:  addBoidToFlock ();       break;
-        case 2:  removeBoidFromFlock ();  break;
-        case 3:  nextPD ();               break;
+        case 1:  addBoidToFlock ();               break;
+        case 2:  removeBoidFromFlock ();          break;
+        case 3:  nextPD ();                       break;
+        case 4:  Boid::nextBoundaryCondition ();  break;
         }
     }
 
@@ -371,6 +408,7 @@ public:
         SteerTest::printMessage ("  F1     add a boid to the flock.");
         SteerTest::printMessage ("  F2     remove a boid from the flock.");
         SteerTest::printMessage ("  F3     use next proximity database.");
+        SteerTest::printMessage ("  F4     next flock boundary condition.");
         SteerTest::printMessage ("");
     }
 

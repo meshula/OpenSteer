@@ -183,6 +183,16 @@ public:
                      (this->z * c) - (this->x * s));
     }
 
+    Vec3 sphericalWrapAround (const Vec3& center, float radius)
+    {
+        const Vec3 offset = *this - center;
+        const float r = offset.length();
+        if (r > radius)
+            return *this + ((offset/r) * radius * -2);
+        else
+            return *this;
+    }
+
     // names for frequently used vector constants
     static const Vec3 zero;
     static const Vec3 side;
