@@ -40,8 +40,8 @@
 
 
 // ----------------------------------------------------------------------------
-// static method to find avoidance steering for a given vehicle,
-// minTimeToCollision and obstacle group
+// Obstacle
+// static method to apply steerToAvoid to nearest obstacle in an ObstacleGroup
 
 
 OpenSteer::Vec3
@@ -50,15 +50,12 @@ steerToAvoidObstacles (const AbstractVehicle& vehicle,
                        const float minTimeToCollision,
                        const ObstacleGroup& obstacles)
 {
-    Vec3 avoidance;
-    Obstacle::PathIntersection nearest, next;
-    const float minDistanceToCollision = minTimeToCollision * vehicle.speed();
+    PathIntersection nearest, next;
 
+    // test all obstacles in group for an intersection with the vehicle's
+    // future path, select the one whose point of intersection is nearest
     next.intersect = false;
     nearest.intersect = false;
-
-    // test all obstacles for intersection with my forward axis,
-    // select the one whose point of intersection is nearest
     for (ObstacleIterator o = obstacles.begin(); o != obstacles.end(); o++)
     {
         // find nearest point (if any) where vehicle path intersects obstacle
@@ -73,79 +70,46 @@ steerToAvoidObstacles (const AbstractVehicle& vehicle,
             nearest = next;
     }
 
-    // when a nearest intersection was found
-    if ((nearest.intersect != false) &&
-        (nearest.distance < minDistanceToCollision))
-    {
-        // XXX at this point we WANT to call steerToAvoid on that obstacle
-
-        // avoidance = nearest.obstacle->steerToAvoid (vehicle, minTimeToCollision);
-
-        // XXX but that is not doing the same thing as this old inline
-        // XXX code, so I will leave it in until I find the difference
-
-        // compute avoidance steering force: take offset from obstacle to me,
-        // take the component of that which is lateral (perpendicular to my
-        // forward direction), set length to maxForce, add a bit of forward
-        // component (in capture the flag, we never want to slow down)
-        const Vec3 offset = vehicle.position() - nearest.centerXXX;
-        avoidance = offset.perpendicularComponent (vehicle.forward());
-        avoidance = avoidance.normalize ();
-        avoidance *= vehicle.maxForce ();
-        avoidance += vehicle.forward() * vehicle.maxForce () * 0.75;
-    }
-
-    return avoidance;
+    // if nearby intersection found, steer away from it, otherwise no steering
+    return nearest.steerToAvoidIfNeeded (vehicle, minTimeToCollision);
 }
 
 
 // ----------------------------------------------------------------------------
-
-// XXX 4-23-03: Temporary work around (see comment above)
-//
-// Checks for intersection of the given spherical obstacle with a
-// volume of "likely future vehicle positions": a cylinder along the
-// current path, extending minTimeToCollision seconds along the
-// forward axis from current position.
-//
-// If they intersect, a collision is imminent and this function returns
-// a steering force pointing laterally away from the obstacle's center.
-//
-// Returns a zero vector if the obstacle is outside the cylinder
-//
-// xxx couldn't this be made more compact using localizePosition?
+// Obstacle
+// compute steering to avoid this obstacle, if needed 
 
 
 OpenSteer::Vec3 
-OpenSteer::SphericalObstacle::steerToAvoid (const AbstractVehicle& v,
-                                            const float minTimeToCollision) const
+OpenSteer::Obstacle::steerToAvoid (const AbstractVehicle& vehicle,
+                                   const float minTimeToCollision) const
 {
-    // minimum distance to obstacle before avoidance is required
-    const float minDistanceToCollision = minTimeToCollision * v.speed();
-    const float minDistanceToCenter = minDistanceToCollision + radius;
+    // if nearby intersection found, steer away from it, otherwise no steering
+    PathIntersection pi;
+    findIntersectionWithVehiclePath (vehicle, pi);
+    return pi.steerToAvoidIfNeeded (vehicle, minTimeToCollision);
+}
 
-    // contact distance: sum of radii of obstacle and vehicle
-    const float totalRadius = radius + v.radius ();
 
-    // obstacle center relative to vehicle position
-    const Vec3 localOffset = center - v.position ();
+// ----------------------------------------------------------------------------
+// PathIntersection
+// determine steering once path intersections have been found
 
-    // distance along vehicle's forward axis to obstacle's center
-    const float forwardComponent = localOffset.dot (v.forward ());
-    const Vec3 forwardOffset = forwardComponent * v.forward ();
 
-    // offset from forward axis to obstacle's center
-    const Vec3 offForwardOffset = localOffset - forwardOffset;
-
-    // test to see if sphere overlaps with obstacle-free corridor
-    const bool inCylinder = offForwardOffset.length() < totalRadius;
-    const bool nearby = forwardComponent < minDistanceToCenter;
-    const bool inFront = forwardComponent > 0;
-
-    // if all three conditions are met, steer away from sphere center
-    if (inCylinder && nearby && inFront)
+OpenSteer::Vec3 
+OpenSteer::Obstacle::PathIntersection::
+steerToAvoidIfNeeded (const AbstractVehicle& vehicle,
+                      const float minTimeToCollision) const
+{
+    // if nearby intersection found, steer away from it, otherwise no steering
+    const float minDistanceToCollision = minTimeToCollision * vehicle.speed();
+    if (intersect && (distance < minDistanceToCollision))
     {
-        return offForwardOffset * -1;
+        // compute avoidance steering force: take the component of
+        // steerHint which is lateral (perpendicular to vehicle's
+        // forward direction), set its length to vehicle's maxForce
+        Vec3 lateral = steerHint.perpendicularComponent (vehicle.forward ());
+        return lateral.normalize () * vehicle.maxForce ();
     }
     else
     {
@@ -155,34 +119,35 @@ OpenSteer::SphericalObstacle::steerToAvoid (const AbstractVehicle& v,
 
 
 // ----------------------------------------------------------------------------
+// SphericalObstacle
+// find first intersection of a vehicle's path with this obstacle
 
 
 void 
 OpenSteer::
 SphericalObstacle::
 findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
-                                 PathIntersection& intersection)
+                                 PathIntersection& intersection) const
 {
     // This routine is based on the Paul Bourke's derivation in:
     //   Intersection of a Line and a Sphere (or circle)
     //   http://www.swin.edu.au/astronomy/pbourke/geometry/sphereline/
+    // But the computation is done in the vehicle's local space,
+    // the line in question is the Z (Forward) axis of the space
 
     float b, c, d, p, q, s;
     Vec3 lc;
 
-    // initialize pathIntersection object
+    // initialize pathIntersection object to "no intersection found"
     intersection.intersect = false;
-    intersection.centerXXX = center;
-    // xxx new
-    intersection.obstacle = this;
 
-    // find "local center" (lc) of sphere in boid's coordinate space
+    // find sphere's "local center" (lc) in the vehicle's coordinate space
     lc = vehicle.localizePosition (center);
 
     // compute line-sphere intersection parameters
+    const float r = radius + vehicle.radius();
     b = -2 * lc.z;
-    c = square (lc.x) + square (lc.y) + square (lc.z) - 
-        square (radius + vehicle.radius());
+    c = square (lc.x) + square (lc.y) + square (lc.z) - square (r);
     d = (b * b) - (4 * c);
 
     // when the path does not intersect the sphere
@@ -201,6 +166,7 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
     // at least one intersection is in front, so intersects our forward
     // path
     intersection.intersect = true;
+    intersection.obstacle = this;
     intersection.distance =
         ((p > 0) && (q > 0)) ?
         // both intersections are in front of us, find nearest one
@@ -211,7 +177,64 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
          0.0f :
          // hollow obstacle (or "both"), pick point that is in front
          ((p > 0) ? p : q));
-    return;
+    intersection.surfacePoint =
+        vehicle.position() + (vehicle.forward() * intersection.distance);
+    intersection.surfaceNormal = (intersection.surfacePoint-center).normalize();
+    intersection.steerHint = intersection.surfaceNormal;
 }
+
+
+// ----------------------------------------------------------------------------
+// RectangleObstacle
+// find first intersection of a vehicle's path with this obstacle
+
+
+void 
+OpenSteer::
+RectangleObstacle::
+findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
+                                 PathIntersection& intersection) const
+{
+    // initialize pathIntersection object to "no intersection found"
+    intersection.intersect = false;
+
+    const Vec3 lp =  localizePosition (vehicle.position ());
+    const Vec3 ld = localizeDirection (vehicle.forward ());
+
+    // no obstacle intersection if path is parallel to rectangle's plane
+    if (ld.dot (Vec3::forward) == 0.0f) return;
+
+    // no obstacle intersection if vehicle is heading away from rectangle
+    if ((lp.z > 0.0f) && (ld.z > 0.0f)) return;
+    if ((lp.z < 0.0f) && (ld.z < 0.0f)) return;
+
+    // no obstacle intersection if obstacle "not seen" from vehicle's side
+    if ((seenFrom () == outside) && (lp.z < 0.0f)) return;
+    if ((seenFrom () == inside)  && (lp.z > 0.0f)) return;
+
+    // find intersection of path with rectangle's plane (XY plane)
+    const float ix = lp.x - (ld.x * lp.z / ld.z);
+    const float iy = lp.y - (ld.y * lp.z / ld.z);
+    const Vec3 planeIntersection (ix, iy, 0.0f);
+
+    // no obstacle intersection if plane intersection is outside rectangle
+    const float r = vehicle.radius ();
+    const float w = r + (width * 0.5f);
+    const float h = r + (height * 0.5f);
+    if ((ix > w) || (ix < -w) || (iy > h) || (iy < -h)) return;
+
+    // otherwise, the vehicle path DOES intersect this rectangle
+    const Vec3 pin = planeIntersection.normalize ();
+    const Vec3 gpin = globalizeDirection (pin);
+    const float sideSign = (lp.z > 0.0f) ? +1.0f : -1.0f;
+    const Vec3 opposingNormal = forward () * sideSign;
+    intersection.intersect = true;
+    intersection.obstacle = this;
+    intersection.distance = (lp - planeIntersection).length ();
+    intersection.steerHint = opposingNormal + gpin;
+    intersection.surfacePoint = globalizePosition (planeIntersection);
+    intersection.surfaceNormal = opposingNormal;
+}
+
 
 // ----------------------------------------------------------------------------

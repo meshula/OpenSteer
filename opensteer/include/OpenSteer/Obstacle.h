@@ -37,13 +37,6 @@
 //
 //
 // ----------------------------------------------------------------------------
-//
-// XXX 4-23-03: Temporary work around.  Put steerToAvoid method here to
-// XXX support generic steerToAvoidObstacle method in SteerLibraryMixin.
-// XXX That in turn requires making Obstacles know about AbstractVehicle.
-// XXX The final implementation will probably be significantly different.
-//
-// ----------------------------------------------------------------------------
 
 
 #ifndef OPENSTEER_OBSTACLE_H
@@ -51,8 +44,7 @@
 
 
 #include "OpenSteer/Vec3.h"
-
-// XXX 4-23-03: Temporary work around (see comment above)
+#include "OpenSteer/LocalSpace.h"
 #include "OpenSteer/AbstractVehicle.h"
 
 
@@ -60,15 +52,43 @@ namespace OpenSteer {
 
 
     // ----------------------------------------------------------------------------
-    // Obstacle: a pure virtual base class for an abstract shape in space, to be
-    // used with obstacle avoidance.
-    //
-    // XXX this should define generic methods for querying the obstacle shape
+    // AbstractObstacle: a pure virtual base class for an abstract shape in
+    // space, to be used with obstacle avoidance.  (Oops, its not "pure" since
+    // I added a concrete method to PathIntersection 11-04-04 -cwr).
 
 
     class AbstractObstacle
     {
     public:
+
+        // compute steering to avoid this obstacle, if needed 
+        virtual Vec3 steerToAvoid (const AbstractVehicle& v,
+                                   const float minTimeToCollision) const = 0;
+
+        // PathIntersection object used internally to analyze intersections
+        class PathIntersection
+        {
+        public:
+            bool intersect;
+            float distance;
+            Vec3 surfacePoint; // not currently used, should it be supported?
+            Vec3 surfaceNormal;// not currently used, should it be supported?
+            Vec3 steerHint;
+            const AbstractObstacle* obstacle;
+
+            // determine steering based on path intersection tests
+            Vec3 steerToAvoidIfNeeded (const AbstractVehicle& vehicle,
+                                       const float minTimeToCollision) const;
+
+        };
+
+        // find first intersection of a vehicle's path with this obstacle
+        // (this must be specialized for each new obstacle shape class)
+        virtual void
+        findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
+                                         PathIntersection& intersection)
+            const
+            = 0 ;
 
         // seenFrom (eversion): does this obstacle contrain vehicle to stay
         // inside it or outside it (or both)?  "Inside" describes a clear space
@@ -78,30 +98,6 @@ namespace OpenSteer {
         enum seenFromState {outside, inside, both};
         virtual seenFromState seenFrom (void) const = 0;
         virtual void setSeenFrom (seenFromState s) = 0;
-
-        // XXX 4-23-03: Temporary work around (see comment above)
-        virtual Vec3 steerToAvoid (const AbstractVehicle& v,
-                                   const float minTimeToCollision) const = 0;
-
-        typedef struct {
-            int intersect;
-            float distance;
-            Vec3 surfacePoint;
-            Vec3 surfaceNormal;
-            // xxx should this be "Obstacle*"now?
-            // SphericalObstacle* obstacle;
-            // xxx no, replace it with centerXXX for now,
-            //    later use surfacePoint/surfaceNormal
-            Vec3 centerXXX;
-            // xxx new
-            AbstractObstacle* obstacle;
-        } PathIntersection;
-
-        virtual void
-        findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
-                                         PathIntersection& intersection)
-        /* const ??? */
-            = 0 ;
     };
 
 
@@ -120,11 +116,16 @@ namespace OpenSteer {
 
         Obstacle (void) : _seenFrom (outside) {}
 
-        // apply steerToAvoid to the nearest obstacle in an ObstacleGroup
+        // static method to apply steerToAvoid to nearest obstacle in an
+        // ObstacleGroup
         static Vec3 steerToAvoidObstacles (const AbstractVehicle& vehicle,
                                            const float minTimeToCollision,
                                            const ObstacleGroup& obstacles);
 
+        // compute steering to avoid this obstacle, if needed 
+        Vec3 steerToAvoid (const AbstractVehicle& v,
+                           const float minTimeToCollision)
+            const;
 
         seenFromState seenFrom (void) const {return _seenFrom;}
         void setSeenFrom (seenFromState s) {_seenFrom = s;}
@@ -133,9 +134,8 @@ namespace OpenSteer {
     };
 
 
-
     // ----------------------------------------------------------------------------
-    // SphericalObstacle a simple concrete type of obstacle
+    // SphericalObstacle a simple ball-shaped obstacle
 
 
     class SphericalObstacle : public Obstacle
@@ -148,13 +148,39 @@ namespace OpenSteer {
         SphericalObstacle (float r, Vec3 c) : radius(r), center (c) {}
         SphericalObstacle (void) : radius(1), center (Vec3::zero) {}
 
-        Vec3 steerToAvoid (const AbstractVehicle& v,
-                           const float minTimeToCollision) const;
-
-
+        // find first intersection of a vehicle's path with this obstacle
         void findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
-                                              PathIntersection& intersection);
+                                              PathIntersection& intersection)
+            const;
     };
+
+
+    // ----------------------------------------------------------------------------
+    // RectangleObstacle: a rectangular obstacle of a given height, width,
+    // position and orientation.  It is a rectangle centered on the XY (aka
+    // side/up) plane of a local space.
+
+
+    // A mixture of LocalSpace and Obstacle
+    typedef LocalSpaceMixin<Obstacle> LocalSpaceObstacle;
+
+
+    class RectangleObstacle : public LocalSpaceObstacle
+    {
+    public:
+        float width;  // width of rectangle centered on local X (side) axis
+        float height; // height of rectangle centered on local Y (up) axis
+
+        // constructors
+        RectangleObstacle (float w, float h) : width(w), height(h) {}
+        RectangleObstacle (void) :  width(1.0f), height(1.0f) {}
+
+        // find first intersection of a vehicle's path with this obstacle
+        void findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
+                                              PathIntersection& intersection)
+            const;
+    };
+
 
 } // namespace OpenSteer
     
