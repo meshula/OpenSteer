@@ -617,8 +617,8 @@ void initializeGraphics (int argc, char **argv)
     // initialize GLUT state based on command line arguments
     glutInit (&argc, argv);  
 
-    // display modes: RGB+A+Z and double buffered
-    GLint mode = GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH;
+    // display modes: RGB+Z and double buffered
+    GLint mode = GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE;
     glutInitDisplayMode (mode);
 
     // create and initialize our window with GLUT tools
