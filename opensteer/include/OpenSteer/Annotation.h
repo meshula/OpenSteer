@@ -45,7 +45,9 @@
 #ifndef OPENSTEER_ANNOTATION_H
 #define OPENSTEER_ANNOTATION_H
 
+#ifndef NOT_OPENSTEERDEMO  // only when building OpenSteerDemo
 #include <OpenSteer/Draw.h>
+#endif // NOT_OPENSTEERDEMO
 #include <OpenSteer/Vec3.h>
 
 // ----------------------------------------------------------------------------
@@ -376,6 +378,7 @@ OpenSteer::AnnotationMixin<Super>::drawTrail (const Vec3& trailColor,
 // segment is queued to be drawn during OpenSteerDemo's redraw phase.
 
 
+#ifndef NOT_OPENSTEERDEMO  // only when building OpenSteerDemo
 template<class Super>
 void 
 OpenSteer::AnnotationMixin<Super>::annotationLine (const Vec3& startPoint,
@@ -394,6 +397,10 @@ OpenSteer::AnnotationMixin<Super>::annotationLine (const Vec3& startPoint,
         }
     }
 }
+#else
+template<class Super> void OpenSteer::AnnotationMixin<Super>::annotationLine
+ (const Vec3&, const Vec3&, const Vec3&) const {}
+#endif // NOT_OPENSTEERDEMO
 
 
 // ----------------------------------------------------------------------------
@@ -404,6 +411,7 @@ OpenSteer::AnnotationMixin<Super>::annotationLine (const Vec3& startPoint,
 // "circle or disk" is queued to be drawn during OpenSteerDemo's redraw phase.
 
 
+#ifndef NOT_OPENSTEERDEMO  // only when building OpenSteerDemo
 template<class Super>
 void 
 OpenSteer::AnnotationMixin<Super>::annotationCircleOrDisk (const float radius,
@@ -428,6 +436,12 @@ OpenSteer::AnnotationMixin<Super>::annotationCircleOrDisk (const float radius,
         }
     }
 }
+#else
+template<class Super>
+void OpenSteer::AnnotationMixin<Super>::annotationCircleOrDisk
+(const float, const Vec3&, const Vec3&, const Vec3&, const int,
+ const bool, const bool) const {}
+#endif // NOT_OPENSTEERDEMO
 
 
 // ----------------------------------------------------------------------------

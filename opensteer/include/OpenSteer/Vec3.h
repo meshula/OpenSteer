@@ -230,12 +230,14 @@ namespace OpenSteer {
     // ----------------------------------------------------------------------------
     // default character stream output method
 
+#ifndef NOT_OPENSTEERDEMO  // only when building OpenSteerDemo
 
     inline std::ostream& operator<< (std::ostream& o, const Vec3& v)
     {
         return o << "(" << v.x << "," << v.y << "," << v.z << ")";
     }
 
+#endif // NOT_OPENSTEERDEMO
 
     // ----------------------------------------------------------------------------
     // Returns a position randomly distributed inside a sphere of unit radius
