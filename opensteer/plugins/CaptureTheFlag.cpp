@@ -590,7 +590,7 @@ Vec3 CtfSeeker::steeringForSeeker (void)
                     seek + limitMaxDeviationAngle (evade, 0.5f, forward());
 
                 // annotation: show evasion steering force
-                annotationLine (position(),position()+(steer*0.2),evadeColor);
+                annotationLine (position(),position()+(steer*0.2f),evadeColor);
                 return steer;
             }
             else

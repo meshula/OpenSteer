@@ -156,7 +156,7 @@ Vec3 vecLimitDeviationAngleUtility (const bool insideOrOutside,
     // and lies on the intersection of a plane (formed the source and
     // basis vectors) and a cone (whose axis is "basis" and whose
     // angle corresponds to cosineOfConeAngle)
-    float perpDist = std::sqrt (1 - (cosineOfConeAngle * cosineOfConeAngle));
+    float perpDist = sqrtXXX (1 - (cosineOfConeAngle * cosineOfConeAngle));
     const Vec3 c0 = basis * cosineOfConeAngle;
     const Vec3 c1 = unitPerp * perpDist;
     return (c0 + c1) * sourceLength;

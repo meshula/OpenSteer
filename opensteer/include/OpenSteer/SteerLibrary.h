@@ -763,11 +763,11 @@ steerForAlignment (const float maxDistance,
                                     distanceWeight,
                                     unitOffset))
             {
-                // const Vec3 alignError = forward - other.forward;
+                // const Vec3 alignError = forward() - other.forward;
                 // steering += alignError * -distanceWeight;
                 // XXX ------------------------------ do it like in psboids
-                // const Vec3 myVelocity = forward * speed;
-                // const Vec3 otherVelocity = other.forward * other.speed;
+                // const Vec3 myVelocity = forward() * speed;
+                // const Vec3 otherVelocity = other.forward() * other.speed;
                 // const Vec3 velocityDifference = myVelocity - otherVelocity;
                 // XXX ------------------------------ do it like in psboids
 
@@ -1012,7 +1012,7 @@ steerForTargetSpeed (const float targetSpeed)
     if (speedError > +maxForce ()) speedError = +maxForce ();
     if (speedError < -maxForce ()) speedError = -maxForce ();
 
-    return forward * speedError;
+    return forward () * speedError;
 }
 
 
@@ -1052,7 +1052,7 @@ findNextIntersectionWithSphere (SphericalObstacle& obs,
     // otherwise, the path intersects the sphere in two points with
     // parametric coordinates of "p" and "q".
     // (If "d" is zero the two points are coincident, the path is tangent)
-    s = std::sqrt (d);
+    s = sqrtXXX (d);
     p = (-b + s) / 2;
     q = (-b - s) / 2;
 

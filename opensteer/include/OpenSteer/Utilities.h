@@ -86,6 +86,9 @@ float inline frandom2 (float lowerBound, float upperBound)
 
 
 // ----------------------------------------------------------------------------
+// Constrain a given value (x) to be between two (ordered) bounds: min
+// and max.  Returns x if it is between the bounds, otherwise returns
+// the nearer bound.
 
 
 float inline clip (const float x, const float min, const float max)
@@ -249,6 +252,32 @@ void inline blendIntoAccumulator (const float smoothRate,
 
 
 // ----------------------------------------------------------------------------
+// Functions to encapsulate cross-platform differences for several <cmath>
+// functions.  Specifically, the C++ standard says that these functions are
+// in the std namespace (std::sqrt, etc.)  Apparently the MS VC6 compiler (or
+// its header files) do not implement this correctly and the function names
+// are in the global namespace.  We hope these -XXX versions are a temporary
+// expedient, to be removed later.
+
+
+#ifdef _WIN32
+
+inline float floorXXX (float x) {return floor (x);}
+inline float  sqrtXXX (float x) {return sqrt (x);}
+inline float   sinXXX (float x) {return sin (x);}
+inline float   cosXXX (float x) {return cos (x);}
+
+#else
+
+inline float floorXXX (float x) {return std::floor (x);}
+inline float  sqrtXXX (float x) {return std::sqrt (x);}
+inline float   sinXXX (float x) {return std::sin (x);}
+inline float   cosXXX (float x) {return std::cos (x);}
+
+#endif
+
+
+// ----------------------------------------------------------------------------
 // round (x)  "round off" x to the nearest integer (as a float value)
 //
 // This is a Gnu-sanctioned(?) post-ANSI-Standard(?) extension (as in
@@ -262,9 +291,9 @@ void inline blendIntoAccumulator (const float smoothRate,
 inline float round (float x)
 {
   if (x < 0)
-      return -std::floor (0.5 - x);
+      return -floorXXX (0.5 - x);
   else
-      return  std::floor (0.5 + x);
+      return  floorXXX (0.5 + x);
 }
 
 #endif

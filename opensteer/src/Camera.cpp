@@ -257,8 +257,8 @@ Vec3 Camera::constDistHelper (const float elapsedTime)
         const Vec3 unitOffset = offset / distance;
 
         // new offset of length XXX
-        const float xxxDistance = std::sqrt (SQ (fixedDistDistance) -
-                                             SQ (fixedDistVOffset));
+        const float xxxDistance = sqrtXXX (SQ (fixedDistDistance) -
+                                           SQ (fixedDistVOffset));
         const Vec3 newOffset = unitOffset * xxxDistance;
 
         // return new camera position: adjust distance to target

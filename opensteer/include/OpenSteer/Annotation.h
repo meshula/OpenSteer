@@ -290,8 +290,8 @@ void AnnotationMixin<Super>::recordTrailVertex (const float currentTime,
         trailIndex = (trailIndex + 1) % trailVertexCount;
         trailVertices [trailIndex] = position;
         trailDottedPhase = (trailDottedPhase + 1) % 2;
-        const int tick = (std::floor (currentTime) >
-                          std::floor (trailLastSampleTime));
+        const int tick = (floorXXX (currentTime) >
+                          floorXXX (trailLastSampleTime));
         trailFlags [trailIndex] = trailDottedPhase | (tick ? 2 : 0);
         trailLastSampleTime = currentTime;
     }
