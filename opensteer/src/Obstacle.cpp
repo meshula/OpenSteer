@@ -155,8 +155,9 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
     // This routine is based on the Paul Bourke's derivation in:
     //   Intersection of a Line and a Sphere (or circle)
     //   http://www.swin.edu.au/astronomy/pbourke/geometry/sphereline/
-    // But the computation is done in the vehicle's local space,
-    // the line in question is the Z (Forward) axis of the space
+    // But the computation is done in the vehicle's local space, so
+    // the line in question is the Z (Forward) axis of the space which
+    // simplifies some of the calculations.
 
     float b, c, d, p, q, s;
     Vec3 lc;
@@ -203,8 +204,20 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
     pi.surfacePoint =
         vehicle.position() + (vehicle.forward() * pi.distance);
     pi.surfaceNormal = (pi.surfacePoint-center).normalize();
-    pi.steerHint = pi.surfaceNormal;
+    // hmm, note that this was actually determined already in pi.distance calc
     pi.vehicleOutside = lc.length () > radius;
+    switch (seenFrom ())
+    {
+    case outside:
+        pi.steerHint = pi.surfaceNormal;
+        break;
+    case inside:
+        pi.steerHint = -pi.surfaceNormal;
+        break;
+    case both:
+        pi.steerHint = pi.surfaceNormal * (pi.vehicleOutside ? 1.0f : -1.0f);
+        break;
+    }
 }
 
 
