@@ -110,24 +110,16 @@ SRCS		+= $(foreach DIR,$(SRCDIRS),$(subst $(DIR)/,,$(wildcard $(DIR)/*.c)))
 OBJS		= 
 
 # Additional libs to link with.
-#cwr
-#LIBS		= libcds_nv.a
-#LIBS		+= glut GLU GL X11 Xext Xi Xmu qt pthread
 LIBS		+= glut GLU GL
 
 
 # Additional locations for header files
-### XXX cwr 4-7-03
-### INCDIRS		+= .
-### XXX cwr 4-9-03
 INCDIRS		+= include include/OpenSteer
 
 # Additional locations for library files
 LIBDIRS		+= 
 
 # Additional locations for source files
-### XXX cwr 4-7-03
-###SRCDIRS		= 
 SRCDIRS		= src plugins
 
 # Object files and the target will be placed in this directory with an
@@ -160,24 +152,12 @@ LIBDIRS		+= /usr/lib /usr/openwin/lib /usr/X11R6/lib
 DEFINES		= USEOpenGL
 
 # Compiler optimization options
-# OPTFLAGS	= -Wall -Winline 
-# xxx cwr 7-9-02: dom's suggestion
-# OPTFLAGS	= -Wall -Winline -lm
-# OPTFLAGS	= -Wall -Winline -std=c99
-# OPTFLAGS	= -Wall -Winline -std=c99 -lm
-# OPTFLAGS	= -Wall -Winline 
-# xxx cwr 3-27-03 removing -Winline
-# (got warnings about the compiler giving up, not about def order problems)
-# OPTFLAGS	= -Wall
-# use -pedantic for more strict warnings
-OPTFLAGS	= -Wall -pedantic
+OPTFLAGS	= -Wall -pedantic -Winline
 
 # Compiler debug options
 
 # enable all warnings
-# DEBUGFLAGS	= -Wall -Winline
 DEBUGFLAGS	= -Wall
-# output assembly listings with c/c++ code
 
 # Command-line arguments to be passed to the target when we run it
 RUNARGS		= 
