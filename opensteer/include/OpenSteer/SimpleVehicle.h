@@ -177,7 +177,7 @@ namespace OpenSteer {
         Vec3 predictFuturePosition (const float predictionTime) const;
 
         // get instantaneous curvature (since last update)
-        float curvature (void) {return _curvature;}
+        float curvature (void) const {return _curvature;}
 
         // get/reset smoothedCurvature, smoothedAcceleration and smoothedPosition
         float smoothedCurvature (void) {return _smoothedCurvature;}

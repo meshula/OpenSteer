@@ -52,7 +52,8 @@
 #include "OpenSteer/Obstacle.h"
 #include "OpenSteer/Utilities.h"
 
-
+// Include OpenSteer::Color, OpenSteer::gBlack, ...
+#include "Color.h"
 
 namespace OpenSteer {
 
@@ -62,6 +63,18 @@ namespace OpenSteer {
     template <class Super>
     class SteerLibraryMixin : public Super
     {
+    public:
+        using Super::velocity;
+        using Super::maxSpeed;
+        using Super::speed;
+        using Super::radius;
+        using Super::maxForce;
+        using Super::forward;
+        using Super::position;
+        using Super::side;
+        using Super::up;
+        using Super::predictFuturePosition;
+        
     public:
 
         // Constructor: initializes state
@@ -308,7 +321,7 @@ OpenSteer::SteerLibraryMixin<Super>::
 steerForWander (float dt)
 {
     // random walk WanderSide and WanderUp between -1 and +1
-    const float speed = 12 * dt; // maybe this (12) should be an argument?
+    const float speed = 12.0f * dt; // maybe this (12) should be an argument?
     WanderSide = scalarRandomWalk (WanderSide, speed, -1, +1);
     WanderUp   = scalarRandomWalk (WanderUp,   speed, -1, +1);
 
@@ -931,7 +944,7 @@ steerForPursuit (const AbstractVehicle& quarry,
     const int p = intervalComparison (parallelness, -0.707f, 0.707f);
 
     float timeFactor = 0; // to be filled in below
-    Vec3 color;           // to be filled in below (xxx just for debugging)
+    Color color;           // to be filled in below (xxx just for debugging)
 
     // Break the pursuit into nine cases, the cross product of the
     // quarry being [ahead, aside, or behind] us and heading

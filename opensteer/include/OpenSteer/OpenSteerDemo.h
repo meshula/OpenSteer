@@ -47,7 +47,7 @@
 #define OPENSTEER_OPENSTEERDEMO_H
 
 
-#include "OpenSteer/Vec3.h"
+
 #include "OpenSteer/Clock.h"
 #include "OpenSteer/PlugIn.h"
 #include "OpenSteer/Camera.h"
@@ -56,6 +56,9 @@
 
 namespace OpenSteer {
 
+    class Color;
+    class Vec3;
+    
 
     class OpenSteerDemo
     {
@@ -222,14 +225,14 @@ namespace OpenSteer {
         // draw a box around a vehicle aligned with its local space
         // xxx not used as of 11-20-02
         static void drawBoxHighlightOnVehicle (const AbstractVehicle& v,
-                                               const Vec3 color);
+                                               const Color& color);
 
         // draws a colored circle (perpendicular to view axis) around the center
         // of a given vehicle.  The circle's radius is the vehicle's radius times
         // radiusMultiplier.
         static void drawCircleHighlightOnVehicle (const AbstractVehicle& v,
                                                   const float radiusMultiplier,
-                                                  const Vec3 color);
+                                                  const Color& color);
 
         // ----------------------------------------------------------- console text
 
