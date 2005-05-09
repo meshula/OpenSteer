@@ -344,6 +344,17 @@ void lqUpdateForNewLocation  (lqInternalDB* lq,
    traverses of subset of bins specified by max and min bin
    coordinates. */
 
+void lqMapOverAllObjectsInLocalityClipped (lqInternalDB* lq, 
+                                           float x, float y, float z,
+                                           float radius,
+                                           lqCallBackFunction func,
+                                           void* clientQueryState,
+                                           int minBinX,
+                                           int minBinY, 
+                                           int minBinZ,
+                                           int maxBinX,
+                                           int maxBinY,
+                                           int maxBinZ);
 
 void lqMapOverAllObjectsInLocalityClipped (lqInternalDB* lq, 
 					   float x, float y, float z,
@@ -410,6 +421,11 @@ void lqMapOverAllObjectsInLocalityClipped (lqInternalDB* lq,
    we need to check for objects in the catch-all "other" bin which
    holds any object which are not inside the regular sub-bricks  */
 
+void lqMapOverAllOutsideObjects (lqInternalDB* lq, 
+                                 float x, float y, float z,
+                                 float radius,
+                                 lqCallBackFunction func,
+                                 void* clientQueryState);
 
 void lqMapOverAllOutsideObjects (lqInternalDB* lq, 
 				 float x, float y, float z,
@@ -518,6 +534,10 @@ typedef struct lqFindNearestState
 
 
 void lqFindNearestHelper (void* clientObject,
+                          float distanceSquared,
+                          void* clientQueryState);
+
+void lqFindNearestHelper (void* clientObject,
 			  float distanceSquared,
 			  void* clientQueryState)
 {
@@ -574,6 +594,9 @@ void* lqFindNearestNeighborWithinRadius (lqInternalDB* lq,
 /* ------------------------------------------------------------------ */
 /* internal helper function */
 
+void lqMapOverAllObjectsInBin (lqClientProxy* binProxyList, 
+                               lqCallBackFunction func,
+                               void* clientQueryState);
 
 void lqMapOverAllObjectsInBin (lqClientProxy* binProxyList, 
 			       lqCallBackFunction func,
@@ -611,6 +634,10 @@ void lqMapOverAllObjects (lqInternalDB* lq,
    average over all bins is a constant (population/bincount))  */
 
 #ifndef NO_LQ_BIN_STATS
+
+void lqgbpsCounter (void* clientObject    USUSED_PARAM,
+                    float distanceSquared USUSED_PARAM,
+                    void* clientQueryState);
 
 void lqgbpsCounter (void* clientObject    USUSED_PARAM,
                     float distanceSquared USUSED_PARAM,

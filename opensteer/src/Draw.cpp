@@ -131,10 +131,10 @@ namespace {
     
     inline void iDrawLine (const OpenSteer::Vec3& startPoint,
                            const OpenSteer::Vec3& endPoint,
-                           const OpenSteer::Vec3& color)
+                           const OpenSteer::Color& color)
     {
         OpenSteer::warnIfInUpdatePhase ("iDrawLine");
-        glColor3f (color.x, color.y, color.z);
+        glColor3f (color.r(), color.g(), color.b());
         glBegin (GL_LINES);
         glVertexVec3 (startPoint);
         glVertexVec3 (endPoint);
@@ -147,10 +147,10 @@ namespace {
     inline void iDrawTriangle (const OpenSteer::Vec3& a,
                                const OpenSteer::Vec3& b,
                                const OpenSteer::Vec3& c,
-                               const OpenSteer::Vec3& color)
+                               const OpenSteer::Color& color)
     {
         OpenSteer::warnIfInUpdatePhase ("iDrawTriangle");
-        glColor3f (color.x, color.y, color.z);
+        glColor3f (color.r(), color.g(), color.b());
         glBegin (GL_TRIANGLES);
         {
             OpenSteer::glVertexVec3 (a);
@@ -168,10 +168,10 @@ namespace {
                                  const OpenSteer::Vec3& b,
                                  const OpenSteer::Vec3& c,
                                  const OpenSteer::Vec3& d,
-                                 const OpenSteer::Vec3& color)
+                                 const OpenSteer::Color& color)
     {
         OpenSteer::warnIfInUpdatePhase ("iDrawQuadrangle");
-        glColor3f (color.x, color.y, color.z);
+        glColor3f (color.r(), color.g(), color.b());
         glBegin (GL_QUADS);
         {
             OpenSteer::glVertexVec3 (a);
@@ -267,7 +267,7 @@ OpenSteer::warnIfInUpdatePhase2 (const char* name)
 void 
 OpenSteer::drawLine (const Vec3& startPoint,
                      const Vec3& endPoint,
-                     const Vec3& color)
+                     const Color& color)
 {
     iDrawLine (startPoint, endPoint, color);
 }
@@ -284,11 +284,11 @@ OpenSteer::drawLine (const Vec3& startPoint,
 void 
 OpenSteer::drawLineAlpha (const Vec3& startPoint,
                           const Vec3& endPoint,
-                          const Vec3& color,
+                          const Color& color,
                           const float alpha)
 {
     warnIfInUpdatePhase ("drawLineAlpha");
-    glColor4f (color.x, color.y, color.z, alpha);
+    glColor4f (color.r(), color.g(), color.b(), alpha);
     glBegin (GL_LINES);
     OpenSteer::glVertexVec3 (startPoint);
     OpenSteer::glVertexVec3 (endPoint);
@@ -303,7 +303,7 @@ void
 OpenSteer::drawTriangle (const Vec3& a,
                          const Vec3& b,
                          const Vec3& c,
-                         const Vec3& color)
+                         const Color& color)
 {
     iDrawTriangle (a, b, c, color);
 }
@@ -318,7 +318,7 @@ OpenSteer::drawQuadrangle (const Vec3& a,
                            const Vec3& b,
                            const Vec3& c,
                            const Vec3& d,
-                           const Vec3& color)
+                           const Color& color)
 {
     iDrawQuadrangle (a, b, c, d, color);
 }
@@ -332,7 +332,7 @@ OpenSteer::drawQuadrangle (const Vec3& a,
 void 
 OpenSteer::drawXZWideLine (const Vec3& startPoint,
                            const Vec3& endPoint,
-                           const Vec3& color,
+                           const Color& color,
                            float width)
 {
     warnIfInUpdatePhase ("drawXZWideLine");
@@ -366,7 +366,7 @@ void
 OpenSteer::drawCircleOrDisk (const float radius,
                              const Vec3& axis,
                              const Vec3& center,
-                             const Vec3& color,
+                             const Color& color,
                              const int segments,
                              const bool filled,
                              const bool in3d)
@@ -392,7 +392,7 @@ OpenSteer::drawCircleOrDisk (const float radius,
     const float step = (2 * OPENSTEER_M_PI) / segments;
 
     // set drawing color
-    glColor3f (color.x, color.y, color.z);
+    glColor3f (color.r(), color.g(), color.b());
 
     // begin drawing a triangle fan (for disk) or line loop (for circle)
     glBegin (filled ? GL_TRIANGLE_FAN : GL_LINE_LOOP);
@@ -428,7 +428,7 @@ void
 OpenSteer::draw3dCircleOrDisk (const float radius,
                                const Vec3& center,
                                const Vec3& axis,
-                               const Vec3& color,
+                               const Color& color,
                                const int segments,
                                const bool filled)
 {
@@ -444,7 +444,7 @@ OpenSteer::draw3dCircleOrDisk (const float radius,
 void 
 OpenSteer::drawXZCircleOrDisk (const float radius,
                                const Vec3& center,
-                               const Vec3& color,
+                               const Color& color,
                                const int segments,
                                const bool filled)
 {
@@ -468,7 +468,7 @@ OpenSteer::drawXZArc (const Vec3& start,
                       const Vec3& center,
                       const float arcLength,
                       const int segments,
-                      const Vec3& color)
+                      const Color& color)
 {
     warnIfInUpdatePhase ("drawXZArc");
 
@@ -484,7 +484,7 @@ OpenSteer::drawXZArc (const Vec3& start,
     const float step = arcAngle / segments;
 
     // set drawing color
-    glColor3f (color.x, color.y, color.z);
+    glColor3f (color.r(), color.g(), color.b());
 
     // begin drawing a series of connected line segments
     glBegin (GL_LINE_STRIP);
@@ -511,7 +511,7 @@ OpenSteer::drawXZArc (const Vec3& start,
 
 void 
 OpenSteer::drawBasic2dCircularVehicle (const AbstractVehicle& vehicle,
-                                       const Vec3& color)
+                                       const Color& color)
 {
     // "aspect ratio" of body (as seen from above)
     const float x = 0.5f;
@@ -546,7 +546,7 @@ OpenSteer::drawBasic2dCircularVehicle (const AbstractVehicle& vehicle,
 
 void 
 OpenSteer::drawBasic3dSphericalVehicle (const AbstractVehicle& vehicle,
-                                        const Vec3& color)
+                                        const Color& color)
 {
     // "aspect ratio" of body (as seen from above)
     const float x = 0.5f;
@@ -572,11 +572,11 @@ OpenSteer::drawBasic3dSphericalVehicle (const AbstractVehicle& vehicle,
     // colors
     const float j = +0.05f;
     const float k = -0.05f;
-    const Vec3 color1 = color + Vec3 (j, j, k);
-    const Vec3 color2 = color + Vec3 (j, k, j);
-    const Vec3 color3 = color + Vec3 (k, j, j);
-    const Vec3 color4 = color + Vec3 (k, j, k);
-    const Vec3 color5 = color + Vec3 (k, k, j);
+    const Color color1 = color + Color(j, j, k);
+    const Color color2 = color + Color(j, k, j);
+    const Color color3 = color + Color(k, j, j);
+    const Color color4 = color + Color(k, j, k);
+    const Color color5 = color + Color(k, k, j);
 
     // draw body
     iDrawTriangle (nose,  side1,  top,    color1);  // top, side 1
@@ -593,7 +593,7 @@ OpenSteer::drawBasic3dSphericalVehicle (const AbstractVehicle& vehicle,
 
 void 
 OpenSteer::drawBasic3dSphericalVehicle (drawTriangleRoutine draw, const AbstractVehicle& vehicle,
-                                        const Vec3& color)
+                                        const Color& color)
 {
     // "aspect ratio" of body (as seen from above)
     const float x = 0.5f;
@@ -619,11 +619,11 @@ OpenSteer::drawBasic3dSphericalVehicle (drawTriangleRoutine draw, const Abstract
     // colors
     const float j = +0.05f;
     const float k = -0.05f;
-    const Vec3 color1 = color + Vec3 (j, j, k);
-    const Vec3 color2 = color + Vec3 (j, k, j);
-    const Vec3 color3 = color + Vec3 (k, j, j);
-    const Vec3 color4 = color + Vec3 (k, j, k);
-    const Vec3 color5 = color + Vec3 (k, k, j);
+    const Color color1 = color + Color (j, j, k);
+    const Color color2 = color + Color (j, k, j);
+    const Color color3 = color + Color (k, j, j);
+    const Color color4 = color + Color (k, j, k);
+    const Color color5 = color + Color (k, k, j);
 
     // draw body
     draw (nose,  side1,  top,    color1);  // top, side 1
@@ -652,8 +652,8 @@ void
 OpenSteer::drawXZCheckerboardGrid (const float size,
                                    const int subsquares,
                                    const Vec3& center,
-                                   const Vec3& color1,
-                                   const Vec3& color2)
+                                   const Color& color1,
+                                   const Color& color2)
 {
     const float half = size/2;
     const float spacing = size / subsquares;
@@ -700,7 +700,7 @@ void
 OpenSteer::drawXZLineGrid (const float size,
                            const int subsquares,
                            const Vec3& center,
-                           const Vec3& color)
+                           const Color& color)
 {
     warnIfInUpdatePhase ("drawXZLineGrid");
 
@@ -708,7 +708,7 @@ OpenSteer::drawXZLineGrid (const float size,
     const float spacing = size / subsquares;
 
     // set grid drawing color
-    glColor3f (color.x, color.y, color.z);
+    glColor3f (color.r(), color.g(), color.b());
 
     // draw a square XZ grid with the given size and line count
     glBegin (GL_LINES);
@@ -740,7 +740,7 @@ OpenSteer::drawXZLineGrid (const float size,
 void 
 OpenSteer::drawAxes  (const AbstractLocalSpace& ls,
                       const Vec3& size,
-                      const Vec3& color)
+                      const Color& color)
 {
     const Vec3 x (size.x / 2, 0, 0);
     const Vec3 y (0, size.y / 2, 0);
@@ -764,7 +764,7 @@ OpenSteer::drawAxes  (const AbstractLocalSpace& ls,
 void 
 OpenSteer::drawBoxOutline  (const AbstractLocalSpace& localSpace,
                             const Vec3& size,
-                            const Vec3& color)
+                            const Color& color)
 {
     const Vec3 s = size / 2.0f;  // half of main diagonal
 
@@ -851,7 +851,7 @@ OpenSteer::drawCameraLookAt (const Vec3& cameraPosition,
 void 
 OpenSteer::draw2dLine (const Vec3& startPoint,
                        const Vec3& endPoint,
-                       const Vec3& color, 
+                       const Color& color, 
                        float w, float h)
 {
     const GLint originalMatrixMode = begin2dDrawing (w, h);
@@ -959,7 +959,7 @@ namespace {
 
         static void addToBuffer (const OpenSteer::Vec3& s,
                                  const OpenSteer::Vec3& e,
-                                 const OpenSteer::Vec3& c)
+                                 const OpenSteer::Color& c)
         {
             DeferredLine dl;
             dl.startPoint = s;
@@ -990,7 +990,7 @@ namespace {
 
         OpenSteer::Vec3 startPoint;
         OpenSteer::Vec3 endPoint;
-        OpenSteer::Vec3 color;
+        OpenSteer::Color color;
 
         static DeferredLines lines;
     };
@@ -1005,7 +1005,7 @@ DeferredLine::DeferredLines DeferredLine::lines;
 void 
 OpenSteer::deferredDrawLine (const Vec3& startPoint,
                              const Vec3& endPoint,
-                             const Vec3& color)
+                             const Color& color)
 {
     DeferredLine::addToBuffer (startPoint, endPoint, color);
 }
@@ -1035,7 +1035,7 @@ namespace {
         static void addToBuffer (const float radius,
                                  const OpenSteer::Vec3& axis,
                                  const OpenSteer::Vec3& center,
-                                 const OpenSteer::Vec3& color,
+                                 const OpenSteer::Color& color,
                                  const int segments,
                                  const bool filled,
                                  const bool in3d)
@@ -1074,7 +1074,7 @@ namespace {
         float radius;
         OpenSteer::Vec3 axis;
         OpenSteer::Vec3 center;
-        OpenSteer::Vec3 color;
+        OpenSteer::Color color;
         int segments;
         bool filled;
         bool in3d;
@@ -1093,7 +1093,7 @@ void
 OpenSteer::deferredDrawCircleOrDisk (const float radius,
                                      const Vec3& axis,
                                      const Vec3& center,
-                                     const Vec3& color,
+                                     const Color& color,
                                      const int segments,
                                      const bool filled,
                                      const bool in3d)
@@ -1159,7 +1159,7 @@ OpenSteer::drawAllDeferredCirclesOrDisks (void)
 //                              const Vec3 color)
 // {
 //     // set text color and raster position
-//     glColor3f (color.x, color.y, color.z);
+//     glColor3f (color.r(), color.g(), color.b());
 //     glRasterPos3f (location.x, location.y, location.z);
 
 //     // loop over each character in string (until null terminator)
@@ -1273,7 +1273,7 @@ OpenSteer::drawAllDeferredCirclesOrDisks (void)
 //                              const Vec3 color)
 // {
 //     // set text color and raster position
-//     glColor3f (color.x, color.y, color.z);
+//     glColor3f (color.r(), color.g(), color.b());
 //     glRasterPos3f (location.x, location.y, location.z);
 
 //     // loop over each character in string (until null terminator)
@@ -1389,7 +1389,7 @@ OpenSteer::drawAllDeferredCirclesOrDisks (void)
 //                              const Vec3 color)
 // {
 //     // set text color and raster position
-//     glColor3f (color.x, color.y, color.z);
+//     glColor3f (color.r(), color.g(), color.b());
 //     glRasterPos3f (location.x, location.y, location.z);
 
 //     // switch into 2d screen space in case we need to handle a new-line
@@ -1446,7 +1446,7 @@ OpenSteer::drawAllDeferredCirclesOrDisks (void)
 //                              const Vec3 color)
 // {
 //     // set text color and raster position
-//     glColor3f (color.x, color.y, color.z);
+//     glColor3f (color.r(), color.g(), color.b());
 //     glRasterPos3f (location.x, location.y, location.z);
 
 //     // switch into 2d screen space in case we need to handle a new-line
@@ -1499,14 +1499,14 @@ OpenSteer::drawAllDeferredCirclesOrDisks (void)
 void 
 OpenSteer::draw2dTextAt3dLocation (const char& text,
                                    const Vec3& location,
-                                   const Vec3& color, float w, float h)
+                                   const Color& color, float w, float h)
 {
     // XXX NOTE: "it would be nice if" this had a 2d screenspace offset for
     // the origin of the text relative to the screen space projection of
     // the 3d point.
 
     // set text color and raster position
-    glColor3f (color.x, color.y, color.z);
+    glColor3f (color.r(), color.g(), color.b());
     glRasterPos3f (location.x, location.y, location.z);
 
     // switch into 2d screen space in case we need to handle a new-line
@@ -1548,7 +1548,7 @@ OpenSteer::draw2dTextAt3dLocation (const char& text,
 void 
 OpenSteer::draw2dTextAt3dLocation (const std::ostringstream& text,
                                    const Vec3& location,
-                                   const Vec3& color, float w, float h)
+                                   const Color& color, float w, float h)
 {
     draw2dTextAt3dLocation (*text.str().c_str(), location, color, w, h);
 }
@@ -1557,7 +1557,7 @@ OpenSteer::draw2dTextAt3dLocation (const std::ostringstream& text,
 void 
 OpenSteer::draw2dTextAt2dLocation (const char& text,
                                    const Vec3 location,
-                                   const Vec3 color, float w, float h)
+                                   const Color& color, float w, float h)
 {
     const GLint originalMatrixMode = begin2dDrawing (w, h);
 
@@ -1572,7 +1572,7 @@ OpenSteer::draw2dTextAt2dLocation (const char& text,
 void 
 OpenSteer::draw2dTextAt2dLocation (const std::ostringstream& text,
                                    const Vec3 location,
-                                   const Vec3 color, float w, float h)
+                                   const Color& color, float w, float h)
 {
     draw2dTextAt2dLocation (*text.str().c_str(), location, color, w, h);
 }
@@ -1600,7 +1600,7 @@ namespace OpenSteer {
         float radius;
         float maxEdgeLength;
         bool filled;
-        Vec3 color;
+        Color color;
         bool drawFrontFacing;
         bool drawBackFacing;
         Vec3 viewpoint;
@@ -1623,7 +1623,7 @@ namespace OpenSteer {
                           const float _radius,
                           const float _maxEdgeLength,
                           const bool _filled,
-                          const Vec3& _color,
+                          const Color& _color,
                           const bool _drawFrontFacing,
                           const bool _drawBackFacing,
                           const Vec3& _viewpoint)
@@ -1781,7 +1781,7 @@ namespace OpenSteer {
         // drawing according to an arbitary but reproducable criterion.
         void drawMeshedTriangleLine (const Vec3& a, 
                                      const Vec3& b,
-                                     const Vec3& color) const
+                                     const Color& color) const
         {
             if (a.x != b.x)
             {
@@ -1808,7 +1808,7 @@ namespace OpenSteer {
                      const float radius,
                      const float maxEdgeLength,
                      const bool filled,
-                     const Vec3& color,
+                     const Color& color,
                      const bool drawFrontFacing,
                      const bool drawBackFacing,
                      const Vec3& viewpoint)
@@ -1823,7 +1823,7 @@ namespace OpenSteer {
     void drawSphereObstacle (const SphereObstacle& so,
                              const float maxEdgeLength,
                              const bool filled,
-                             const Vec3& color,
+                             const Color& color,
                              const Vec3& viewpoint)
     {
         bool front, back;

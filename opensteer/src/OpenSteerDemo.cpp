@@ -43,6 +43,8 @@
 
 #include "OpenSteer/OpenSteerDemo.h"
 #include "OpenSteer/Annotation.h"
+#include "OpenSteer/Color.h"
+#include "OpenSteer/Vec3.h"
 
 #include <algorithm>
 #include <sstream>
@@ -606,14 +608,14 @@ OpenSteer::OpenSteerDemo::gridUtility (const Vec3& gridTarget)
                            (round (gridTarget.z * 0.5f) * 2));
 
     // colors for checkboard
-    const Vec3 gray1 = grayColor (0.27f);
-    const Vec3 gray2 = grayColor (0.30f);
+    const Color gray1(0.27f);
+    const Color gray2(0.30f);
 
     // draw 50x50 checkerboard grid with 50 squares along each side
     drawXZCheckerboardGrid (50, 50, gridCenter, gray1, gray2);
 
     // alternate style
-    // drawXZLineGrid (50, 50, gridCenter, black);
+    // drawXZLineGrid (50, 50, gridCenter, gBlack);
 }
 
 
@@ -650,7 +652,7 @@ OpenSteer::OpenSteerDemo::circleHighlightVehicleUtility (const AbstractVehicle& 
 
 void 
 OpenSteer::OpenSteerDemo::drawBoxHighlightOnVehicle (const AbstractVehicle& v,
-                                               const Vec3 color)
+                                               const Color& color)
 {
     if (&v)
     {
@@ -670,7 +672,7 @@ OpenSteer::OpenSteerDemo::drawBoxHighlightOnVehicle (const AbstractVehicle& v,
 void 
 OpenSteer::OpenSteerDemo::drawCircleHighlightOnVehicle (const AbstractVehicle& v,
                                                   const float radiusMultiplier,
-                                                  const Vec3 color)
+                                                  const Color& color)
 {
     if (&v)
     {
@@ -841,7 +843,9 @@ namespace {
     initGL (void)
     {
         // background = dark gray
+        // @todo bknafla Changed the background color to make some screenshots.
         glClearColor (0.3f, 0.3f, 0.3f, 0);
+        // glClearColor( 1.0f, 1.0f, 1.0f, 0.0f );
 
         // enable depth buffer clears
         glClearDepth (1.0f);
@@ -1170,7 +1174,7 @@ namespace {
                     // display message in lower left corner of window
                     // (draw in red if the instantaneous usage is 100% or more)
                     const float usage = OpenSteer::OpenSteerDemo::clock.getUsage ();
-                    const OpenSteer::Vec3 color = (usage >= 100) ? OpenSteer::gRed : OpenSteer::gWhite;
+                    const OpenSteer::Color color = (usage >= 100) ? OpenSteer::gRed : OpenSteer::gWhite;
                     draw2dTextAt2dLocation (xxxStr, sp, color, OpenSteer::drawGetWindowWidth(), OpenSteer::drawGetWindowHeight());
                 }
             }
