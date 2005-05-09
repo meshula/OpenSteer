@@ -40,6 +40,8 @@
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/OpenSteerDemo.h"
 #include "OpenSteer/Proximity.h"
+#include "OpenSteer/Color.h"
+#include "OpenSteer/UnusedParameter.h"
 
 #ifdef WIN32
 // Windows defines these as macros :(
@@ -132,6 +134,8 @@ public:
     // per frame simulation update
     void update (const float currentTime, const float elapsedTime)
     {
+        OPENSTEER_UNUSED_PARAMETER(currentTime);
+        
         // steer to flock and avoid obstacles if any
         applySteeringForce (steerToFlock (), elapsedTime);
 
@@ -297,7 +301,7 @@ public:
         const Vec3 FL = position() + boxFront + boxSide;
         const Vec3 BR = position()            - boxSide;
         const Vec3 BL = position()            + boxSide;
-        const Vec3 white (1,1,1);
+        const Color white (1,1,1);
         annotationLine (FR, FL, white);
         annotationLine (FL, BL, white);
         annotationLine (BL, BR, white);
@@ -593,15 +597,15 @@ public:
     }
 
     class SO : public SphereObstacle
-    {void draw (const bool filled, const Vec3& color, const Vec3& vp) const
+    {void draw (const bool filled, const Color& color, const Vec3& vp) const
         {drawSphereObstacle (*this, 10.0f, filled, color, vp);}};
 
     class RO : public RectangleObstacle
-    {void draw (const bool, const Vec3& color, const Vec3&) const
+    {void draw (const bool, const Color& color, const Vec3&) const
         {tempDrawRectangle (*this, color);}};
 
     class BO : public BoxObstacle
-    {void draw (const bool, const Vec3& color, const Vec3&) const
+    {void draw (const bool, const Color& color, const Vec3&) const
         {tempDrawBox (*this, color);}};
 
     RO bigRectangle;
@@ -718,14 +722,14 @@ public:
         {
             (**o).draw (false, // draw in wireframe
                         ((*o == &insideBigSphere) ?
-                         Vec3 (0.2f, 0.2f, 0.4f) :
-                         Vec3 (0.1f, 0.1f, 0.2f)),
+                         Color (0.2f, 0.2f, 0.4f) :
+                         Color (0.1f, 0.1f, 0.2f)),
                         OpenSteerDemo::camera.position ());
         }
     }
 
 
-    static void tempDrawRectangle (const RectangleObstacle& rect, const Vec3 color)
+    static void tempDrawRectangle (const RectangleObstacle& rect, const Color& color)
     {
         float w = rect.width / 2;
         float h = rect.height / 2;
@@ -742,7 +746,7 @@ public:
     }
 
 
-    static void tempDrawBox (const BoxObstacle& box, const Vec3 color)
+    static void tempDrawBox (const BoxObstacle& box, const Color& color)
     {
         const float w = box.width / 2;
         const float h = box.height / 2;

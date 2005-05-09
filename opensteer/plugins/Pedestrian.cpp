@@ -43,7 +43,7 @@
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/OpenSteerDemo.h"
 #include "OpenSteer/Proximity.h"
-
+#include "OpenSteer/Color.h"
 
 
 
@@ -154,7 +154,7 @@ public:
         // reverse direction when we reach an endpoint
         if (gUseDirectedPathFollowing)
         {
-            const Vec3 darkRed (0.7f, 0, 0);
+            const Color darkRed (0.7f, 0, 0);
 
             if (Vec3::distance (position(), gEndpoint0) < path->radius)
             {
@@ -266,10 +266,10 @@ public:
                                 const Vec3& target,
                                 const float outside)
     {
-        const Vec3 yellow (1, 1, 0);
-        const Vec3 lightOrange (1.0f, 0.5f, 0.0f);
-        const Vec3 darkOrange  (0.6f, 0.3f, 0.0f);
-        const Vec3 yellowOrange (1.0f, 0.75f, 0.0f);
+        const Color yellow (1, 1, 0);
+        const Color lightOrange (1.0f, 0.5f, 0.0f);
+        const Color darkOrange  (0.6f, 0.3f, 0.0f);
+        const Color yellowOrange (1.0f, 0.75f, 0.0f);
 
         // draw line from our position to our predicted future position
         annotationLine (position(), future, yellow);
@@ -293,9 +293,9 @@ public:
     {
         // draw the word "Ouch!" above colliding vehicles
         const float headOn = forward().dot(other.forward()) < 0;
-        const Vec3 green (0.4f, 0.8f, 0.1f);
-        const Vec3 red (1, 0.1f, 0);
-        const Vec3 color = headOn ? red : green;
+        const Color green (0.4f, 0.8f, 0.1f);
+        const Color red (1, 0.1f, 0);
+        const Color color = headOn ? red : green;
         const char* string = headOn ? "OUCH!" : "pardon me";
         const Vec3 location = position() + Vec3 (0, 0.5f, 0);
         if (OpenSteer::annotationIsOn())
@@ -309,7 +309,7 @@ public:
                                 const Vec3& ourFuture,
                                 const Vec3& threatFuture)
     {
-        const Vec3 green (0.15f, 0.6f, 0.0f);
+        const Color green (0.15f, 0.6f, 0.0f);
 
         annotationLine (position(), ourFuture, green);
         annotationLine (threat.position(), threatFuture, green);
@@ -329,7 +329,7 @@ public:
         const Vec3 FL = position() + boxFront + boxSide;
         const Vec3 BR = position()            - boxSide;
         const Vec3 BL = position()            + boxSide;
-        const Vec3 white (1,1,1);
+        const Color white (1,1,1);
         annotationLine (FR, FL, white);
         annotationLine (FL, BL, white);
         annotationLine (BL, BR, white);
@@ -532,7 +532,7 @@ public:
         // textual annotation for selected Pedestrian
         if (OpenSteerDemo::selectedVehicle && OpenSteer::annotationIsOn())
         {
-            const Vec3 color (0.8f, 0.8f, 1.0f);
+            const Color color (0.8f, 0.8f, 1.0f);
             const Vec3 textOffset (0, 0.25f, 0);
             const Vec3 textPosition = selected.position() + textOffset;
             const Vec3 camPosition = OpenSteerDemo::camera.position();
@@ -593,7 +593,7 @@ public:
                     sn << "#"
                        << ((Pedestrian*)vehicle)->serialNumber
                        << std::ends;
-                    const Vec3 textColor (0.8f, 1, 0.8f);
+                    const Color textColor (0.8f, 1, 0.8f);
                     const Vec3 textOffset (0, 0.25f, 0);
                     const Vec3 textPos = vehicle->position() + textOffset;
                     draw2dTextAt3dLocation (sn, textPos, textColor, drawGetWindowWidth(), drawGetWindowHeight());

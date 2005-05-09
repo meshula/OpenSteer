@@ -38,7 +38,7 @@
 
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/OpenSteerDemo.h"
-
+#include "OpenSteer/Color.h"
 
 
 using namespace OpenSteer;
@@ -74,7 +74,7 @@ public:
     }
 
     // for draw method
-    Vec3 bodyColor;
+    Color bodyColor;
 };
 
 

@@ -43,7 +43,8 @@
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/OpenSteerDemo.h"
 #include "OpenSteer/Draw.h"
-
+#include "OpenSteer/Color.h"
+#include "OpenSteer/UnusedParameter.h"
 
 
 using namespace OpenSteer;
@@ -74,7 +75,7 @@ public:
         Vec3 b,c;
         b = Vec3(m_min.x, 0, m_max.z);
         c = Vec3(m_max.x, 0, m_min.z);
-        Vec3 color(1,1,0);
+        Color color(1.0f,1.0f,0.0f);
         drawLineAlpha(m_min, b, color, 1.0f);
         drawLineAlpha(b, m_max, color, 1.0f);
         drawLineAlpha(m_max, c, color, 1.0f);
@@ -125,6 +126,8 @@ public:
     }
 
     void kick(Vec3 dir, const float elapsedTime){
+        OPENSTEER_UNUSED_PARAMETER(elapsedTime);
+        
         setSpeed(dir.length());
         regenerateOrthonormalBasis(dir);
     }
@@ -132,7 +135,7 @@ public:
     // draw this character/vehicle into the scene
     void draw (void)
     {
-        drawBasic2dCircularVehicle (*this, Vec3(0,1,0));
+        drawBasic2dCircularVehicle (*this, Color(0.0f,1.0f,0.0f));
         drawTrail ();
     }
 
@@ -187,7 +190,7 @@ public:
         else
             {
             float distHomeToBall = Vec3::distance (m_home, m_Ball->position());
-            if( distHomeToBall < 12)
+            if( distHomeToBall < 12.0f)
                 {
                 // go for ball if I'm on the 'right' side of the ball
                     if( b_ImTeamA ? position().x > m_Ball->position().x : position().x < m_Ball->position().x)
@@ -197,14 +200,14 @@ public:
                     }
                 else
                     {
-                    if( distHomeToBall < 12)
+                    if( distHomeToBall < 12.0f)
                         {
                         float Z = m_Ball->position().z - position().z > 0 ? -1.0f : 1.0f;
-                        Vec3 behindBall = m_Ball->position() + (b_ImTeamA ? Vec3(2,0,Z) : Vec3(-2,0,Z));
+                        Vec3 behindBall = m_Ball->position() + (b_ImTeamA ? Vec3(2.0f,0.0f,Z) : Vec3(-2.0f,0.0f,Z));
                         Vec3 behindBallForce = xxxsteerForSeek(behindBall);
-                        annotationLine (position(), behindBall , Vec3(0,1,0));
+                        annotationLine (position(), behindBall , Color(0.0f,1.0f,0.0f));
                         Vec3 evadeTarget = xxxsteerForFlee(m_Ball->position());
-                        applySteeringForce (behindBallForce*10 + evadeTarget, elapsedTime);
+                        applySteeringForce (behindBallForce*10.0f + evadeTarget, elapsedTime);
                         }
                     }
                 }
@@ -221,7 +224,7 @@ public:
     // draw this character/vehicle into the scene
     void draw (void)
     {
-        drawBasic2dCircularVehicle (*this, b_ImTeamA ? Vec3(1,0,0):Vec3(0,0,1));
+        drawBasic2dCircularVehicle (*this, b_ImTeamA ? Color(1.0f,0.0f,0.0f):Color(0.0f,0.0f,1.0f));
         drawTrail ();
     }
     // per-instance reference to its group
@@ -323,12 +326,12 @@ public:
         {
             std::ostringstream annote;
             annote << "Red: "<< m_redScore;
-            draw2dTextAt3dLocation (annote, Vec3(23,0,0), Vec3(1,0.7f,0.7f), drawGetWindowWidth(), drawGetWindowHeight());
+            draw2dTextAt3dLocation (annote, Vec3(23,0,0), Color(1.0f,0.7f,0.7f), drawGetWindowWidth(), drawGetWindowHeight());
         }
         {
             std::ostringstream annote;
             annote << "Blue: "<< m_blueScore;
-            draw2dTextAt3dLocation (annote, Vec3(-23,0,0), Vec3(0.7f,0.7f,1), drawGetWindowWidth(), drawGetWindowHeight());
+            draw2dTextAt3dLocation (annote, Vec3(-23,0,0), Color(0.7f,0.7f,1.0f), drawGetWindowWidth(), drawGetWindowHeight());
         }
 
         // textual annotation (following the test vehicle's screen position)

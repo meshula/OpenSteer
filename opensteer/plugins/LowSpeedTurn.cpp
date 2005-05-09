@@ -43,7 +43,7 @@
 #include <sstream>
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/OpenSteerDemo.h"
-
+#include "OpenSteer/Color.h"
 
 
 using namespace OpenSteer;
@@ -197,7 +197,7 @@ public:
             agent.draw ();
 
             // display speed near agent's screen position
-            const Vec3 textColor (0.8f, 0.8f, 1.0f);
+            const Color textColor (0.8f, 0.8f, 1.0f);
             const Vec3 textOffset (0, 0.25f, 0);
             const Vec3 textPosition = agent.position() + textOffset;
             std::ostringstream annote;

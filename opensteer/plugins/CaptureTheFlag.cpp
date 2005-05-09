@@ -55,6 +55,7 @@
 #include <sstream>
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/OpenSteerDemo.h"
+#include "OpenSteer/Color.h"
 
 using namespace OpenSteer;
 
@@ -94,7 +95,7 @@ public:
     enum seekerState {running, tagged, atGoal};
 
     // for draw method
-    Vec3 bodyColor;
+    Color bodyColor;
 
     // xxx store steer sub-state for anotation
     bool avoiding;
@@ -172,9 +173,9 @@ const float gMaxStartRadius = 40;
 
 const float gBrakingRate = 0.75;
 
-const Vec3 evadeColor     (0.6f, 0.6f, 0.3f); // annotation
-const Vec3 seekColor      (0.3f, 0.6f, 0.6f); // annotation
-const Vec3 clearPathColor (0.3f, 0.6f, 0.3f); // annotation
+const Color evadeColor     (0.6f, 0.6f, 0.3f); // annotation
+const Color seekColor      (0.3f, 0.6f, 0.6f); // annotation
+const Color clearPathColor (0.3f, 0.6f, 0.3f); // annotation
 
 const float gAvoidancePredictTimeMin  = 0.9f;
 const float gAvoidancePredictTimeMax  = 2;
@@ -328,7 +329,7 @@ void CtfEnemy::update (const float currentTime, const float elapsedTime)
         // annotation:
         if (gSeeker->state == tagged)
         {
-            const Vec3 color (0.8f, 0.5f, 0.5f);
+            const Color color (0.8f, 0.5f, 0.5f);
             annotationXZDisk (sumOfRadii,
                         (position() + gSeeker->position()) / 2,
                         color,
@@ -451,7 +452,7 @@ void CtfBase::annotateAvoidObstacle (const float minDistanceToCollision)
     const Vec3 FL = position() + boxFront + boxSide;
     const Vec3 BR = position()            - boxSide;
     const Vec3 BL = position()            + boxSide;
-    const Vec3 white (1,1,1);
+    const Color white (1,1,1);
     annotationLine (FR, FL, white);
     annotationLine (FL, BL, white);
     annotationLine (BL, BR, white);
@@ -955,17 +956,17 @@ public:
     void drawHomeBase (void)
     {
         const Vec3 up (0, 0.01f, 0);
-        const Vec3 atColor (0.3f, 0.3f, 0.5f);
-        const Vec3 noColor = gGray50;
+        const Color atColor (0.3f, 0.3f, 0.5f);
+        const Color noColor = gGray50;
         const bool reached = ctfSeeker->state == CtfSeeker::atGoal;
-        const Vec3 baseColor = (reached ? atColor : noColor);
+        const Color baseColor = (reached ? atColor : noColor);
         drawXZDisk (gHomeBaseRadius,    gHomeBaseCenter, baseColor, 40);
         drawXZDisk (gHomeBaseRadius/15, gHomeBaseCenter+up, gBlack, 20);
     }
 
     void drawObstacles (void)
     {
-        const Vec3 color (0.8f, 0.6f, 0.4f);
+        const Color color (0.8f, 0.6f, 0.4f);
         const SOG& allSO = CtfBase::allObstacles;
         for (SOI so = allSO.begin(); so != allSO.end(); so++)
         {

@@ -54,6 +54,8 @@
 #include <cassert>
 #include "OpenSteer/OpenSteerDemo.h"
 #include "OpenSteer/SimpleVehicle.h"
+#include "OpenSteer/Color.h"
+#include "OpenSteer/UnusedParameter.h"
 
 // to use local version of the map class
 #define OLDTERRAINMAP
@@ -163,7 +165,7 @@ public:
                     const Vec3 v3 (-xs/2, rockHeight, -zs/2);
                     const Vec3 v4 (-xs/2, rockHeight, +zs/2);
                     // const Vec3 redRockColor (0.6f, 0.1f, 0.0f);
-                    const Vec3 orangeRockColor (0.5f, 0.2f, 0.0f);
+                    const Color orangeRockColor (0.5f, 0.2f, 0.0f);
                     drawQuadrangle (g+v1, g+v2, g+v3, g+v4, orangeRockColor);
 
                     // pyramids
@@ -949,8 +951,8 @@ public:
             // QQQ should be a parameter of this method
             const Vec3 wingWidth = side() * wingSlope () * maxForward;
 
-            const Vec3 beforeColor (0.75f, 0.9f, 0.0f);  // for annotation
-            const Vec3 afterColor  (0.9f,  0.5f, 0.0f);  // for annotation
+            const Color beforeColor (0.75f, 0.9f, 0.0f);  // for annotation
+            const Color afterColor  (0.9f,  0.5f, 0.0f);  // for annotation
 
             for (int i=1; i<=wingScans; i++)
             {
@@ -1128,13 +1130,15 @@ public:
         if (scanIndex > 0)
         {
             const Vec3 hit = scanOrigin + (scanStep * (float) scanIndex);
-            annotationLine (scanOrigin, hit, Vec3 (0.7f, 0.3f, 0.3f));
+            annotationLine (scanOrigin, hit, Color (0.7f, 0.3f, 0.3f));
         }
     }
 
 
     void annotationNoteOAClauseName (const char* clauseName)
     {
+        OPENSTEER_UNUSED_PARAMETER(clauseName);
+        
         // does noting now, idea was that it might draw 2d text near vehicle
         // with this state information
         //
@@ -1190,8 +1194,8 @@ public:
                            const float arcAngle,
                            const int segments,
                            const float endRadiusChange,
-                           const Vec3& beforeColor,
-                           const Vec3& afterColor,
+                           const Color& beforeColor,
+                           const Color& afterColor,
                            Vec3& returnObstaclePosition)
     {
         // "spoke" is initially the vector from center to start,
@@ -1345,7 +1349,7 @@ public:
     //
     // this should be const, but easier for now to ignore that
 
-    Vec3 predictFuturePosition (const float predictionTime) /* const */
+    Vec3 predictFuturePosition (const float predictionTime) const
     {
         if (curvedSteering)
         {
@@ -1371,7 +1375,7 @@ public:
             const Vec3 prediction = newSpoke + center;
 
             // QQQ unify with annotatePathFollowing
-            const Vec3 futurePositionColor (0.5f, 0.5f, 0.6f);
+            const Color futurePositionColor (0.5f, 0.5f, 0.6f);
             annotationXZArc (position (), center, arcLength, 20, 
                              futurePositionColor);
             return prediction;
@@ -1390,7 +1394,7 @@ public:
     // a given (positive!) fraction of the arc's (circle's) circumference
     //
 
-    float arcLengthLimit (const float length, const float limit)
+    float arcLengthLimit (const float length, const float limit) const
     {
         if (length > 0)
             return minXXX (length, limit);
@@ -1607,7 +1611,7 @@ public:
                 const Vec3 c2 = p + corSide + corFront;
                 const Vec3 c3 = p - corSide + corFront;
                 const Vec3 c4 = p - corSide + corBack;
-                const Vec3 color = ((annotateAvoid!=Vec3::zero)?gRed:gYellow);
+                const Color color = ((annotateAvoid!=Vec3::zero)?gRed:gYellow);
                 annotationLine (c1, c2, color);
                 annotationLine (c2, c3, color);
                 annotationLine (c3, c4, color);
@@ -1616,7 +1620,7 @@ public:
                 const Vec3 wingWidth = side () * wingSlope () * corLength;
                 const Vec3 wingTipL = c2 + wingWidth;
                 const Vec3 wingTipR = c3 - wingWidth;
-                const Vec3 wingColor (gOrange);
+                const Color wingColor (gOrange);
                 if (wingDrawFlagL) annotationLine (c2, wingTipL, wingColor);
                 if (wingDrawFlagL) annotationLine (c1, wingTipL, wingColor);
                 if (wingDrawFlagR) annotationLine (c3, wingTipR, wingColor);
@@ -1627,7 +1631,7 @@ public:
         // annotate steering acceleration
         const Vec3 above = position () + Vec3 (0, 0.2f, 0);
         const Vec3 accel = smoothedAcceleration () * 5 / maxForce ();
-        const Vec3 aColor (0.4f, 0.4f, 0.8f);
+        const Color aColor (0.4f, 0.4f, 0.8f);
         annotationLine (above, above + accel, aColor);
     }
 
@@ -1635,7 +1639,7 @@ public:
     void draw (void)
     {
         // for now: draw as a 2d bounding box on the ground
-        Vec3                     bodyColor = gBlack;
+        Color                     bodyColor( gBlack );
         if (stuck)               bodyColor = gYellow;
         if (! bodyInsidePath ()) bodyColor = gOrange;
         if (collisionDetected)   bodyColor = gRed;
@@ -1652,7 +1656,7 @@ public:
                         bodyColor);
 
         // annotate trail
-        const Vec3 darkGreen (0, 0.6f, 0);
+        const Color darkGreen (0, 0.6f, 0);
         drawTrail (darkGreen, gBlack);
     }
 
@@ -1663,10 +1667,10 @@ public:
                                 const Vec3& target,
                                 const float outside)
     {
-        const Vec3 toTargetColor (gGreen * 0.6f);
-        const Vec3 insidePathColor (gCyan * 0.6f);
-        const Vec3 outsidePathColor (gBlue * 0.6f);
-        const Vec3 futurePositionColor (0.5f, 0.5f, 0.6f);
+        const Color toTargetColor (gGreen * 0.6f);
+        const Color insidePathColor (gCyan * 0.6f);
+        const Color outsidePathColor (gBlue * 0.6f);
+        const Color futurePositionColor (0.5f, 0.5f, 0.6f);
 
         // draw line from our position to our predicted future position
         if (!curvedSteering)
@@ -1714,7 +1718,7 @@ public:
                     const Vec3 v3 (-xs/2, rockHeight, -zs/2);
                     const Vec3 v4 (-xs/2, rockHeight, +zs/2);
                     // const Vec3 redRockColor (0.6f, 0.1f, 0.0f);
-                    const Vec3 orangeRockColor (0.5f, 0.2f, 0.0f);
+                    const Color orangeRockColor (0.5f, 0.2f, 0.0f);
                     drawQuadrangle (g+v1, g+v2, g+v3, g+v4, orangeRockColor);
 
                     // pyramids
@@ -1740,9 +1744,9 @@ public:
     // color in, certainly shouldn't be recomputing it each draw)
     void drawPath (void)
     {
-        const Vec3 pathColor (0, 0.5f, 0.5f);
-        const Vec3 sandColor (0.8f, 0.7f, 0.5f);
-        const Vec3 color = interpolate (0.1f, sandColor, pathColor);
+        const Color pathColor (0, 0.5f, 0.5f);
+        const Color sandColor (0.8f, 0.7f, 0.5f);
+        const Color color = interpolate (0.1f, sandColor, pathColor);
 
         const Vec3 down (0, -0.1f, 0);
         for (int i = 0; i < path->pointCount; i++)
@@ -2042,7 +2046,7 @@ public:
     // QQQ Presumably it would be better to get rid of this routine and
     // QQQ redesign the arguments of scanObstacleMap
     //
-    float nonZeroCurvatureQQQ (void)
+    float nonZeroCurvatureQQQ (void) const
     {
         const float c = curvature ();
         const float minCurvature = 1.0f / 100000.0f; // 100,000 meter radius
@@ -2111,7 +2115,7 @@ public:
                           const Vec3& center,
                           const float arcLength,
                           const int segments,
-                          const Vec3& color)
+                          const Color& color) const
     {
         // "spoke" is initially the vector from center to start,
         // it is then rotated around its tail
@@ -2306,7 +2310,7 @@ public:
                         Vec3 (+s, u, -s),
                         Vec3 (-s, u, -s),
                         Vec3 (-s, u, +s),
-                        Vec3 (0.8f, 0.7f, 0.5f)); // "sand"
+                        Color (0.8f, 0.7f, 0.5f)); // "sand"
 
         // draw map and path
         vehicle->drawMap ();
@@ -2392,7 +2396,7 @@ public:
         status << std::ends;
         const float h = drawGetWindowHeight ();
         const Vec3 screenLocation (10, h-50, 0);
-        const Vec3 color (0.15f, 0.15f, 0.5f);
+        const Color color (0.15f, 0.15f, 0.5f);
         draw2dTextAt2dLocation (status, screenLocation, color, drawGetWindowWidth(), drawGetWindowHeight());
 
         {
