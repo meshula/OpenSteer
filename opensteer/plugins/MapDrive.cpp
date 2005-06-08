@@ -73,6 +73,9 @@
 // Include OpenSteer::square, OpenSteer::clamp
 #include "OpenSteer/Utilities.h"
 
+// Include OpenSteer::size_t
+#include "OpenSteer/StandardTypes.h"
+
 
 
 // to use local version of the map class
@@ -85,8 +88,8 @@
 
 
 namespace {
-    template< class PathAlike, template< class T > class RadiusSwitch >
-    class PointToRadiusMapping : public RadiusSwitch< PathAlike >, public OpenSteer::DontExtractPathDistance {
+
+    class PointToRadiusMapping : public OpenSteer::DontExtractPathDistance {
     public:
         PointToRadiusMapping(): radius( 0.0f ) {}
         
@@ -94,7 +97,7 @@ namespace {
         void setPointOnPathBoundary( OpenSteer::Vec3 const&  ) {}
         void setRadius( float r ) { radius = r; }
         void setTangent( OpenSteer::Vec3 const& ) {}
-        void setSegmentIndex( typename PathAlike::size_type ) {}
+        void setSegmentIndex( OpenSteer::size_t ) {}
         void setDistancePointToPath( float  ) {}
         void setDistancePointToPathCenterLine( float ) {}
         void setDistanceOnPath( float  ) {}
@@ -104,8 +107,8 @@ namespace {
     };
     
     
-    template< class PathAlike, template< class T > class RadiusSwitch >
-    class PointToTangentMapping : public RadiusSwitch< PathAlike >, public OpenSteer::DontExtractPathDistance {
+    
+    class PointToTangentMapping : public OpenSteer::DontExtractPathDistance {
     public:
         PointToTangentMapping() : tangent( OpenSteer::Vec3( 0.0f, 0.0f, 0.0f ) ) {}
         
@@ -113,7 +116,7 @@ namespace {
         void setPointOnPathBoundary( OpenSteer::Vec3 const&  ) {}
         void setRadius( float ) {}
         void setTangent( OpenSteer::Vec3 const& t ) { tangent = t; }
-        void setSegmentIndex( typename PathAlike::size_type ) {}
+        void setSegmentIndex( OpenSteer::size_t ) {}
         void setDistancePointToPath( float  ) {}
         void setDistancePointToPathCenterLine( float ) {}
         void setDistanceOnPath( float  ) {}
@@ -124,8 +127,8 @@ namespace {
 
 
         
-    template< class PathAlike, template< class T > class RadiusSwitch >
-    class PointToBoundaryPointAndOutsideMapping : public RadiusSwitch< PathAlike >, public OpenSteer::DontExtractPathDistance {
+    
+    class PointToBoundaryPointAndOutsideMapping : public OpenSteer::DontExtractPathDistance {
     public:
         PointToBoundaryPointAndOutsideMapping() : pointOnPathBoundary( OpenSteer::Vec3( 0.0f, 0.0f, 0.0f ) ), distancePointToPathBoundary( 0.0f ) {}
         
@@ -133,7 +136,7 @@ namespace {
         void setPointOnPathBoundary( OpenSteer::Vec3 const& p ) { pointOnPathBoundary = p; }
         void setRadius( float ) {}
         void setTangent( OpenSteer::Vec3 const& ) {}
-        void setSegmentIndex( typename PathAlike::size_type ) {}
+        void setSegmentIndex( OpenSteer::size_t ) {}
         void setDistancePointToPath( float d ) { distancePointToPathBoundary = d; }
         void setDistancePointToPathCenterLine( float ) {}
         void setDistanceOnPath( float  ) {}
@@ -145,8 +148,8 @@ namespace {
 
 
         
-    template< class PathAlike, template< class T > class RadiusSwitch >
-    class PointToOutsideMapping : public RadiusSwitch< PathAlike >, public OpenSteer::DontExtractPathDistance {
+    
+    class PointToOutsideMapping : public OpenSteer::DontExtractPathDistance {
     public:
         PointToOutsideMapping() : distancePointToPathBoundary( 0.0f ) {}
         
@@ -154,7 +157,7 @@ namespace {
         void setPointOnPathBoundary( OpenSteer::Vec3 const&  ) {}
         void setRadius( float ) {}
         void setTangent( OpenSteer::Vec3 const& ) {}
-        void setSegmentIndex( typename PathAlike::size_type ) {}
+        void setSegmentIndex( OpenSteer::size_t ) {}
         void setDistancePointToPath( float d ) { distancePointToPathBoundary = d; }
         void setDistancePointToPathCenterLine( float ) {}
         void setDistanceOnPath( float  ) {}
@@ -164,30 +167,30 @@ namespace {
     };
 
 
-    template< class PathAlike, template< class T > class RadiusSwitch >
-        class PointToSegmentIndexMapping : public RadiusSwitch< PathAlike >, public OpenSteer::DontExtractPathDistance {
-        public:
-            PointToSegmentIndexMapping() : segmentIndex( 0 ) {}
-            
-            void setPointOnPathCenterLine( OpenSteer::Vec3 const& ) {}
-            void setPointOnPathBoundary( OpenSteer::Vec3 const&  ) {}
-            void setRadius( float ) {}
-            void setTangent( OpenSteer::Vec3 const& ) {}
-            void setSegmentIndex( typename PathAlike::size_type i ) { segmentIndex = i; }
-            void setDistancePointToPath( float  ) {}
-            void setDistancePointToPathCenterLine( float ) {}
-            void setDistanceOnPath( float  ) {}
-            void setDistanceOnSegment( float ) {}    
-            
-            typename PathAlike::size_type segmentIndex;
-        };
+    
+    class PointToSegmentIndexMapping : public OpenSteer::DontExtractPathDistance {
+    public:
+        PointToSegmentIndexMapping() : segmentIndex( 0 ) {}
+        
+        void setPointOnPathCenterLine( OpenSteer::Vec3 const& ) {}
+        void setPointOnPathBoundary( OpenSteer::Vec3 const&  ) {}
+        void setRadius( float ) {}
+        void setTangent( OpenSteer::Vec3 const& ) {}
+        void setSegmentIndex( OpenSteer::size_t i ) { segmentIndex = i; }
+        void setDistancePointToPath( float  ) {}
+        void setDistancePointToPathCenterLine( float ) {}
+        void setDistanceOnPath( float  ) {}
+        void setDistanceOnSegment( float ) {}    
+        
+        OpenSteer::size_t segmentIndex;
+    };
     
     /**
      * Maps @a point to @a pathway and extracts the radius at the mapping point.
      */
     float mapPointToRadius( OpenSteer::PolylineSegmentedPathwaySegmentRadii const& pathway, OpenSteer::Vec3 const& point ) {
-        PointToRadiusMapping< OpenSteer::PolylineSegmentedPathwaySegmentRadii, OpenSteer::HasSegmentRadii > mapping;
-        OpenSteer::mapPointToPathway( pathway, point, mapping );
+        PointToRadiusMapping mapping;
+        OpenSteer::mapPointToPathAlike( pathway, point, mapping );
         return mapping.radius;
     }
     
@@ -196,8 +199,8 @@ namespace {
      * point.
      */
     OpenSteer::Vec3 mapPointToTangent( OpenSteer::PolylineSegmentedPathwaySegmentRadii const& pathway, OpenSteer::Vec3 const& point ) {
-        PointToTangentMapping< OpenSteer::PolylineSegmentedPathwaySegmentRadii, OpenSteer::HasSegmentRadii > mapping;
-        OpenSteer::mapPointToPathway( pathway, point, mapping );
+        PointToTangentMapping mapping;
+        OpenSteer::mapPointToPathAlike( pathway, point, mapping );
         return mapping.tangent;
     }
     
@@ -236,8 +239,8 @@ namespace {
         assert( ( ( 1 == direction ) || ( -1 == direction ) ) && "direction must be 1 or -1." );
         typedef OpenSteer::PolylineSegmentedPathwaySegmentRadii::size_type size_type;
         
-        PointToSegmentIndexMapping< OpenSteer::PolylineSegmentedPathwaySegmentRadii, OpenSteer::HasSegmentRadii > mapping;
-        OpenSteer::mapPointToPathway( pathway, point, mapping );
+        PointToSegmentIndexMapping mapping;
+        OpenSteer::mapPointToPathAlike( pathway, point, mapping );
         size_type segmentIndex = mapping.segmentIndex;
         size_type nextSegmentIndex = segmentIndex;
         if ( 0 < direction ) {
@@ -326,8 +329,8 @@ namespace {
      * boundary and how far outside @a point is from the mapping point.
      */
     OpenSteer::Vec3 mapPointToBoundaryPointAndOutside( OpenSteer::PolylineSegmentedPathwaySegmentRadii const& pathway, OpenSteer::Vec3 const& point, float& outside ) {
-        PointToBoundaryPointAndOutsideMapping< OpenSteer::PolylineSegmentedPathwaySegmentRadii, OpenSteer::HasSegmentRadii > mapping;
-        OpenSteer::mapPointToPathway( pathway, point, mapping );
+        PointToBoundaryPointAndOutsideMapping mapping;
+        OpenSteer::mapPointToPathAlike( pathway, point, mapping );
         outside = mapping.distancePointToPathBoundary;
         return mapping.pointOnPathBoundary;
     }
@@ -338,8 +341,8 @@ namespace {
      * the mapping point on the path boundary.
      */
     float mapPointToOutside( OpenSteer::PolylineSegmentedPathwaySegmentRadii const& pathway, OpenSteer::Vec3 const& point ) {
-        PointToOutsideMapping< OpenSteer::PolylineSegmentedPathwaySegmentRadii, OpenSteer::HasSegmentRadii > mapping;
-        OpenSteer::mapPointToPathway( pathway, point, mapping);
+        PointToOutsideMapping mapping;
+        OpenSteer::mapPointToPathAlike( pathway, point, mapping);
         return mapping.distancePointToPathBoundary;    
     }
     
@@ -354,8 +357,8 @@ namespace {
 
     OpenSteer::PolylineSegmentedPathwaySegmentRadii::size_type mapPointToSegmentIndex(  OpenSteer::PolylineSegmentedPathwaySegmentRadii const& pathway, 
                                                                                         OpenSteer::Vec3 const& point ) {
-        PointToSegmentIndexMapping< OpenSteer::PolylineSegmentedPathwaySegmentRadii, OpenSteer::HasSegmentRadii > mapping;
-        OpenSteer::mapPointToPathway( pathway, point, mapping );
+        PointToSegmentIndexMapping mapping;
+        OpenSteer::mapPointToPathAlike( pathway, point, mapping );
         return mapping.segmentIndex;
     }
     

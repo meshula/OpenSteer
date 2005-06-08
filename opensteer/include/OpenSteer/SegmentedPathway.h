@@ -141,19 +141,27 @@ namespace OpenSteer {
         virtual Vec3 mapSegmentDistanceToTangent( size_type segmentIndex, 
                                                   float segmentDistance ) const = 0;
         
+        /**
+         * Combines @c mapSegmentDistanceToPoint and 
+         * @c mapSegmentDistanceToTangent and @c mapSegmentDistanceToRadius.
+         */
+        virtual void mapDistanceToSegmentPointAndTangentAndRadius( size_type segmentIndex,
+                                                                   float segmentDistance,
+                                                                   Vec3& pointOnPath,
+                                                                   Vec3& tangent,
+                                                                   float& radius ) const = 0;        
         
         /**
          * Combines @c mapPointToSegmentDistance, @c mapSegmentDistanceToPoint,
          * @c mapSegmentDistanceToRadius, and @c mapSegmentDistanceToTangent.
          */
-        /*
         virtual void mapPointToSegmentDistanceAndPointAndTangentAndRadius( size_type segmentIndex,
                                                                            Vec3 const& point,
                                                                            float& distance,
                                                                            Vec3& pointOnPath,
                                                                            Vec3& tangent,
                                                                            float& radius) const = 0;
-        */
+        
         
     }; // class Segmented Pathway
     

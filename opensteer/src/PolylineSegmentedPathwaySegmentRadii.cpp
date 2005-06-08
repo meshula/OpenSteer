@@ -229,8 +229,8 @@ OpenSteer::PolylineSegmentedPathwaySegmentRadii::mapPointToPath (const Vec3& poi
                                                                  Vec3& tangent,
                                                                  float& outside) const
 {
-    PointToPathMapping< PolylineSegmentedPathwaySegmentRadii, HasSegmentRadii > mapping;
-    mapPointToPathway( *this, point, mapping );
+    PointToPathMapping mapping;
+    mapPointToPathAlike( *this, point, mapping );
     tangent = mapping.tangent;
     outside = mapping.distancePointToPath;
     return mapping.pointOnPathBoundary;    
@@ -241,8 +241,8 @@ OpenSteer::PolylineSegmentedPathwaySegmentRadii::mapPointToPath (const Vec3& poi
 OpenSteer::Vec3 
 OpenSteer::PolylineSegmentedPathwaySegmentRadii::mapPathDistanceToPoint (float pathDistance) const
 {
-    PathDistanceToPointMapping< PolylineSegmentedPathwaySegmentRadii, HasSegmentRadii > mapping;
-    mapDistanceToPointOnPathCenterLine( *this, pathDistance, mapping );
+    PathDistanceToPointMapping mapping;
+    mapDistanceToPathAlike( *this, pathDistance, mapping );
     return mapping.pointOnPathCenterLine;    
 }
 
@@ -251,8 +251,8 @@ OpenSteer::PolylineSegmentedPathwaySegmentRadii::mapPathDistanceToPoint (float p
 float 
 OpenSteer::PolylineSegmentedPathwaySegmentRadii::mapPointToPathDistance (const Vec3& point) const
 {
-    PointToPathDistanceMapping< PolylineSegmentedPathwaySegmentRadii, HasSegmentRadii > mapping;
-    mapPointToPathway( *this, point, mapping );
+    PointToPathDistanceMapping mapping;
+    mapPointToPathAlike( *this, point, mapping );
     return mapping.distanceOnPath;    
 }
 
@@ -357,7 +357,24 @@ OpenSteer::PolylineSegmentedPathwaySegmentRadii::mapSegmentDistanceToTangent( si
     return path_.mapSegmentDistanceToTangent( segmentIndex, segmentDistance );
 }
 
-/*
+
+
+
+void 
+OpenSteer::PolylineSegmentedPathwaySegmentRadii::mapDistanceToSegmentPointAndTangentAndRadius( size_type segmentIndex,
+                                                                                               float distance,
+                                                                                               Vec3& pointOnPath,
+                                                                                               Vec3& tangent,
+                                                                                               float& radius ) const
+{
+    assert( segmentIndex < segmentCount() && "segmentIndex out of range." );
+    path_.mapDistanceToSegmentPointAndTangent( segmentIndex, distance, pointOnPath, tangent );
+    radius = segmentRadii_[ segmentIndex ];
+}
+
+
+
+
 void 
 OpenSteer::PolylineSegmentedPathwaySegmentRadii::mapPointToSegmentDistanceAndPointAndTangentAndRadius( size_type segmentIndex,
                                                                                                        Vec3 const& point,
@@ -369,5 +386,5 @@ OpenSteer::PolylineSegmentedPathwaySegmentRadii::mapPointToSegmentDistanceAndPoi
     path_.mapPointToSegmentDistanceAndPointAndTangent( segmentIndex, point, distance, pointOnPath, tangent );
     radius = segmentRadii_[ segmentIndex ];
 }
-*/
+
 

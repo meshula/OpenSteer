@@ -36,6 +36,16 @@
 // Include OpenSteer::SegmentedPath
 #include "OpenSteer/SegmentedPath.h"
 
+// Include OpenSteer::PointToPathAlikeBaseDataExtractionPolicy
+#include "OpenSteer/QueryPathAlikeBaseDataExtractionPolicies.h"
+
+// Include OpenSteer::Vec3
+#include "OpenSteer/Vec3.h"
+
+// Include OpenSteer::distance
+#include "OpenSteer/Vec3Utilities.h"
+
+
 
 namespace OpenSteer {
     
@@ -141,13 +151,18 @@ namespace OpenSteer {
                                                 float segmentDistance ) const;
         virtual Vec3 mapSegmentDistanceToTangent( size_type segmentIndex, 
                                                   float segmentDistance ) const;
-        /*
+        
+        virtual void mapDistanceToSegmentPointAndTangent( size_type segmentIndex,
+                                                          float distance,
+                                                          Vec3& pointOnPath,
+                                                          Vec3& tangent ) const;
+        
         virtual void mapPointToSegmentDistanceAndPointAndTangent( size_type segmentIndex,
                                                                   Vec3 const& point,
                                                                   float& distance,
                                                                   Vec3& pointOnPath,
                                                                   Vec3& tangent ) const;
-        */
+        
     private:
         std::vector< Vec3 > points_;
         std::vector< Vec3 > segmentTangents_;
@@ -162,6 +177,48 @@ namespace OpenSteer {
     inline void swap( PolylineSegmentedPath& lhs, PolylineSegmentedPath& rhs ) {
         lhs.swap( rhs );
     }
+    
+    
+    /**
+     * Extracts the base data of @c PolylineSegmentedPath.
+     */
+    template<>
+    class PointToPathAlikeBaseDataExtractionPolicy< PolylineSegmentedPath > {
+    public:
+        
+        static void extract( PolylineSegmentedPath const& pathAlike,
+                             PolylineSegmentedPath::size_type segmentIndex,
+                             Vec3 const& point, 
+                             float& segmentDistance, 
+                             float&, 
+                             float& distancePointToPath, 
+                             Vec3& pointOnPathCenterLine, 
+                             Vec3& tangent ) {
+            pathAlike.mapPointToSegmentDistanceAndPointAndTangent( segmentIndex, point, segmentDistance, pointOnPathCenterLine, tangent );
+            distancePointToPath = distance( point, pointOnPathCenterLine );
+        }
+        
+    }; // class PointToPathAlikeBaseDataExtractionPolicy
+    
+    /**
+     * Extracts the base data of @c PolylineSegmentedPath.
+     */
+    template<>
+    class DistanceToPathAlikeBaseDataExtractionPolicy< PolylineSegmentedPath > {
+    public:
+        static void extract( PolylineSegmentedPath const& pathAlike,
+                             PolylineSegmentedPath::size_type segmentIndex,
+                             float segmentDistance, 
+                             Vec3& pointOnPathCenterLine, 
+                             Vec3& tangent, 
+                             float&  )  {
+            pathAlike.mapDistanceToSegmentPointAndTangent( segmentIndex, segmentDistance, pointOnPathCenterLine, tangent );     
+        }
+        
+        
+    }; // DistanceToPathAlikeBaseDataExtractionPolicy
+    
+    
     
 } // namespace OpenSteer
 

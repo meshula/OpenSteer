@@ -34,6 +34,15 @@
 // Include OpenSteer::PolylineSegmentedPath
 #include "OpenSteer/PolylineSegmentedPath.h"
 
+// Include OpenSteer::PointToPathAlikeBaseDataExtractionPolicy
+#include "OpenSteer/QueryPathAlikeBaseDataExtractionPolicies.h"
+
+// Include OpenSteer::Vec3
+#include "OpenSteer/Vec3.h"
+
+// Include OpenSteer::distance
+#include "OpenSteer/Vec3Utilities.h"
+
 
 
 namespace OpenSteer {
@@ -136,14 +145,20 @@ namespace OpenSteer {
                                                  float distanceOnSegment ) const;
         virtual Vec3 mapSegmentDistanceToTangent( size_type segmentIndex, 
                                                   float segmentDistance ) const;
-        /*
-        void mapPointToSegmentDistanceAndPointAndTangentAndRadius( size_type segmentIndex,
-                                                                   Vec3 const& point,
-                                                                   float& distance,
+        
+        virtual void mapDistanceToSegmentPointAndTangentAndRadius( size_type segmentIndex,
+                                                                   float segmentDistance,
                                                                    Vec3& pointOnPath,
                                                                    Vec3& tangent,
-                                                                   float& radius) const;
-         */
+                                                                   float& radius ) const;
+        
+        virtual void mapPointToSegmentDistanceAndPointAndTangentAndRadius( size_type segmentIndex,
+                                                                           Vec3 const& point,
+                                                                           float& distance,
+                                                                           Vec3& pointOnPath,
+                                                                           Vec3& tangent,
+                                                                           float& radius) const;
+         
     private:
         PolylineSegmentedPath path_;
         float radius_;
@@ -158,6 +173,46 @@ namespace OpenSteer {
         lhs.swap( rhs );
     }
     
+    
+    /**
+     * Extracts the base data of @c PolylineSegmentedPathwaySingleRadius.
+     */
+    template<>
+    class PointToPathAlikeBaseDataExtractionPolicy< PolylineSegmentedPathwaySingleRadius > {
+    public:
+            
+        static void extract( PolylineSegmentedPathwaySingleRadius const& pathAlike,
+                             PolylineSegmentedPathwaySingleRadius::size_type segmentIndex,
+                             Vec3 const& point, 
+                             float& segmentDistance, 
+                             float& radius, 
+                             float& distancePointToPath, 
+                             Vec3& pointOnPathCenterLine, 
+                             Vec3& tangent ) {
+            pathAlike.mapPointToSegmentDistanceAndPointAndTangentAndRadius( segmentIndex, point, segmentDistance, pointOnPathCenterLine, tangent, radius );
+            distancePointToPath = distance( point, pointOnPathCenterLine ) - radius;
+        }
+            
+    }; // class PointToPathAlikeBaseDataExtractionPolicy
+    
+    
+    /**
+     * Extracts the base data of @c PolylineSegmentedPathwaySingleRadius.
+     */
+    template<>
+    class DistanceToPathAlikeBaseDataExtractionPolicy< PolylineSegmentedPathwaySingleRadius > {
+    public:
+        static void extract( PolylineSegmentedPathwaySingleRadius const& pathAlike,
+                             PolylineSegmentedPathwaySingleRadius::size_type segmentIndex,
+                             float segmentDistance, 
+                             Vec3& pointOnPathCenterLine, 
+                             Vec3& tangent, 
+                             float& radius )  {
+            pathAlike.mapDistanceToSegmentPointAndTangentAndRadius( segmentIndex, segmentDistance, pointOnPathCenterLine, tangent, radius );     
+        }
+        
+        
+    }; // DistanceToPathAlikeBaseDataExtractionPolicy 
     
 } // namespace OpenSteer
 

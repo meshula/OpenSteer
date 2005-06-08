@@ -204,6 +204,7 @@
 		324DA5EE082ABDD8000F3779 /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Color.cpp; sourceTree = "<group>"; };
 		324DA5F6082ABE43000F3779 /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		327C7F2D0857205D00C14AE6 /* OldPathway.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = OldPathway.cpp; sourceTree = "<group>"; };
+		327C89DE085762AD00C14AE6 /* QueryPathAlikeBaseDataExtractionPolicies.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QueryPathAlikeBaseDataExtractionPolicies.h; sourceTree = "<group>"; };
 		32C150890765ABE000A8BC25 /* TerrainRayTest.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TerrainRayTest.cpp; sourceTree = "<group>"; };
 		32C1508A0765ABE000A8BC25 /* TerrainRayTest.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TerrainRayTest.h; sourceTree = "<group>"; };
 		32ECF063082FC7FB00E5E444 /* UnusedParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnusedParameter.h; sourceTree = "<group>"; };
@@ -354,6 +355,7 @@
 				32FFF52A06E9CEA700E1D8A3 /* lq.h */,
 				32FFF52B06E9CEA700E1D8A3 /* Obstacle.h */,
 				84AD12AD070E221100559513 /* OpenSteerDemo.h */,
+				327C89DE085762AD00C14AE6 /* QueryPathAlikeBaseDataExtractionPolicies.h */,
 				3224E4F80844ACF800C13D97 /* QueryPathAlike.h */,
 				3224E59508485F8A00C13D97 /* QueryPathAlikeUtilities.h */,
 				3224E6600849C27400C13D97 /* QueryPathAlikeMappings.h */,

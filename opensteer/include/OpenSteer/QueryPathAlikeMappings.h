@@ -35,6 +35,9 @@
 // Include OpenSteer::Vec3
 #include "OpenSteer/Vec3.h"
 
+// Include OpenSteer::size_t
+#include "OpenSteer/StandardTypes.h"
+
 
 
 namespace OpenSteer {
@@ -42,18 +45,13 @@ namespace OpenSteer {
     /**
      * Maps points to a path to extract the point on the path boundary, the 
      * tangent at that point and the distance of the given point to the nearest
-     * path boundary. Use @c HasNoRadius, @c HasSegmentOrSegmentPointRadius,
-     * @c HasSingleRadius or @c HasSegmentRadii as arguments for 
-     * @c RadiusSwitch. The class provided must have the following member
-     * function 
-     * <code>float segmentDistanceRadius( PathAlike const& pathAlike, typename PathAlike::size_type segmentIndex, float ) const </code>.
+     * path boundary.
      */
-    template< class PathAlike, template< class T > class RadiusSwitch >
     class PointToPathMapping 
-        : public RadiusSwitch< PathAlike >, public DontExtractPathDistance {
+        : public DontExtractPathDistance {
         
     public:
-        PointToPathMapping() : pointOnPathBoundary(), tangent(), distancePointToPath( 0.0f ) {}
+        PointToPathMapping() : pointOnPathBoundary( 0.0f, 0.0f, 0.0f ), tangent( 0.0f, 0.0f, 0.0f ), distancePointToPath( 0.0f ) {}
             
         void setPointOnPathCenterLine( Vec3 const& ) {}
         void setPointOnPathBoundary( Vec3 const& point ) {
@@ -63,7 +61,7 @@ namespace OpenSteer {
         void setTangent( Vec3 const& t) {
             tangent = t;
         }
-        void setSegmentIndex( typename PathAlike::size_type ) {}
+        void setSegmentIndex( size_t ) {}
         void setDistancePointToPath( float distance ) {
             distancePointToPath = distance;
         }
@@ -82,15 +80,10 @@ namespace OpenSteer {
     
     /**
      * Maps a distance along the path center line to a point on the path center
-     * line. Use @c HasNoRadius, @c HasSegmentOrSegmentPointRadius,
-     * @c HasSingleRadius or @c HasSegmentRadii as arguments for 
-     * @c RadiusSwitch. The class provided must have the following member
-     * function 
-     * <code>float segmentDistanceRadius( PathAlike const& pathAlike, typename PathAlike::size_type segmentIndex, float ) const </code>.
+     * line.
      */
-    template< class PathAlike, template< class T > class RadiusSwitch >
     class PathDistanceToPointMapping 
-        : public RadiusSwitch< PathAlike >, public DontExtractPathDistance {
+        :  public DontExtractPathDistance {
             
     public:
         
@@ -99,7 +92,7 @@ namespace OpenSteer {
         }
         void setRadius( float ) {}
         void setTangent( Vec3 const& ){}
-        void setSegmentIndex( typename PathAlike::size_type ){}
+        void setSegmentIndex( size_t ){}
         void setDistanceOnPath( float ){}
         void setDistanceOnSegment( float ){}
             
@@ -114,15 +107,10 @@ namespace OpenSteer {
     /**
      * Maps a point to the nearest point on the path center line
      * and extracts the distance from the start of the path to this
-     * center line point. Use @c HasNoRadius, @c HasSegmentOrSegmentPointRadius,
-     * @c HasSingleRadius or @c HasSegmentRadii as arguments for 
-     * @c RadiusSwitch. The class provided must have the following member
-     * function 
-     * <code>float segmentDistanceRadius( PathAlike const& pathAlike, typename PathAlike::size_type segmentIndex, float ) const </code>.
+     * center line point.
      */
-    template< class PathAlike, template< class T > class RadiusSwitch >
     class PointToPathDistanceMapping
-        : public RadiusSwitch< PathAlike >, public ExtractPathDistance {
+        : public ExtractPathDistance {
     public:
         PointToPathDistanceMapping() : distanceOnPath( 0.0f ) {}
             
@@ -130,7 +118,7 @@ namespace OpenSteer {
         void setPointOnPathBoundary( Vec3 const&  ) {}
         void setRadius( float ) {}
         void setTangent( Vec3 const& ) {}
-        void setSegmentIndex( typename PathAlike::size_type ) {}
+        void setSegmentIndex( size_t ) {}
         void setDistancePointToPath( float  ) {}
         void setDistancePointToPathCenterLine( float ) {}
         void setDistanceOnPath( float distance ) {

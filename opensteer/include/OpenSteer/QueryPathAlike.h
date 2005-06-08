@@ -84,6 +84,7 @@ namespace OpenSteer {
      * In @c QueryPathAlikeUtilities.h provides some base classes to inherit
      * from to automatically get some of the functionality described above.
      */
+    /*
     template< class SegmentedPathAlike, class PointToPathwayMapping >
     void mapPointToPathway( SegmentedPathAlike const& pathway, 
                             Vec3 const& queryPoint, 
@@ -101,15 +102,7 @@ namespace OpenSteer {
             Vec3 pointOnPathCenterLine( pathway.mapSegmentDistanceToPoint( segmentIndex, segmentDistance ) );
             float radius = mapping.segmentDistanceRadius( pathway, segmentIndex, segmentDistance );
             float distancePointToPath = distance( queryPoint, pointOnPathCenterLine )  - radius;
-            
-            /*
-            float segmentDistance = 0.0f;
-            Vec3 pointOnPathCenterLine( 0.0f, 0.0f, 0.0f );
-            Vec3 tangent( 0.0f, 0.0f, 0.0f );
-            float radius = 0.0f;
-            mapPointToSegmentDistanceAndPointAndTangentAndRadius( segmentIndex, queryPoint, segmentDistance, pointOnPathCenterLine, tangent, radius );
-            float distancePointToPath = distance( queryPoint, pointOnPathCenterLine )  - radius;
-            */
+ 
            if ( distancePointToPath < minDistancePointToPath ) {
                minDistancePointToPath = distancePointToPath;
                mapping.setPointOnPathCenterLine( pointOnPathCenterLine );
@@ -127,9 +120,56 @@ namespace OpenSteer {
            mapping.setDistanceOnPathFlag( mapping.distanceOnPathFlag() + pathway.segmentLength( segmentIndex ) );
         }
     }
+     */
 
 
-
+    template< class PathAlike, class Mapping, class BaseDataExtractionPolicy = PointToPathAlikeBaseDataExtractionPolicy< PathAlike > >
+    class PointToPathAlikeMapping {
+    public:
+        
+        static void map( PathAlike const& pathAlike, Vec3 const& queryPoint, Mapping& mapping ) {
+            float minDistancePointToPath = std::numeric_limits< float >::max();
+            mapping.setDistanceOnPathFlag( 0.0f );
+            
+            typedef typename PathAlike::size_type size_type;
+            size_type const segmentCount = pathAlike.segmentCount();
+            for ( size_type segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex ) {
+                
+                float segmentDistance = 0.0f;
+                float radius = 0.0f;
+                float distancePointToPath = 0.0f;
+                Vec3 pointOnPathCenterLine( 0.0f, 0.0f, 0.0f );
+                Vec3 tangent( 0.0f, 0.0f, 0.0f );
+                
+                BaseDataExtractionPolicy::extract( pathAlike, segmentIndex, queryPoint, segmentDistance, radius, distancePointToPath, pointOnPathCenterLine, tangent );
+                
+                if ( distancePointToPath < minDistancePointToPath ) {
+                    minDistancePointToPath = distancePointToPath;
+                    mapping.setPointOnPathCenterLine( pointOnPathCenterLine );
+                    mapping.setPointOnPathBoundary( pointOnPathCenterLine + ( ( queryPoint - pointOnPathCenterLine ).normalize() * radius ) );
+                    mapping.setRadius( radius );
+                    mapping.setTangent( tangent );
+                    mapping.setSegmentIndex( segmentIndex );
+                    mapping.setDistancePointToPath( distancePointToPath );
+                    mapping.setDistancePointToPathCenterLine( distancePointToPath + radius );
+                    mapping.setDistanceOnPath( mapping.distanceOnPathFlag() + segmentDistance );
+                    mapping.setDistanceOnSegment( segmentDistance );
+                }
+                
+                mapping.setDistanceOnPathFlag( mapping.distanceOnPathFlag() + pathAlike.segmentLength( segmentIndex ) );
+            }
+        }
+        
+    }; // class MapPointToPathway
+    
+    
+    template< class PathAlike, class Mapping >
+    void mapPointToPathAlike( PathAlike const& pathAlike, Vec3 const& point, Mapping& mapping ) {
+        PointToPathAlikeMapping< PathAlike, Mapping >::map( pathAlike, point, mapping );
+    }
+    
+    
+    
     /**
      * Maps @a distanceOnPath to a path alike @a pathway and returns the queried
      * data in @a mapping.
@@ -152,6 +192,7 @@ namespace OpenSteer {
      * without an associated radius for example would just return @c 0.0f all 
      * the time.
      */
+    /*
     template< class SegmentedPathAlike, class DistanceToPathwayMapping >
     void mapDistanceToPointOnPathCenterLine( SegmentedPathAlike const& pathway, 
                                              float distanceOnPath, 
@@ -192,6 +233,65 @@ namespace OpenSteer {
         mapping.setDistanceOnPath( distanceOnPath );
         mapping.setDistanceOnSegment( remainingDistance );
     }    
+    */
+    
+    
+    template< class PathAlike, class Mapping, class BaseDataExtractionPolicy = DistanceToPathAlikeBaseDataExtractionPolicy< PathAlike > > 
+    class DistanceToPathAlikeMapping {
+    public:
+    
+        static void map( PathAlike const& pathAlike, float distanceOnPath, Mapping& mapping ) {
+            float const pathLength = pathAlike.length();
+            if ( pathAlike.isCyclic() ) {
+                distanceOnPath = modulo( distanceOnPath, pathLength );       
+                if ( 0.0f > distanceOnPath ) {
+                    distanceOnPath = pathLength + distanceOnPath;
+                }       
+            } else {    
+                if ( 0.0f > distanceOnPath ) {
+                    distanceOnPath = pathLength + distanceOnPath;
+                }    
+                distanceOnPath = clamp( distanceOnPath, 0.0f, pathLength );
+            }
+            
+            float remainingDistance = distanceOnPath;
+            typedef typename PathAlike::size_type size_type;
+            size_type segmentIndex = 0;        
+            size_type const maxSegmentIndex = pathAlike.segmentCount() - 1;
+            while( remainingDistance > pathAlike.segmentLength( segmentIndex ) ) {
+                remainingDistance -= pathAlike.segmentLength( segmentIndex );
+                if ( segmentIndex == maxSegmentIndex ) { 
+                    break; 
+                }
+                ++segmentIndex;
+            }
+            
+            Vec3 pointOnPathCenterLine( 0.0f, 0.0f, 0.0f );
+            Vec3 tangent( 0.0f, 0.0f, 0.0f );
+            float radius = 0.0f;
+            
+            BaseDataExtractionPolicy::extract( pathAlike, segmentIndex, remainingDistance, pointOnPathCenterLine, tangent, radius );
+            
+            
+            mapping.setPointOnPathCenterLine( pointOnPathCenterLine );
+            // mapping.setPointOnPathBoundary();
+            mapping.setRadius( radius );
+            mapping.setTangent( tangent );
+            mapping.setSegmentIndex( segmentIndex );
+            // mapping.setDistancePointToPath();
+            // mapping.setDistancePointToPathCenterLine();
+            mapping.setDistanceOnPath( distanceOnPath );
+            mapping.setDistanceOnSegment( remainingDistance );            
+        }
+        
+    }; // class DistanceToPathAlikeMapping
+    
+    
+    template< class PathAlike, class Mapping >
+    void mapDistanceToPathAlike( PathAlike const& pathAlike, float distance, Mapping& mapping ) {
+        DistanceToPathAlikeMapping< PathAlike, Mapping >::map( pathAlike, distance, mapping );
+    }
+    
     
 } // namespace OpenSteer
 
