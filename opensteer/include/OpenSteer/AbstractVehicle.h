@@ -54,7 +54,8 @@ namespace OpenSteer {
     class AbstractVehicle : public AbstractLocalSpace 
     {
     public:
-
+        virtual ~AbstractVehicle() { /* Nothing to do. */ }
+        
         // mass (defaults to unity so acceleration=force)
         virtual float mass (void) const = 0;
         virtual float setMass (float) = 0;

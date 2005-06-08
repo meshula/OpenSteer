@@ -91,6 +91,9 @@ namespace OpenSteer {
         // type for the "tokens" manipulated by this spatial database
         typedef AbstractTokenForProximityDatabase<ContentType> tokenType;
 
+        
+        virtual ~AbstractProximityDatabase() { /* Nothing to do? */ }
+        
         // allocate a token to represent a given client object in this database
         virtual tokenType* allocateToken (ContentType parentObject) = 0;
 

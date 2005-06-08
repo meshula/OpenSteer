@@ -59,6 +59,7 @@ namespace OpenSteer {
 
         // constructor
         Camera ();
+        virtual ~Camera() { /* Nothing to do? */ }
 
         // reset all camera state to default values
         void reset (void);

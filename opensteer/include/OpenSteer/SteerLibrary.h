@@ -469,8 +469,8 @@ steerToFollowPath (const int direction,
         // otherwise we need to steer towards a target point obtained
         // by adding pathDistanceOffset to our current path position
 
-        float targetPathDistance = nowPathDistance + pathDistanceOffset;
-        Vec3 target = path.mapPathDistanceToPoint (targetPathDistance);
+        float const targetPathDistance = nowPathDistance + pathDistanceOffset;
+        Vec3 const target = path.mapPathDistanceToPoint (targetPathDistance);
 
         annotatePathFollowing (futurePosition, onPath, target, outside);
 

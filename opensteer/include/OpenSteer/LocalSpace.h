@@ -76,6 +76,8 @@ namespace OpenSteer {
     class AbstractLocalSpace
     {
     public:
+        virtual ~AbstractLocalSpace() { /* Nothing to do. */ }
+        
 
         // accessors (get and set) for side, up, forward and position
         virtual Vec3 side (void) const = 0;
@@ -182,24 +184,20 @@ namespace OpenSteer {
                          const Vec3& Up,
                          const Vec3& Forward,
                          const Vec3& Position)
-        {
-            _side = Side;
-            _up = Up;
-            _forward = Forward;
-            _position = Position;
-        };
+            : _side( Side ), _up( Up ), _forward( Forward ), _position( Position ) {}
 
 
         LocalSpaceMixin (const Vec3& Up,
                          const Vec3& Forward,
                          const Vec3& Position)
+            : _side(), _up( Up ), _forward( Forward ), _position( Position )
         {
-            _up = Up;
-            _forward = Forward;
-            _position = Position;
             setUnitSideFromForwardAndUp ();
-        };
+        }
 
+        
+        virtual ~LocalSpaceMixin() { /* Nothing to do. */ }
+        
 
         // ------------------------------------------------------------------------
         // reset transform: set local space to its identity state, equivalent to a

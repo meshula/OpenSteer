@@ -42,6 +42,7 @@
 // simulation is restarted.  (This plug-in includes two non-path-following
 // demos of map-based obstacle avoidance.  Use F1 to select among them.)
 //
+// 06-01-05 bknafla: exchanged GCRoute with PolylineSegmentedPathwaySegmentRadii
 // 08-16-04 cwr: merge back into OpenSteer code base
 // 10-15-03 cwr: created 
 //
@@ -57,6 +58,23 @@
 #include "OpenSteer/Color.h"
 #include "OpenSteer/UnusedParameter.h"
 
+// Include OpenSteer::PolylineSegmentedPathwaySegmentRadii
+#include "OpenSteer/PolylineSegmentedPathwaySegmentRadii.h"
+
+// Include OpenSteer::mapPointToPathway
+#include "OpenSteer/QueryPathAlike.h"
+
+// Include OpenSteer::DontExtractPathDistance, OpenSteer::HasSegmentRadii
+#include "OpenSteer/QueryPathAlikeUtilities.h"
+
+// Include OpenSteer::nextSegment, OpenSteer::previousSegment
+#include "OpenSteer/SegmentedPathAlikeUtilities.h"
+
+// Include OpenSteer::square, OpenSteer::clamp
+#include "OpenSteer/Utilities.h"
+
+
+
 // to use local version of the map class
 #define OLDTERRAINMAP
 #ifndef OLDTERRAINMAP
@@ -64,6 +82,288 @@
 #endif
 
 // ----------------------------------------------------------------------------
+
+
+namespace {
+    template< class PathAlike, template< class T > class RadiusSwitch >
+    class PointToRadiusMapping : public RadiusSwitch< PathAlike >, public OpenSteer::DontExtractPathDistance {
+    public:
+        PointToRadiusMapping(): radius( 0.0f ) {}
+        
+        void setPointOnPathCenterLine( OpenSteer::Vec3 const& ) {}
+        void setPointOnPathBoundary( OpenSteer::Vec3 const&  ) {}
+        void setRadius( float r ) { radius = r; }
+        void setTangent( OpenSteer::Vec3 const& ) {}
+        void setSegmentIndex( typename PathAlike::size_type ) {}
+        void setDistancePointToPath( float  ) {}
+        void setDistancePointToPathCenterLine( float ) {}
+        void setDistanceOnPath( float  ) {}
+        void setDistanceOnSegment( float ) {}
+        
+        float radius;
+    };
+    
+    
+    template< class PathAlike, template< class T > class RadiusSwitch >
+    class PointToTangentMapping : public RadiusSwitch< PathAlike >, public OpenSteer::DontExtractPathDistance {
+    public:
+        PointToTangentMapping() : tangent( OpenSteer::Vec3( 0.0f, 0.0f, 0.0f ) ) {}
+        
+        void setPointOnPathCenterLine( OpenSteer::Vec3 const& ) {}
+        void setPointOnPathBoundary( OpenSteer::Vec3 const&  ) {}
+        void setRadius( float ) {}
+        void setTangent( OpenSteer::Vec3 const& t ) { tangent = t; }
+        void setSegmentIndex( typename PathAlike::size_type ) {}
+        void setDistancePointToPath( float  ) {}
+        void setDistancePointToPathCenterLine( float ) {}
+        void setDistanceOnPath( float  ) {}
+        void setDistanceOnSegment( float ) {}
+        
+        OpenSteer::Vec3 tangent;
+    };
+
+
+        
+    template< class PathAlike, template< class T > class RadiusSwitch >
+    class PointToBoundaryPointAndOutsideMapping : public RadiusSwitch< PathAlike >, public OpenSteer::DontExtractPathDistance {
+    public:
+        PointToBoundaryPointAndOutsideMapping() : pointOnPathBoundary( OpenSteer::Vec3( 0.0f, 0.0f, 0.0f ) ), distancePointToPathBoundary( 0.0f ) {}
+        
+        void setPointOnPathCenterLine( OpenSteer::Vec3 const& ) {}
+        void setPointOnPathBoundary( OpenSteer::Vec3 const& p ) { pointOnPathBoundary = p; }
+        void setRadius( float ) {}
+        void setTangent( OpenSteer::Vec3 const& ) {}
+        void setSegmentIndex( typename PathAlike::size_type ) {}
+        void setDistancePointToPath( float d ) { distancePointToPathBoundary = d; }
+        void setDistancePointToPathCenterLine( float ) {}
+        void setDistanceOnPath( float  ) {}
+        void setDistanceOnSegment( float ) {}    
+        
+        OpenSteer::Vec3 pointOnPathBoundary;
+        float distancePointToPathBoundary;
+    };
+
+
+        
+    template< class PathAlike, template< class T > class RadiusSwitch >
+    class PointToOutsideMapping : public RadiusSwitch< PathAlike >, public OpenSteer::DontExtractPathDistance {
+    public:
+        PointToOutsideMapping() : distancePointToPathBoundary( 0.0f ) {}
+        
+        void setPointOnPathCenterLine( OpenSteer::Vec3 const& ) {}
+        void setPointOnPathBoundary( OpenSteer::Vec3 const&  ) {}
+        void setRadius( float ) {}
+        void setTangent( OpenSteer::Vec3 const& ) {}
+        void setSegmentIndex( typename PathAlike::size_type ) {}
+        void setDistancePointToPath( float d ) { distancePointToPathBoundary = d; }
+        void setDistancePointToPathCenterLine( float ) {}
+        void setDistanceOnPath( float  ) {}
+        void setDistanceOnSegment( float ) {}    
+        
+        float distancePointToPathBoundary;
+    };
+
+
+    template< class PathAlike, template< class T > class RadiusSwitch >
+        class PointToSegmentIndexMapping : public RadiusSwitch< PathAlike >, public OpenSteer::DontExtractPathDistance {
+        public:
+            PointToSegmentIndexMapping() : segmentIndex( 0 ) {}
+            
+            void setPointOnPathCenterLine( OpenSteer::Vec3 const& ) {}
+            void setPointOnPathBoundary( OpenSteer::Vec3 const&  ) {}
+            void setRadius( float ) {}
+            void setTangent( OpenSteer::Vec3 const& ) {}
+            void setSegmentIndex( typename PathAlike::size_type i ) { segmentIndex = i; }
+            void setDistancePointToPath( float  ) {}
+            void setDistancePointToPathCenterLine( float ) {}
+            void setDistanceOnPath( float  ) {}
+            void setDistanceOnSegment( float ) {}    
+            
+            typename PathAlike::size_type segmentIndex;
+        };
+    
+    /**
+     * Maps @a point to @a pathway and extracts the radius at the mapping point.
+     */
+    float mapPointToRadius( OpenSteer::PolylineSegmentedPathwaySegmentRadii const& pathway, OpenSteer::Vec3 const& point ) {
+        PointToRadiusMapping< OpenSteer::PolylineSegmentedPathwaySegmentRadii, OpenSteer::HasSegmentRadii > mapping;
+        OpenSteer::mapPointToPathway( pathway, point, mapping );
+        return mapping.radius;
+    }
+    
+    /**
+     * Maps @a point to @a pathway and extracts the tangent at the mapping 
+     * point.
+     */
+    OpenSteer::Vec3 mapPointToTangent( OpenSteer::PolylineSegmentedPathwaySegmentRadii const& pathway, OpenSteer::Vec3 const& point ) {
+        PointToTangentMapping< OpenSteer::PolylineSegmentedPathwaySegmentRadii, OpenSteer::HasSegmentRadii > mapping;
+        OpenSteer::mapPointToPathway( pathway, point, mapping );
+        return mapping.tangent;
+    }
+    
+    /**
+     * Returns @c true if @a point is inside @a pathway segment @a segmentIndex.
+     *
+     * On point on the boundary isn't inside the pathway.
+     */
+    bool isInsidePathSegment( OpenSteer::PolylineSegmentedPathwaySegmentRadii const& pathway,  
+                              OpenSteer::PolylineSegmentedPathwaySegmentRadii::size_type segmentIndex, 
+                              OpenSteer::Vec3 const& point ) {
+        assert( pathway.isValid() && "pathway isn't valid." );
+        assert( segmentIndex < pathway.segmentCount() && "segmentIndex out of range." );
+        
+        float const segmentDistance = pathway.mapPointToSegmentDistance( segmentIndex, point );
+        OpenSteer::Vec3 const pointOnSegmentCenterLine = pathway.mapSegmentDistanceToPoint( segmentIndex, segmentDistance );
+        float const segmentRadiusAtPoint = pathway.mapSegmentDistanceToRadius( segmentIndex, segmentDistance );
+        
+        float const distancePointToPointOnSegmentCenterLine = (point - pointOnSegmentCenterLine).length();
+        
+        return distancePointToPointOnSegmentCenterLine < segmentRadiusAtPoint;
+    }
+    
+    
+    /**
+     * Maps the @a point to @a pathway and extracts the tangent at the mapping
+     * point or of the next path segment as indicated by @a direction if the
+     * mapping point is near a path defining point (waypoint).
+     *
+     * @param pathway Pathway to inspect.
+     * @param point Point to map to @a pathway.
+     * @param direction Follow the path in path direction (@c 1) or in reverse
+     *                  direction ( @c -1 ).
+     */
+    OpenSteer::Vec3 mapPointAndDirectionToTangent( OpenSteer::PolylineSegmentedPathwaySegmentRadii const& pathway, OpenSteer::Vec3 const& point, int direction ) {
+        assert( ( ( 1 == direction ) || ( -1 == direction ) ) && "direction must be 1 or -1." );
+        typedef OpenSteer::PolylineSegmentedPathwaySegmentRadii::size_type size_type;
+        
+        PointToSegmentIndexMapping< OpenSteer::PolylineSegmentedPathwaySegmentRadii, OpenSteer::HasSegmentRadii > mapping;
+        OpenSteer::mapPointToPathway( pathway, point, mapping );
+        size_type segmentIndex = mapping.segmentIndex;
+        size_type nextSegmentIndex = segmentIndex;
+        if ( 0 < direction ) {
+            nextSegmentIndex = OpenSteer::nextSegment( pathway, segmentIndex );
+        } else {
+            nextSegmentIndex = OpenSteer::previousSegment( pathway, segmentIndex );
+        }
+
+        if ( isInsidePathSegment( pathway, nextSegmentIndex, point ) ) {
+            segmentIndex = nextSegmentIndex;
+        }
+        
+        // To save calculations to gather the tangent in a sound way the fact is
+        // used that a polyline segmented pathway has the same tangent for a
+        // whole segment.
+        return pathway.mapSegmentDistanceToTangent( segmentIndex, 0.0f ) * static_cast< float >( direction );
+        
+        /*
+         const int segmentIndex = indexOfNearestSegment (point);
+         const int nextIndex = segmentIndex + pathFollowDirection;
+         const bool insideNextSegment = isInsidePathSegment (point, nextIndex);
+         const int i = (segmentIndex +
+                     (insideNextSegment ? pathFollowDirection : 0));
+         return normals [i] * (float)pathFollowDirection;
+        */
+    }
+    
+    /**
+     * Returns @c true if @a point is near a waypoint of @a pathway.
+     *
+     * It is near if its distance to a waypoint of the path is lesser than the
+     * radius of one of the segments that the waypoint belongs to.
+     *
+     * On point on the boundary isn't inside the pathway.
+     */
+    bool isNearWaypoint( OpenSteer::PolylineSegmentedPathwaySegmentRadii const& pathway, OpenSteer::Vec3 const& point ) {
+        assert( pathway.isValid() && "pathway must be valid." );
+        
+        typedef OpenSteer::PolylineSegmentedPathwaySegmentRadii::size_type size_type;
+        
+        size_type pointIndex = 0;
+        
+        // Test first waypoint.
+        OpenSteer::Vec3 pointPathwayPointVector = point - pathway.point( pointIndex );
+        float pointPathwayPointDistance = pointPathwayPointVector.dot( pointPathwayPointVector );
+        if ( pointPathwayPointDistance < OpenSteer::square( pathway.segmentRadius( pointIndex ) ) ) {
+            return true;
+        }
+        
+        // Test other waypoints.
+        size_type const maxInnerPointIndex = pathway.pointCount() - 2;
+        for ( pointIndex = 1; pointIndex <= maxInnerPointIndex; ++pointIndex ) {
+            pointPathwayPointVector = point - pathway.point( pointIndex );
+            pointPathwayPointDistance = pointPathwayPointVector.dot( pointPathwayPointVector );
+            if ( ( pointPathwayPointDistance < OpenSteer::square( pathway.segmentRadius( pointIndex ) ) ) ||
+                 ( pointPathwayPointDistance < OpenSteer::square( pathway.segmentRadius( pointIndex - 1) ) ) ) {
+                return true;
+            }
+        }
+
+        // Test last waypoint.
+        pointPathwayPointVector = point - pathway.point( pointIndex );
+        pointPathwayPointDistance = pointPathwayPointVector.dot( pointPathwayPointVector );
+        if ( pointPathwayPointDistance < OpenSteer::square( pathway.segmentRadius( pointIndex - 1 ) ) ) {
+            return true;
+        }
+        
+        
+        return false;
+        
+        /*
+         // loop over all waypoints
+         for (int i = 1; i < pointCount; i++)
+         {
+             // return true if near enough to this waypoint
+             const float r = maxXXX (radii[i], radii[i+1]);
+             const float d = (point - points[i]).length ();
+             if (d < r) return true;
+         }
+         return false;
+        */
+    }
+    
+    /**
+     * Maps @a point to @a pathway and returns the mapping point on the pathway 
+     * boundary and how far outside @a point is from the mapping point.
+     */
+    OpenSteer::Vec3 mapPointToBoundaryPointAndOutside( OpenSteer::PolylineSegmentedPathwaySegmentRadii const& pathway, OpenSteer::Vec3 const& point, float& outside ) {
+        PointToBoundaryPointAndOutsideMapping< OpenSteer::PolylineSegmentedPathwaySegmentRadii, OpenSteer::HasSegmentRadii > mapping;
+        OpenSteer::mapPointToPathway( pathway, point, mapping );
+        outside = mapping.distancePointToPathBoundary;
+        return mapping.pointOnPathBoundary;
+    }
+    
+    
+    /**
+     * Maps @a point to @a pathway and returns how far outside @a point is from 
+     * the mapping point on the path boundary.
+     */
+    float mapPointToOutside( OpenSteer::PolylineSegmentedPathwaySegmentRadii const& pathway, OpenSteer::Vec3 const& point ) {
+        PointToOutsideMapping< OpenSteer::PolylineSegmentedPathwaySegmentRadii, OpenSteer::HasSegmentRadii > mapping;
+        OpenSteer::mapPointToPathway( pathway, point, mapping);
+        return mapping.distancePointToPathBoundary;    
+    }
+    
+    /**
+     * Returns @c true if @a point is inside @a pathway, @c false otherwise.
+     * A point on the boundary isn't inside the pathway.
+     */
+    bool isInsidePathway( OpenSteer::PolylineSegmentedPathwaySegmentRadii const& pathway, OpenSteer::Vec3 const& point ) {
+        return 0.0f > mapPointToOutside( pathway, point );
+    }
+    
+
+    OpenSteer::PolylineSegmentedPathwaySegmentRadii::size_type mapPointToSegmentIndex(  OpenSteer::PolylineSegmentedPathwaySegmentRadii const& pathway, 
+                                                                                        OpenSteer::Vec3 const& point ) {
+        PointToSegmentIndexMapping< OpenSteer::PolylineSegmentedPathwaySegmentRadii, OpenSteer::HasSegmentRadii > mapping;
+        OpenSteer::mapPointToPathway( pathway, point, mapping );
+        return mapping.segmentIndex;
+    }
+    
+    
+} // namespace anonymous
+
+
+
 
 
 using namespace OpenSteer;
@@ -248,6 +548,16 @@ private:
 #endif
 
 
+
+
+typedef PolylineSegmentedPathwaySegmentRadii GCRoute;
+
+
+
+/* 
+ * Use PolylineSegmentedPathwaySegmentRadii instead!
+
+
 // ----------------------------------------------------------------------------
 // A variation on PolylinePathway (whose path tube radius is constant)
 // GCRoute (Grand Challenge Route) has an array of radii-per-segment
@@ -418,6 +728,9 @@ public:
     // per-segment radius (width) array
     float* radii;
 };
+
+*/
+
 
 
 // ----------------------------------------------------------------------------
@@ -625,9 +938,7 @@ public:
                     {
                         // path aligment: when neither obstacle avoidance nor
                         // path following is required, align with path segment
-                        const Vec3 pathHeading =
-                            path->tangentAt (position (),
-                                             pathFollowDirection);
+                        const Vec3 pathHeading = mapPointAndDirectionToTangent( *path, position(), pathFollowDirection ); // path->tangentAt (position (), pathFollowDirection);
                         {
                             const Vec3 b = (position () +
                                             (up () * 0.2f) +
@@ -637,7 +948,7 @@ public:
                             annotationLine (b, b + (pathHeading * l), gCyan);
                         }
                         steering += (steerTowardHeading(pathHeading) *
-                                     (path->nearWaypoint (position ()) ?
+                                     ( isNearWaypoint( *path, position() ) /* path->nearWaypoint (position () ) */ ?
                                       0.5f : 0.1f));
                     }
                 }
@@ -746,7 +1057,7 @@ public:
 
         // are we heading roughly parallel to the current path segment?
         const Vec3 p = position ();
-        const Vec3 pathHeading = path->tangentAt (p, pathFollowDirection);
+        const Vec3 pathHeading = mapPointAndDirectionToTangent( *path, p, pathFollowDirection ); // path->tangentAt (p, pathFollowDirection);
         if (pathHeading.dot (forward ()) < 0.8f)
         {
             // if not, the "hint" is to turn to align with path heading
@@ -766,7 +1077,7 @@ public:
             {
                 // get offset, distance from obstacle to its image on path
                 float outside;
-                const Vec3 onPath = path->mapPointToPath (obstacle, outside);
+                const Vec3 onPath = mapPointToBoundaryPointAndOutside( *path, obstacle, outside );// path->mapPointToPath (obstacle, outside);
                 const Vec3 offset = onPath - obstacle;
                 const float offsetDistance = offset.length();
 
@@ -774,9 +1085,9 @@ public:
                 if (outside < 0)
                 {
                     // when near the outer edge of a sufficiently wide tube
-                    const int segmentIndex =
-                        path->indexOfNearestSegment (onPath);
-                    const float segmentRadius = path->radii [segmentIndex];
+                    // const int segmentIndex = path->indexOfNearestSegment (onPath);
+                    // const float segmentRadius = path->segmentRadius( segmentIndex );
+                    float const segmentRadius = mapPointToRadius( *path, onPath );
                     const float w = halfWidth * 6;
                     const bool nearEdge = offsetDistance > w;
                     const bool wideEnough = segmentRadius > (w * 2);
@@ -1442,7 +1753,7 @@ public:
             path.mapPointToPathDistance (position ());
 
         // are we facing in the correction direction?
-        const Vec3 pathHeading = path.tangentAt(position()) * (float)direction;
+        const Vec3 pathHeading = mapPointToTangent( path, position() ) * static_cast< float >( direction );// path.tangentAt(position()) * (float)direction;
         const bool correctDirection = pathHeading.dot (forward ()) > 0;
 
         // find the point on the path nearest the predicted future position
@@ -1450,11 +1761,11 @@ public:
         // XXX special path-defined object which includes two Vec3s and a 
         // XXX bool (onPath,tangent (ignored), withinPath)
         float futureOutside;
-        const Vec3 onPath = path.mapPointToPath (futurePosition,futureOutside);
+        const Vec3 onPath = mapPointToBoundaryPointAndOutside( path, futurePosition, futureOutside ); // path.mapPointToPath (futurePosition,futureOutside);
 
         // determine if we are currently inside the path tube
         float nowOutside;
-        const Vec3 nowOnPath = path.mapPointToPath (position (), nowOutside);
+        const Vec3 nowOnPath = mapPointToBoundaryPointAndOutside( path, position(), nowOutside );  // path.mapPointToPath (position (), nowOutside);
 
         // no steering is required if our present and future positions are
         // inside the path tube and we are facing in the correct direction
@@ -1479,10 +1790,16 @@ public:
             // if we are on one segment and target is on the next segment and
             // the dot of the tangents of the two segments is negative --
             // increase the target offset to compensate the fold back
-            const int ip = path.indexOfNearestSegment (position ());
-            const int it = path.indexOfNearestSegment (target);
+            const int ip =  static_cast< int >( mapPointToSegmentIndex( path, position() ) ); // path.indexOfNearestSegment (position ());
+            const int it =  static_cast< int >( mapPointToSegmentIndex( path, target ) ); // path.indexOfNearestSegment (target);
+            // Because polyline paths have a constant tangent along a segment
+            // just set the distance along the segment to @c 0.0f.
+            Vec3 const ipTangent = path.mapSegmentDistanceToTangent( ip, 0.0f );
+            // Because polyline paths have a constant tangent along a segment
+            // just set the distance along the segment to @c 0.0f.
+            Vec3 const itTangent = path.mapSegmentDistanceToTangent( it, 0.0f );
             if (((ip + direction) == it) &&
-                (path.dotSegmentUnitTangents (it, ip) < -0.1f))
+                ( /* path.dotSegmentUnitTangents (it, ip) */  itTangent.dot( ipTangent ) < -0.1f ) )
             {
                 const float newTargetPathDistance =
                     nowPathDistance + (pathDistanceOffset * 2);
@@ -1524,8 +1841,8 @@ public:
         const Vec3 futurePosition = predictFuturePosition (predictionTime);
         // find the point on the path nearest the predicted future position
         float futureOutside;
-        const Vec3 onPath = path.mapPointToPath (futurePosition,futureOutside);
-        const Vec3 pathHeading = path.tangentAt (onPath, direction);
+        const Vec3 onPath =  mapPointToBoundaryPointAndOutside( path, futurePosition, futureOutside ); // path.mapPointToPath (futurePosition,futureOutside);
+        const Vec3 pathHeading =  mapPointAndDirectionToTangent( path, onPath, direction ); // path.tangentAt (onPath, direction);
         const Vec3 rawBraking = forward () * maxForce () * -1;
         const Vec3 braking = ((futureOutside < 0) ? Vec3::zero : rawBraking);
         //qqq experimental wrong-way-fixer
@@ -1571,7 +1888,7 @@ public:
                                    position(), futureOutside);
 
             // two cases, if entering a turn (a waypoint between path segments)
-            if (path.nearWaypoint (onPath) && (futureOutside > 0))
+            if ( /* path.nearWaypoint (onPath) */ isNearWaypoint( path, onPath )  && (futureOutside > 0))
             {
                 // steer to align with next path segment
                 annotationCircleOrDisk (0.5f, up(), futurePosition,
@@ -1738,10 +2055,14 @@ public:
 #endif
     }
 
-    // draw the GCRoute as a series of circles and "wide lines"
-    // (QQQ this should probably be a method of Path (or a
-    // closely-related utility function) in which case should pass
-    // color in, certainly shouldn't be recomputing it each draw)
+    /**
+     * draw the GCRoute as a series of circles and "wide lines"
+     * (QQQ this should probably be a method of Path (or a
+     * closely-related utility function) in which case should pass
+     * color in, certainly shouldn't be recomputing it each draw)
+     * @todo Add a <code>Vec3 const* points() const</code> member function to
+     *       SegmentedPath, etc. to allow for faster point access?
+     */
     void drawPath (void)
     {
         const Color pathColor (0, 0.5f, 0.5f);
@@ -1749,20 +2070,18 @@ public:
         const Color color = interpolate (0.1f, sandColor, pathColor);
 
         const Vec3 down (0, -0.1f, 0);
-        for (int i = 0; i < path->pointCount; i++)
+        for ( OpenSteer::size_t i = 1; i < path->pointCount(); ++i )
         {
-            const Vec3 endPoint0 = path->points[i] + down;
-            if (i > 0)
-            {
-                const Vec3 endPoint1 = path->points[i-1] + down;
+            const Vec3 endPoint0 = path->point( i ) + down;
+            const Vec3 endPoint1 = path->point( i - 1 ) + down;
 
-                const float legWidth = path->radii[i];
+            const float legWidth = path->segmentRadius( i - 1 );
 
-                drawXZWideLine (endPoint0, endPoint1, color, legWidth * 2);
-                drawLine (path->points[i], path->points[i-1], pathColor);
-                drawXZDisk (legWidth, endPoint0, color, 24);
-                drawXZDisk (legWidth, endPoint1, color, 24);
-            }
+            drawXZWideLine (endPoint0, endPoint1, color, legWidth * 2);
+            drawLine (path->point( i ), path->point( i - 1 ), pathColor);
+            drawXZDisk (legWidth, endPoint0, color, 24);
+            drawXZDisk (legWidth, endPoint1, color, 24);
+
         }
     }
 
@@ -1929,10 +2248,10 @@ public:
         {
             const Vec3 bbSide = side () * halfWidth;
             const Vec3 bbFront = forward () * halfLength;
-            return (path->isInsidePath (position () - bbFront + bbSide) &&
-                    path->isInsidePath (position () + bbFront + bbSide) &&
-                    path->isInsidePath (position () + bbFront - bbSide) &&
-                    path->isInsidePath (position () - bbFront - bbSide));
+            return ( /* path->isInsidePath (position () - bbFront + bbSide) */ isInsidePathway( *path, position () - bbFront + bbSide ) &&
+                     /* path->isInsidePath (position () + bbFront + bbSide) */ isInsidePathway( *path, position () + bbFront + bbSide ) &&
+                     /* path->isInsidePath (position () + bbFront - bbSide) */ isInsidePathway( *path, position () + bbFront - bbSide ) &&
+                     /* path->isInsidePath (position () - bbFront - bbSide) */ isInsidePathway( *path, position () - bbFront - bbSide ) );
         }
         return true;
     }
@@ -2080,8 +2399,7 @@ public:
             else
             {
                 // heading (unit tangent) of the path segment of interest
-                const Vec3 pathHeading = path->tangentAt (position (),
-                                                          pathFollowDirection);
+                const Vec3 pathHeading =  mapPointAndDirectionToTangent( *path, position(), pathFollowDirection ); // path->tangentAt (position (), pathFollowDirection);
                 // measure how parallel we are to the path
                 const float parallelness = pathHeading.dot (forward ());
 
@@ -2563,16 +2881,16 @@ public:
         // randomize path widths
         if (vehicle->demoSelect == 2)
         {
-            const int count = vehicle->path->pointCount;
+            const int count = vehicle->path->segmentCount();
             const bool upstream = vehicle->pathFollowDirection > 0;
-            const int entryIndex = upstream ? 1 : count-1;
-            const int exitIndex  = upstream ? count-1 : 1;
-            const float lastExitRadius = vehicle->path->radii[exitIndex];
-            for (int i = 1; i < count; i++)
+            const int entryIndex = upstream ? 0 : count-1;
+            const int exitIndex  = upstream ? count-1 : 0;
+            const float lastExitRadius = vehicle->path->segmentRadius( exitIndex );
+            for (int i = 0; i < count; i++)
             {
-                 vehicle->path->radii[i] = frandom2 (4, 19);
+                 vehicle->path->setSegmentRadius( i, frandom2 (4, 19) );
             }
-            vehicle->path->radii[entryIndex] = lastExitRadius;
+            vehicle->path->setSegmentRadius( entryIndex, lastExitRadius );
         }
 
         // mark path-boundary map cells as obstacles
@@ -2668,7 +2986,7 @@ public:
         {
             for (int i = 0; i < map.resolution; i++)
             {
-                const float outside = path.howFarOutsidePath (g);
+                const float outside = mapPointToOutside( path, g ); // path.howFarOutsidePath (g);
                 const float wallThickness = 1.0f;
 
                 // set map cells adjacent to the outside edge of the path

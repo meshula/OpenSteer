@@ -84,6 +84,9 @@ namespace OpenSteer {
     class AbstractPlugIn
     {
     public:
+        
+        virtual ~AbstractPlugIn() { /* Nothing to do. */ }
+        
         // generic PlugIn actions: open, update, redraw, close and reset
         virtual void open (void) = 0;
         virtual void update (const float currentTime, const float elapsedTime) = 0;

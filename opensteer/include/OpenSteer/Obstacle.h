@@ -63,6 +63,9 @@ namespace OpenSteer {
     {
     public:
 
+        virtual ~AbstractObstacle() { /* Nothing to do. */ }
+        
+        
         // compute steering for a vehicle to avoid this obstacle, if needed
         virtual Vec3 steerToAvoid (const AbstractVehicle& v,
                                    const float minTimeToCollision) const = 0;
@@ -128,6 +131,8 @@ namespace OpenSteer {
 
         Obstacle (void) : _seenFrom (outside) {}
 
+        virtual ~Obstacle() { /* Nothing to do. */ }
+        
         // compute steering for a vehicle to avoid this obstacle, if needed 
         Vec3 steerToAvoid (const AbstractVehicle& v,
                            const float minTimeToCollision)
@@ -171,6 +176,8 @@ namespace OpenSteer {
         SphereObstacle (float r, Vec3 c) : radius(r), center (c) {}
         SphereObstacle (void) : radius(1), center (Vec3::zero) {}
 
+        virtual ~SphereObstacle() { /* Nothing to do. */ }
+        
         // find first intersection of a vehicle's path with this obstacle
         void findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
                                               PathIntersection& pi)
@@ -202,6 +209,9 @@ namespace OpenSteer {
         BoxObstacle (float w, float h, float d) : width(w), height(h), depth(d) {}
         BoxObstacle (void) :  width(1.0f), height(1.0f), depth(1.0f) {}
 
+        virtual ~BoxObstacle() { /* Nothing to do. */ }
+        
+        
         // find first intersection of a vehicle's path with this obstacle
         void findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
                                               PathIntersection& pi)
@@ -229,11 +239,14 @@ namespace OpenSteer {
                        const Vec3& u,
                        const Vec3& f,
                        const Vec3& p)
+        : LocalSpaceObstacle( s, u, f, p )
         {
+            /*
             setSide (s);
             setUp (u);
             setForward (f);
             setPosition (p);
+             */
         }
 
         // find first intersection of a vehicle's path with this obstacle
@@ -267,13 +280,19 @@ namespace OpenSteer {
         RectangleObstacle (void) :  width(1.0f), height(1.0f) {}
         RectangleObstacle (float w, float h, const Vec3& s,
                            const Vec3& u, const Vec3& f, const Vec3& p,
-                           seenFromState sf) : width(w), height(h)
+                           seenFromState sf) 
+            : PlaneObstacle( s, u, f, p ), width(w), height(h)
         {
+            /*
             setSide (s);
             setUp (u);
             setForward (f);
             setPosition (p);
-            setSeenFrom (sf);}
+             */
+            setSeenFrom (sf);
+        }
+        
+        virtual ~RectangleObstacle() { /* Nothing to do. */ }
 
         // determines if a given point on XY plane is inside obstacle shape
         bool xyPointInsideShape (const Vec3& point, float radius) const;

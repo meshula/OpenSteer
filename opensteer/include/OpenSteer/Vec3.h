@@ -69,8 +69,8 @@ namespace OpenSteer {
         float x, y, z;
 
         // constructors
-        Vec3 (void) {x = y = z = 0;}
-        Vec3 (float X, float Y, float Z) {x = X; y = Y; z = Z;}
+        Vec3 (void): x( 0.0f ), y( 0.0f ), z( 0.0f ) {}
+        Vec3 (float X, float Y, float Z) : x( X ), y( Y ), z( Z ) {}
 
         // vector addition
         Vec3 operator+ (const Vec3& v) const {return Vec3 (x+v.x, y+v.y, z+v.z);}
@@ -129,13 +129,17 @@ namespace OpenSteer {
         // *=
         Vec3 operator*= (const float& s) {return *this = (*this * s);}
 
+        
+        Vec3 operator/=( float d ) { return *this = (*this / d);  }
+        
         // equality/inequality
         bool operator== (const Vec3& v) const {return x==v.x && y==v.y && z==v.z;}
         bool operator!= (const Vec3& v) const {return !(*this == v);}
 
+        // @todo Remove - use @c distance from the Vec3Utilitites header instead.
         // XXX experimental (4-1-03 cwr): is this the right approach?  defining
         // XXX "Vec3 distance (vec3, Vec3)" collided with STL's distance template.
-        static float distance (const Vec3& a, const Vec3& b){return(a-b).length();}
+        static float distance (const Vec3& a, const Vec3& b){ return(a-b).length();}
 
         // --------------------------- utility member functions used in OpenSteer
 
@@ -359,11 +363,6 @@ namespace OpenSteer {
     // length
     // distance
     // normalized
-
-
-    //you would really expect this to work, but it collides with STL's obscure
-    //distance template
-    //inline float distance (const Vec3& a, const Vec3& b) {return (a-b).length();}
 
     
 } // namespace OpenSteer

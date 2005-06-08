@@ -27,7 +27,7 @@
 //
 // ----------------------------------------------------------------------------
 
-#include "Color.h"
+#include "OpenSteer/Color.h"
 
 // Include OpenSteer::Vec3
 #include "OpenSteer/Vec3.h"

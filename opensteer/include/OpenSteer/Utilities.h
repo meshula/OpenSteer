@@ -30,6 +30,8 @@
 //
 // Utilities for OpenSteering
 //
+// 08-06-05 bk:  added functions to clamp values to a certain value range, to 
+//               compare values using a tolerance, and so on.
 // 10-04-04 bk:  put everything into the OpenSteer namespace
 // 07-09-02 cwr: created 
 //
@@ -45,7 +47,7 @@
 #include <cstdlib>   // for rand, etc.
 #include <cfloat>    // for FLT_MAX, etc.
 #include <cmath>     // for sqrt, etc.
-
+#include <vector>    // for std::vector
 
 // ----------------------------------------------------------------------------
 // For the sake of Windows, apparently this is a "Linux/Unix thing"
@@ -258,12 +260,12 @@ namespace OpenSteer {
 
     #ifdef _WIN32
 
-    inline float floorXXX (float x)          {return floor (x);}
-    inline float  sqrtXXX (float x)          {return sqrt (x);}
-    inline float   sinXXX (float x)          {return sin (x);}
-    inline float   cosXXX (float x)          {return cos (x);}
-    inline float   absXXX (float x)          {return abs (x);}
-    inline int     absXXX (int x)            {return abs (x);}
+    inline float floorXXX (float x)          {return ::floor (x);}
+    inline float  sqrtXXX (float x)          {return ::sqrt (x);}
+    inline float   sinXXX (float x)          {return ::sin (x);}
+    inline float   cosXXX (float x)          {return ::cos (x);}
+    inline float   absXXX (float x)          {return ::abs (x);}
+    inline int     absXXX (int x)            {return ::abs (x);}
     inline float   maxXXX (float x, float y) {if (x > y) return x; else return y;}
     inline float   minXXX (float x, float y) {if (x < y) return x; else return y;}
 
@@ -309,6 +311,195 @@ namespace OpenSteer {
     
     #endif
 
+    
+    /**
+     * Returns @a valueToClamp clamped to the range @a minValue - @a maxValue.
+     */
+    template< typename T >
+    T
+    clamp( T const& valueToClamp, T const& minValue, T const& maxValue) {
+        assert( minValue <= maxValue && "minValue must be lesser or equal to maxValue."  );
+        
+        if ( valueToClamp < minValue ) {
+            return minValue;
+        } else if ( valueToClamp > maxValue ) {
+            return maxValue;
+        }
+        
+        return valueToClamp;
+    }
+    
+    
+    /**
+     * Returns the floating point remainder of the division of @a x by @a y.
+     * If @a y is @c 0 the behavior is undefined.
+     */
+    inline float modulo( float x, float y ) {
+        assert( 0.0f != y && "Division by zero." );
+        return std::fmod( x, y );
+    }
+    
+    /**
+     * Returns the floating point remainder of the division of @a x by @a y.
+     * If @a y is @c 0 the behavior is undefined.
+     */
+    inline double modulo( double x, double y ) {
+        assert( 0.0 != y && "Division by zero." );
+        return std::fmod( x, y );
+    }    
+    
+    /**
+     * Returns the floating point remainder of the division of @a x by @a y.
+     * If @a y is @c 0 the behavior is undefined.
+     */
+    inline long double modulo( long double x, long double y ) {
+        assert( 0.0 != y && "Division by zero." );
+        return std::fmod( x, y );
+    }
+    
+    /**
+     * Returns the floating point remainder of the division of @a x by @a y.
+     * If @a y is @c 0 the behavior is undefined.
+     */
+    inline short modulo( short x, short y ) {
+        assert( 0 != y && "Division by zero." );
+        return x % y;
+    }
+    
+    /**
+     * Returns the floating point remainder of the division of @a x by @a y.
+     * If @a y is @c 0 the behavior is undefined.
+     */
+    inline int modulo( int x, int y ) {
+        assert( 0 != y && "Division by zero." );
+        return x % y;
+    }
+    
+    /**
+     * Returns the floating point remainder of the division of @a x by @a y.
+     * If @a y is @c 0 the behavior is undefined.
+     */
+    inline long modulo( long x, long y ) {
+        assert( 0 != y && "Division by zero." );
+        return x % y;
+    }
+    
+    
+    /**
+     * Returns <code>value</code> if <code>value >= 0 </code>, otherwise
+     * <code>-value</code>.
+     */
+    template< typename T >
+    T abs( T const& value ) {
+        return absXXX( value );
+    }
+    
+    /**
+     * Returns the maximum of the three values @a v0, @a v1, and @a v2.
+     *
+     * @todo Write a unit test.
+     */
+    template< typename T >
+    T
+    max( T const& v0, T const& v1, T const& v2 ) {
+        return maxXXX( v0, maxXXX( v1, v2 ) );
+    }
+    
+    
+    /**
+     * Returns the minimum of the three values @a v0, @a v1, and @a v2.
+     *
+     * @todo Write a unit test.
+     */
+    template< typename T >
+    T
+    min( T const& v0, T const& v1, T const& v2 ) {
+        return minXXX( v0, minXXX( v1, v2 ) );
+    }
+    
+    
+    /**
+     * Compares the absolute value of @a v with @a tolerance.
+     *
+     * See Christer Ericson, Real-Time Collision Detection, Morgan Kaufmann, 
+     * 2005, pp. 441--443.
+     *
+     * @todo Write a unit test.
+     */
+    template< typename T >
+    bool
+    isZero( T const& v, T const& tolerance = std::numeric_limits< T >::epsilon() ) {
+        return abs( v ) <= tolerance;
+    }
+    
+    
+    /**
+     * Compares @a lhs with @a rhs given a specific @a tolerance.
+     *
+     * @attention Adapt @a tolerance to the range of values of @a lhs and 
+     * @a rhs.
+     * See Christer Ericson, Real-Time Collision Detection, Morgan Kaufmann, 
+     * 2005, pp. 441--443.
+     *
+     * @return <code>abs( lhs - rhs ) <= tolerance</code>
+     *
+     * @todo Write a unit test.
+     */
+    template< typename T >
+    bool
+    equalsAbsolute( T const& lhs, T const& rhs, T const& tolerance = std::numeric_limits< T >::epsilon()  ) {
+        return isZero( lhs - rhs, tolerance );
+    }
+    
+    
+    /**
+     * Compares @a lhs with @a rhs given a specific @a tolerance taking the 
+     * range of values into account.
+     *
+     * See Christer Ericson, Real-Time Collision Detection, Morgan Kaufmann, 
+     * 2005, pp. 441--443.
+     *
+     * @return <code>abs( lhs - rhs ) <= tolerance * max( abs( lhs ), abs( rhs ), 1 )</code>
+     *
+     * @todo Write a unit test.
+     */
+    template< typename T >
+    bool
+    equalsRelative( T const& lhs, T const& rhs, T const& tolerance = std::numeric_limits< T >::epsilon()  ) {
+        return isZero( lhs - rhs, tolerance * max( abs( lhs ), abs( rhs ), T( 1 ) ) );
+    }
+    
+    
+    /**
+     * Approximately compares @a lhs with @a rhs given a specific @a tolerance  
+     * taking the range of values into account.
+     *
+     * See Christer Ericson, Real-Time Collision Detection, Morgan Kaufmann, 
+     * 2005, pp. 441--443.
+     *
+     * @return <code>abs( lhs - rhs ) <= tolerance * ( abs( lhs ) + abs( rhs ) + 1 )</code>
+     *
+     * @todo Write a unit test.
+     */
+    template< typename T >
+    bool
+    equalsRelativeApproximately( T const& lhs, T const& rhs, T const& tolerance = std::numeric_limits< T >::epsilon()  ) {
+        return isZero( lhs - rhs, tolerance * ( abs( lhs ) + abs( rhs ) + T( 1 ) ) );
+    }    
+    
+    
+    /**
+     * Shrinks the capacity of a std::vector to fit its content.
+     *
+     * See Scott Meyer, Effective STL, Addison-Wesley, 2001, pp. 77--79.
+     */
+    template< typename T >
+    void shrinkToFit( std::vector< T >& v ) {
+        std::vector< T >( v ).swap( v );
+    }
+    
+
+    
 } // namespace OpenSteer
     
     

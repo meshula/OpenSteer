@@ -28,10 +28,9 @@
 // ----------------------------------------------------------------------------
 //
 //
-// Pathway and PolylinePathway, for path following.
+// Pathway, for path following.
 //
-// 10-04-04 bk:  put everything into the OpenSteer namespace
-// 06-03-02 cwr: created
+// May 12, 2005 bk: created based on old pathway code.
 //
 //
 // ----------------------------------------------------------------------------
@@ -40,139 +39,70 @@
 #ifndef OPENSTEER_PATHWAY_H
 #define OPENSTEER_PATHWAY_H
 
-
-#include "OpenSteer/Vec3.h"
-
-
 namespace OpenSteer {
-
-    // ----------------------------------------------------------------------------
-    // Pathway: a pure virtual base class for an abstract pathway in space, as for
-    // example would be used in path following.
-
-
-	class Pathway
-	{
-	public:
-		Pathway() { }
-		virtual ~Pathway() { }
-
-		// Given an arbitrary point ("A"), returns the nearest point ("P") on
-		// this path.  Also returns, via output arguments, the path tangent at
-		// P and a measure of how far A is outside the Pathway's "tube".  Note
-		// that a negative distance indicates A is inside the Pathway.
+    
+    // Forward declaration, include Vec3.h if needed.
+    // @todo Include Vec3.h?
+    class Vec3;
+    
+    
+    
+    /**
+     * Pure virtual base class representing an abstract pathway in space.
+     * Could be used for example in path following.
+     */
+    class Pathway {
+    public:
+        virtual ~Pathway() = 0;
+        
+        /**
+         * Returns @c true if the path is valid, @c false otherwise.
+         */
+        virtual bool isValid() const = 0;
+        
+        /**
+         * Given an arbitrary point ("A"), returns the nearest point ("P") on
+		 * this path.  Also returns, via output arguments, the path tangent at
+		 * P and a measure of how far A is outside the Pathway's "tube".  Note
+		 * that a negative distance indicates A is inside the Pathway.
+         * If @c isValid is @c false the behavior is undefined.
+         *
+         * @todo Move it into a non-member function?
+         */
 		virtual Vec3 mapPointToPath (const Vec3& point,
-			Vec3& tangent,
-			float& outside) = 0;
-
-		// given a distance along the path, convert it to a point on the path
-		virtual Vec3 mapPathDistanceToPoint (float pathDistance) = 0;
-
-		// Given an arbitrary point, convert it to a distance along the path.
-		virtual float mapPointToPathDistance (const Vec3& point) = 0;
-
-		// is the given point inside the path tube?
-		bool isInsidePath (const Vec3& point)
-		{
-			float outside; Vec3 tangent;
-			mapPointToPath (point, tangent, outside);
-			return outside < 0;
-		}
-
-		// how far outside path tube is the given point?  (negative is inside)
-		float howFarOutsidePath (const Vec3& point)
-		{
-			float outside; Vec3 tangent;
-			mapPointToPath (point, tangent, outside);
-			return outside;
-		}
-	};
-
-
-    // ----------------------------------------------------------------------------
-    // PolylinePathway: a simple implementation of the Pathway protocol.  The path
-    // is a "polyline" a series of line segments between specified points.  A
-    // radius defines a volume for the path which is the union of a sphere at each
-    // point and a cylinder along each segment.
-
-
-	class PolylinePathway: public virtual Pathway
-	{
-	public:
-
-		int pointCount;
-		Vec3* points;
-		float radius;
-		bool cyclic;
-
-		PolylinePathway (void) {}
-		virtual ~PolylinePathway() { }
-
-		// construct a PolylinePathway given the number of points (vertices),
-		// an array of points, and a path radius.
-		PolylinePathway (const int _pointCount,
-			const Vec3 _points[],
-			const float _radius,
-			const bool _cyclic);
-
-		// utility for constructors in derived classes
-		void initialize (const int _pointCount,
-			const Vec3 _points[],
-			const float _radius,
-			const bool _cyclic);
-
-        // utility for constructors in derived classes
-		void 
-		setupLengths ();
-
-        // move existing points safely
-        void movePoints (const int _firstPoint,
-						const int _numPoints,
-                        const Vec3 _points[]);
-
-		// Given an arbitrary point ("A"), returns the nearest point ("P") on
-        // this path.  Also returns, via output arguments, the path tangent at
-        // P and a measure of how far A is outside the Pathway's "tube".  Note
-        // that a negative distance indicates A is inside the Pathway.
-        Vec3 mapPointToPath (const Vec3& point, Vec3& tangent, float& outside);
-
-
-		// given an arbitrary point, convert it to a distance along the path
-		float mapPointToPathDistance (const Vec3& point);
-
-		// given a distance along the path, convert it to a point on the path
-		Vec3 mapPathDistanceToPoint (float pathDistance);
-
-		// utility methods
-
-		// compute minimum distance from a point to a line segment
-		float pointToSegmentDistance (const Vec3& point,
-			const Vec3& ep0,
-			const Vec3& ep1);
-
-		// assessor for total path length;
-		float getTotalPathLength (void) {return totalPathLength;};
-
-		// XXX removed the "private" because it interfered with derived
-		// XXX classes later this should all be rewritten and cleaned up
-		// private:
-
-		// xxx shouldn't these 5 just be local variables?
-		// xxx or are they used to pass secret messages between calls?
-		// xxx seems like a bad design
-		float segmentLength;
-		float segmentProjection;
-		Vec3 local;
-		Vec3 chosen;
-		Vec3 segmentNormal;
-
-		float* lengths;
-		Vec3* normals;
-		float totalPathLength;
-	};
-
+                                     Vec3& tangent,
+                                     float& outside) const = 0;
+        
+		/**
+         * Given a distance along the path, convert it to a point on the path.
+         * If @c isValid is @c false the behavior is undefined.
+         *
+         * @todo Move it into a non-member function?
+         */
+		virtual Vec3 mapPathDistanceToPoint (float pathDistance) const = 0;
+        
+		/**
+         * Given an arbitrary point, convert it to a distance along the path.
+         * If @c isValid is @c false the behavior is undefined.
+         *
+         * @todo Move it into a non-member function?
+         */
+		virtual float mapPointToPathDistance (const Vec3& point) const = 0;
+        
+        /**
+         * Returns @c true f the path is closed, otherwise @c false.
+         */
+        virtual bool isCyclic() const = 0;
+        
+        /**
+         * Returns the length of the path.
+         */
+        virtual float length() const = 0;
+        
+        
+    }; // class Pathway
+    
 } // namespace OpenSteer
-    
-    
-// ----------------------------------------------------------------------------
+
+
 #endif // OPENSTEER_PATHWAY_H

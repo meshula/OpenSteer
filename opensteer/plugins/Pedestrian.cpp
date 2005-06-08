@@ -39,7 +39,7 @@
 
 #include <iomanip>
 #include <sstream>
-#include "OpenSteer/Pathway.h"
+#include "OpenSteer/PolylineSegmentedPathwaySingleRadius.h"
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/OpenSteerDemo.h"
 #include "OpenSteer/Proximity.h"
@@ -61,8 +61,8 @@ typedef AbstractTokenForProximityDatabase<AbstractVehicle*> ProximityToken;
 
 
 // creates a path for the PlugIn
-PolylinePathway* getTestPath (void);
-PolylinePathway* gTestPath = NULL;
+PolylineSegmentedPathwaySingleRadius* getTestPath (void);
+PolylineSegmentedPathwaySingleRadius* gTestPath = NULL;
 SphereObstacle gObstacle1;
 SphereObstacle gObstacle2;
 ObstacleGroup gObstacles;
@@ -126,8 +126,8 @@ public:
 
         // set initial position
         // (random point on path + random horizontal offset)
-        const float d = path->getTotalPathLength() * frandom01();
-        const float r = path->radius;
+        const float d = path->length() * frandom01();
+        const float r = path->radius();
         const Vec3 randomOffset = randomVectorOnUnitRadiusXZDisk () * r;
         setPosition (path->mapPathDistanceToPoint (d) + randomOffset);
 
@@ -155,16 +155,17 @@ public:
         if (gUseDirectedPathFollowing)
         {
             const Color darkRed (0.7f, 0, 0);
-
-            if (Vec3::distance (position(), gEndpoint0) < path->radius)
+            float const pathRadius = path->radius();
+            
+            if (Vec3::distance (position(), gEndpoint0) < pathRadius )
             {
                 pathDirection = +1;
-                annotationXZCircle (path->radius, gEndpoint0, darkRed, 20);
+                annotationXZCircle (pathRadius, gEndpoint0, darkRed, 20);
             }
-            if (Vec3::distance (position(), gEndpoint1) < path->radius)
+            if (Vec3::distance (position(), gEndpoint1) < pathRadius )
             {
                 pathDirection = -1;
-                annotationXZCircle (path->radius, gEndpoint1, darkRed, 20);
+                annotationXZCircle (pathRadius, gEndpoint1, darkRed, 20);
             }
         }
 
@@ -358,7 +359,7 @@ public:
     // XXX getTotalPathLength and radius methods (currently defined only
     // XXX on PolylinePathway) to set random initial positions.  Could
     // XXX there be a "random position inside path" method on Pathway?
-    PolylinePathway* path;
+    PolylineSegmentedPathwaySingleRadius* path;
 
     // direction for path following (upstream or downstream)
     int pathDirection;
@@ -390,13 +391,13 @@ AVGroup Pedestrian::neighbors;
 //
 
 
-PolylinePathway* getTestPath (void)
+PolylineSegmentedPathwaySingleRadius* getTestPath (void)
 {
     if (gTestPath == NULL)
     {
         const float pathRadius = 2;
 
-        const int pathPointCount = 7;
+        const PolylineSegmentedPathwaySingleRadius::size_type pathPointCount = 7;
         const float size = 30;
         const float top = 2 * size;
         const float gap = 1.2f * size;
@@ -452,10 +453,10 @@ PolylinePathway* getTestPath (void)
         gEndpoint0 = pathPoints[0];
         gEndpoint1 = pathPoints[pathPointCount-1];
 
-        gTestPath = new PolylinePathway (pathPointCount,
-                                         pathPoints,
-                                         pathRadius,
-                                         false);
+        gTestPath = new PolylineSegmentedPathwaySingleRadius (pathPointCount,
+                                                              pathPoints,
+                                                              pathRadius,
+                                                              false);
     }
     return gTestPath;
 }
@@ -604,17 +605,20 @@ public:
 
     void drawPathAndObstacles (void)
     {
+        typedef PolylineSegmentedPathwaySingleRadius::size_type size_type;
+        
         // draw a line along each segment of path
-        const PolylinePathway& path = *getTestPath ();
-        for (int i = 0; i < path.pointCount; i++)
-            if (i > 0) drawLine (path.points[i], path.points[i-1], gRed);
-
+        const PolylineSegmentedPathwaySingleRadius& path = *getTestPath ();
+        for (size_type i = 1; i < path.pointCount(); ++i ) {
+            drawLine (path.point( i ), path.point( i-1) , gRed);
+        }
+        
         // draw obstacles
         drawXZCircle (gObstacle1.radius, gObstacle1.center, gWhite, 40);
         drawXZCircle (gObstacle2.radius, gObstacle2.center, gWhite, 40);
 // ------------------------------------ xxxcwr11-1-04 fixing steerToAvoid
         {
-            float w = gObstacle3.width / 2;
+            float w = gObstacle3.width * 0.5f;
             Vec3 p = gObstacle3.position ();
             Vec3 s = gObstacle3.side ();
             drawLine (p + (s * w), p + (s * -w), gWhite);
