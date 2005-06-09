@@ -48,6 +48,7 @@
 #include <cfloat>    // for FLT_MAX, etc.
 #include <cmath>     // for sqrt, etc.
 #include <vector>    // for std::vector
+#include <cassert>   // for assert
 
 // ----------------------------------------------------------------------------
 // For the sake of Windows, apparently this is a "Linux/Unix thing"
