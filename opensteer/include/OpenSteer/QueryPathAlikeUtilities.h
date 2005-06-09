@@ -23,11 +23,13 @@
  * DEALINGS IN THE SOFTWARE.
  *
  *
+ * @file
+ *
  * @author Bjoern Knafla <bknafla@uni-kassel.de>
  *
  * Collection of helper classes to inherit from to create mappings as used by  
- * @c OpenSteer::mapDistanceToPointOnPathCenterLine and 
- * @c OpenSteer::mapPointToPathway.
+ * @c OpenSteer::mapDistanceToPathAlike and 
+ * @c OpenSteer::mapPointToPathAlike.
  */
 
 #ifndef OPENSTEER_QUERYPATHALIKEUTILITIES_H
@@ -38,8 +40,8 @@ namespace OpenSteer {
 
     /**
      * Inherit from it to create a mapping class used by 
-     * @c OpenSteer::mapDistanceToPointOnPathCenterLine and 
-     * @c OpenSteer::mapPointToPathway that calculates and extracts the
+     * @c OpenSteer::mapDistanceToPathAlike and 
+     * @c OpenSteer::mapPointToPathAlike that calculates and extracts the
      * distance along the path alike.
      */    
     class ExtractPathDistance {
@@ -73,8 +75,8 @@ namespace OpenSteer {
     
     /**
      * Inherit from it to create a mapping class used by 
-     * @c OpenSteer::mapDistanceToPointOnPathCenterLine and 
-     * @c OpenSteer::mapPointToPathway that shouldn't calculate and extract the
+     * @c OpenSteer::mapDistanceToPathAlike and 
+     * @c OpenSteer::mapPointToPathAlike that shouldn't calculate and extract the
      * distance along the path alike.
      */
     class DontExtractPathDistance {

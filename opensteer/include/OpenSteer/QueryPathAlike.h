@@ -23,7 +23,12 @@
  * DEALINGS IN THE SOFTWARE.
  *
  *
+ * @file
+ *
  * @author Bjoern Knafla <bknafla@uni-kassel.de>
+ *
+ * Functionality to map points or distances to path alikes and to extract
+ * the assocaited information.
  */
 #ifndef OPENSTEER_QUERYPATHALIKE_H
 #define OPENSTEER_QUERYPATHALIKE_H
@@ -48,85 +53,45 @@
 namespace OpenSteer {
 
     /**
-     * Maps @a queryPoint to a path alike @a pathway and returns the queried 
-     * data in @a mapping.
-     *
-     * @c PointToPathwayMapping must provide the following member functions to
-     * set queried values. Provide empty member functions if you aren't 
-     * interested in the specified values. A good compiler should optimize the
-     * empty member function calls and the associated calculations for its
-     * parameters away.
-     *
-     * <code> void setPointOnPathCenterLine( Vec3 const& ) </code>
-     * <code> void setPointOnPathBoundary( Vec3 const& ) </code>
-     * <code> void setRadius( float ) </code>
-     * <code> void setTangent( Vec3 const& ) </code>
-     * <code> void setSegmentIndex( typename SegmentedPathAlike::size_type ) </code>
-     * <code> void setDistancePointToPath( float ) </code>
-     * <code> void setDistancePointToPathCenterLine( float ) </code>
-     * <code> void setDistanceOnPath( float ) </code>
-     * <code> void setDistanceOnSegment( float ) </code>
-     *
-     * To query for the distance on the path the two following member functions
-     * of @c PointToPathwayMapping must be provided too:
-     *
-     * <code> void setDistanceOnPathFlag( float ) </code> and
-     * <code> float distanceOnPathFlag() const </code>.
-     *
-     * If the distance along the path shouldn't be extracted provide empty 
-     * versions of these member functions.
-     *
-     * Provide a member function <code>float segmentDistanceRadius( PathAlike const& pathAlike, typename PathAlike::size_type segmentIndex, float distanceOnSegment ) const</code>
-     * for your path alike class so radius information can be extracted. A path
-     * without an associated radius for example would just return @c 0.0f all 
-     * the time.
-     *
-     * In @c QueryPathAlikeUtilities.h provides some base classes to inherit
-     * from to automatically get some of the functionality described above.
+     * Provides functionality to map points or distances to path alikes and
+     * to extract associated information.
      */
-    /*
-    template< class SegmentedPathAlike, class PointToPathwayMapping >
-    void mapPointToPathway( SegmentedPathAlike const& pathway, 
-                            Vec3 const& queryPoint, 
-                            PointToPathwayMapping& mapping )
-    {
-        float minDistancePointToPath = std::numeric_limits< float >::max();
-        mapping.setDistanceOnPathFlag( 0.0f );
-            
-        typedef typename SegmentedPathAlike::size_type size_type;
-        size_type const segmentCount = pathway.segmentCount();
-        for (  size_type segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex ) {
-            
-            
-            float segmentDistance = pathway.mapPointToSegmentDistance( segmentIndex, queryPoint );
-            Vec3 pointOnPathCenterLine( pathway.mapSegmentDistanceToPoint( segmentIndex, segmentDistance ) );
-            float radius = mapping.segmentDistanceRadius( pathway, segmentIndex, segmentDistance );
-            float distancePointToPath = distance( queryPoint, pointOnPathCenterLine )  - radius;
- 
-           if ( distancePointToPath < minDistancePointToPath ) {
-               minDistancePointToPath = distancePointToPath;
-               mapping.setPointOnPathCenterLine( pointOnPathCenterLine );
-               mapping.setPointOnPathBoundary( pointOnPathCenterLine + ( ( queryPoint - pointOnPathCenterLine ).normalize() * radius ) );
-               mapping.setRadius( radius );
-               mapping.setTangent( pathway.mapSegmentDistanceToTangent( segmentIndex, segmentDistance ) );
-               // mapping.setTangent( tangent );
-               mapping.setSegmentIndex( segmentIndex );
-               mapping.setDistancePointToPath( distancePointToPath );
-               mapping.setDistancePointToPathCenterLine( distancePointToPath + radius );
-               mapping.setDistanceOnPath( mapping.distanceOnPathFlag() + segmentDistance );
-               mapping.setDistanceOnSegment( segmentDistance );
-           }
-           
-           mapping.setDistanceOnPathFlag( mapping.distanceOnPathFlag() + pathway.segmentLength( segmentIndex ) );
-        }
-    }
-     */
-
-
     template< class PathAlike, class Mapping, class BaseDataExtractionPolicy = PointToPathAlikeBaseDataExtractionPolicy< PathAlike > >
     class PointToPathAlikeMapping {
     public:
         
+        /**
+         * Maps @a queryPoint to a path alike @a pathAlike and returns the  
+         * queried data in @a mapping.
+         *
+         * @c Mapping must provide the following member functions to
+         * set queried values. Member functions might be empty if the specific 
+         * data isn't needed. A good compiler should optimize the
+         * empty member function calls and the associated calculations for its
+         * parameters away.
+         *
+         * <code> void setPointOnPathCenterLine( Vec3 const& ) </code>
+         * <code> void setPointOnPathBoundary( Vec3 const& ) </code>
+         * <code> void setRadius( float ) </code>
+         * <code> void setTangent( Vec3 const& ) </code>
+         * <code> void setSegmentIndex( typename SegmentedPathAlike::size_type ) </code>
+         * <code> void setDistancePointToPath( float ) </code>
+         * <code> void setDistancePointToPathCenterLine( float ) </code>
+         * <code> void setDistanceOnPath( float ) </code>
+         * <code> void setDistanceOnSegment( float ) </code>
+         *
+         * To query for the distance on the path the two following member functions
+         * of @c Mapping must be provided too:
+         *
+         * <code> void setDistanceOnPathFlag( float ) </code> and
+         * <code> float distanceOnPathFlag() const </code>.
+         *
+         * If the distance along the path shouldn't be extracted empty 
+         * versions of these member functions are possible.
+         *
+         * @c QueryPathAlikeUtilities.h provides some base classes to inherit
+         * from to automatically get some of the functionality described above.
+         */
         static void map( PathAlike const& pathAlike, Vec3 const& queryPoint, Mapping& mapping ) {
             float minDistancePointToPath = std::numeric_limits< float >::max();
             mapping.setDistanceOnPathFlag( 0.0f );
@@ -160,88 +125,50 @@ namespace OpenSteer {
             }
         }
         
-    }; // class MapPointToPathway
+    }; // class PointToPathAlikeMapping
     
-    
+    /**
+     * Maps @a point to @a pathAlike and returns the data extracted in 
+     * @a mapping.
+     *
+     * See @c MapPointToPathAlike::map for further information.
+     */
     template< class PathAlike, class Mapping >
     void mapPointToPathAlike( PathAlike const& pathAlike, Vec3 const& point, Mapping& mapping ) {
         PointToPathAlikeMapping< PathAlike, Mapping >::map( pathAlike, point, mapping );
     }
     
-    
+        
     
     /**
-     * Maps @a distanceOnPath to a path alike @a pathway and returns the queried
-     * data in @a mapping.
-     *
-     * @c DistanceToPathwayMapping must provide the following member functions 
-     * to set queried values. Provide empty member functions if you aren't 
-     * interested in the specified values. A good compiler should optimize the
-     * empty member function calls and the associated calculations for its
-     * parameters away.
-     *
-     * <code> void setPointOnPathCenterLine( Vec3 const& ) </code>
-     * <code> void setRadius( float ) </code>
-     * <code> void setTangent( Vec3 const& ) </code>
-     * <code> void setSegmentIndex( typename SegmentedPathAlike::size_type ) </code>
-     * <code> void setDistanceOnPath( float ) </code>
-     * <code> void setDistanceOnSegment( float ) </code>
-     *
-     * Provide a member function <code>float segmentDistanceRadius( PathAlike const& pathAlike, typename PathAlike::size_type segmentIndex, float distanceOnSegment ) const </code>
-     * for your path alike class so radius information can be extracted. A path
-     * without an associated radius for example would just return @c 0.0f all 
-     * the time.
+     * Provides functionality to map distances to path alikes and to extract
+     * the associated data.
      */
-    /*
-    template< class SegmentedPathAlike, class DistanceToPathwayMapping >
-    void mapDistanceToPointOnPathCenterLine( SegmentedPathAlike const& pathway, 
-                                             float distanceOnPath, 
-                                             DistanceToPathwayMapping& mapping )
-    {
-        float const pathLength = pathway.length();
-        if ( pathway.isCyclic() ) {
-            distanceOnPath = modulo( distanceOnPath, pathLength );       
-            if ( 0.0f > distanceOnPath ) {
-                distanceOnPath = pathLength + distanceOnPath;
-            }       
-        } else {    
-            if ( 0.0f > distanceOnPath ) {
-                distanceOnPath = pathLength + distanceOnPath;
-            }    
-            distanceOnPath = clamp( distanceOnPath, 0.0f, pathLength );
-        }
-        
-        float remainingDistance = distanceOnPath;
-        typedef typename SegmentedPathAlike::size_type size_type;
-        size_type segmentIndex = 0;        
-        size_type const maxSegmentIndex = pathway.segmentCount() - 1;
-        while( remainingDistance > pathway.segmentLength( segmentIndex ) ) {
-            remainingDistance -= pathway.segmentLength( segmentIndex );
-            if ( segmentIndex == maxSegmentIndex ) { 
-                break; 
-            }
-            ++segmentIndex;
-        }
-        
-        mapping.setPointOnPathCenterLine( pathway.mapSegmentDistanceToPoint( segmentIndex, remainingDistance ) );
-        // mapping.setPointOnPathBoundary();
-        mapping.setRadius( mapping.segmentDistanceRadius( pathway, segmentIndex, remainingDistance ) );
-        mapping.setTangent( pathway.mapSegmentDistanceToTangent( segmentIndex, remainingDistance ) );
-        mapping.setSegmentIndex( segmentIndex );
-        // mapping.setDistancePointToPath();
-        // mapping.setDistancePointToPathCenterLine();
-        mapping.setDistanceOnPath( distanceOnPath );
-        mapping.setDistanceOnSegment( remainingDistance );
-    }    
-    */
-    
-    
     template< class PathAlike, class Mapping, class BaseDataExtractionPolicy = DistanceToPathAlikeBaseDataExtractionPolicy< PathAlike > > 
     class DistanceToPathAlikeMapping {
     public:
     
+        /**
+         * Maps @a distanceOnPath to a path alike @a pathAlike and returns the 
+         * queried data in @a mapping.
+         *
+         * @c Mapping must provide the following member functions 
+         * to set queried values. Member functions might be empty if the  
+         * specific data isn't needed. A good compiler should optimize the
+         * empty member function calls and the associated calculations for its
+         * parameters away.
+         *
+         * <code> void setPointOnPathCenterLine( Vec3 const& ) </code>
+         * <code> void setRadius( float ) </code>
+         * <code> void setTangent( Vec3 const& ) </code>
+         * <code> void setSegmentIndex( typename SegmentedPathAlike::size_type ) </code>
+         * <code> void setDistanceOnPath( float ) </code>
+         * <code> void setDistanceOnSegment( float ) </code>
+         */
         static void map( PathAlike const& pathAlike, float distanceOnPath, Mapping& mapping ) {
             float const pathLength = pathAlike.length();
+            
+            // Modify @c distanceOnPath to applicable values.
             if ( pathAlike.isCyclic() ) {
                 distanceOnPath = modulo( distanceOnPath, pathLength );       
                 if ( 0.0f > distanceOnPath ) {
@@ -254,6 +181,7 @@ namespace OpenSteer {
                 distanceOnPath = clamp( distanceOnPath, 0.0f, pathLength );
             }
             
+            // Which path alike segment is reached by @c distanceOnPath?
             float remainingDistance = distanceOnPath;
             typedef typename PathAlike::size_type size_type;
             size_type segmentIndex = 0;        
@@ -266,20 +194,18 @@ namespace OpenSteer {
                 ++segmentIndex;
             }
             
+            // Extract the path related data associated with the segment reached
+            // by @c distanceOnPath.
             Vec3 pointOnPathCenterLine( 0.0f, 0.0f, 0.0f );
             Vec3 tangent( 0.0f, 0.0f, 0.0f );
             float radius = 0.0f;
-            
             BaseDataExtractionPolicy::extract( pathAlike, segmentIndex, remainingDistance, pointOnPathCenterLine, tangent, radius );
             
-            
+            // Store the extracted data in @c mapping to return it to the caller.
             mapping.setPointOnPathCenterLine( pointOnPathCenterLine );
-            // mapping.setPointOnPathBoundary();
             mapping.setRadius( radius );
             mapping.setTangent( tangent );
             mapping.setSegmentIndex( segmentIndex );
-            // mapping.setDistancePointToPath();
-            // mapping.setDistancePointToPathCenterLine();
             mapping.setDistanceOnPath( distanceOnPath );
             mapping.setDistanceOnSegment( remainingDistance );            
         }
@@ -287,6 +213,13 @@ namespace OpenSteer {
     }; // class DistanceToPathAlikeMapping
     
     
+    
+    /**
+     * Maps @a distance to @a pathAlike and stores the data queried in
+     * @a mapping.
+     *
+     * See @c DistanceToPathAlikeMapping::map for further information.
+     */
     template< class PathAlike, class Mapping >
     void mapDistanceToPathAlike( PathAlike const& pathAlike, float distance, Mapping& mapping ) {
         DistanceToPathAlikeMapping< PathAlike, Mapping >::map( pathAlike, distance, mapping );

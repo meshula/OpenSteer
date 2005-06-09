@@ -23,7 +23,11 @@
  * DEALINGS IN THE SOFTWARE.
  *
  *
+ * @file
+ *
  * @author Bjoern Knafla <bknafla@uni-kassel.de>
+ *
+ * Utilitites to get the next or previous segment of a segmented path alike.
  */
 #ifndef OPENSTEER_SEGMENTEDPATHALIKEUTILITIES_H
 #define OPENSTEER_SEGMENTEDPATHALIKEUTILITIES_H

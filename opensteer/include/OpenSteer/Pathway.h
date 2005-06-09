@@ -21,6 +21,11 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
+ *
+ *
+ * @file
+ *
+ * Abstract base class for pathways - paths with associated radii.
  */
 #ifndef OPENSTEER_PATHWAY_H
 #define OPENSTEER_PATHWAY_H

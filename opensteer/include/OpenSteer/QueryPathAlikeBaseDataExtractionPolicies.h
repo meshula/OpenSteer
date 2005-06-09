@@ -23,7 +23,12 @@
  * DEALINGS IN THE SOFTWARE.
  *
  *
+ * @file
+ *
  * @author Bjoern Knafla <bknafla@uni-kassel.de>
+ *
+ * Declarations of policies used by @c OpenSteer::mapPointToPathAlike and
+ * @c OpenSteer::mapDistanceToPathAlike to extract informations of path alikes.
  */
 #ifndef OPENSTEER_QUERYPATHALIKEBASEDATAEXTRACTIONPOLICY_H
 #define OPENSTEER_QUERYPATHALIKEBASEDATAEXTRACTIONPOLICY_H

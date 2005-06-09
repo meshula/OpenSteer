@@ -23,7 +23,11 @@
  * DEALINGS IN THE SOFTWARE.
  *
  *
+ * @file
+ *
  * @author Bjoern Knafla <bknafla@uni-kassel.de>
+ *
+ * Abstract segmented path class for paths build of segments between waypoints.
  */
 #ifndef OPENSTEER_SEGMENTEDPATH_H
 #define OPENSTEER_SEGMENTEDPATH_H

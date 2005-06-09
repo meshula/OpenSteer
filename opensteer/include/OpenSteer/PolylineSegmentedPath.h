@@ -23,7 +23,11 @@
  * DEALINGS IN THE SOFTWARE.
  *
  *
+ * @file
+ *
  * @author Bjoern Knafla <bknafla@uni-kassel.de>
+ *
+ * Segmented path build of polylines.
  */
 #ifndef OPENSTEER_POLYLINESEGMENTEDPATH_H
 #define OPENSTEER_POLYLINESEGMENTEDPATH_H

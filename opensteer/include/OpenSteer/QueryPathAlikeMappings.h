@@ -23,7 +23,13 @@
  * DEALINGS IN THE SOFTWARE.
  *
  *
+ * @file
+ *
  * @author Bjoern Knafla <bknafla@uni-kassel.de>
+ *
+ * Predefined mappings used by @c OpenSteer::mapPointToPathAlike and 
+ * @c OpenSteer::mapDistanceToPathAlike used by implementations of segmented
+ * paths and pathways.
  */
 #ifndef OPENSTEER_QUERYPATHALIKEMAPPINGS_H
 #define OPENSTEER_QUERYPATHALIKEMAPPINGS_H
@@ -43,9 +49,9 @@
 namespace OpenSteer {
     
     /**
-     * Maps points to a path to extract the point on the path boundary, the 
-     * tangent at that point and the distance of the given point to the nearest
-     * path boundary.
+     * Stores the point on a pathway boundary, the tangent at the associated
+     * path center line and the distance of a query point to the point on the 
+     * path boundary - used by @c OpenSteer::mapPointToPathAlike.
      */
     class PointToPathMapping 
         : public DontExtractPathDistance {
@@ -79,8 +85,8 @@ namespace OpenSteer {
     
     
     /**
-     * Maps a distance along the path center line to a point on the path center
-     * line.
+     * Stores the point on a path center line for a given distance from the
+     * start of the path - used by @c OpenSteer::mapDistanceToPathAlike.
      */
     class PathDistanceToPointMapping 
         :  public DontExtractPathDistance {
@@ -105,9 +111,8 @@ namespace OpenSteer {
     
     
     /**
-     * Maps a point to the nearest point on the path center line
-     * and extracts the distance from the start of the path to this
-     * center line point.
+     * Stores the distance of from the start of a path to a point on the 
+     * center line of the path - used by @c OpenSteer::mapPointToPathAlike.
      */
     class PointToPathDistanceMapping
         : public ExtractPathDistance {

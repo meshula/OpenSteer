@@ -21,6 +21,11 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
+ *
+ *
+ * @file
+ *
+ * Abstract interface for paths.
  */
 #ifndef OPENSTEER_PATH_H
 #define OPENSTEER_PATH_H
@@ -37,6 +42,8 @@ namespace OpenSteer {
     
     /**
      * Path in space that might be cyclic.
+     *
+     * Paths are infinitesimal thin.
      */
     class Path {
     public:

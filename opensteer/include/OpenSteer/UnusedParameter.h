@@ -28,7 +28,7 @@
 // ----------------------------------------------------------------------------
 //
 //
-// Color class and predefined colors.
+// Macro to surpress warnings that parameters aren't used.
 //
 // May 09, 2005 bk:  created 
 //

@@ -23,7 +23,11 @@
  * DEALINGS IN THE SOFTWARE.
  *
  *
+ * @file
+ *
  * @author Bjoern Knafla <bknafla@uni-kassel.de>
+ *
+ * Abstract pathway build of segments between waypoints.
  */
 #ifndef OPENSTEER_SEGMENTEDPATHWAY_H
 #define OPENSTEER_SEGMENTEDPATHWAY_H

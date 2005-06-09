@@ -23,7 +23,12 @@
  * DEALINGS IN THE SOFTWARE.
  *
  *
+ * @file
+ * 
  * @author Bjoern Knafla <bknafla@uni-kassel.de>
+ *
+ * Segmented pathway build of polylines. Every segmented is associated with its
+ * own radius.
  */
 #ifndef OPENSTEER_POLYLINESEGMENTEDPATHWAYSEGMENTRADII_H
 #define OPENSTEER_POLYLINESEGMENTEDPATHWAYSEGMENTRADII_H
