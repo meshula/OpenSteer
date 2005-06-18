@@ -811,7 +811,8 @@ steerForSeparation (const float maxDistance,
     int neighbors = 0;
 
     // for each of the other vehicles...
-    for (AVIterator otherVehicle = flock.begin(); otherVehicle != flock.end(); otherVehicle++)
+    AVIterator flockEndIter = flock.end();
+    for (AVIterator otherVehicle = flock.begin(); otherVehicle != flockEndIter; ++otherVehicle )
     {
         if (inBoidNeighborhood (**otherVehicle, radius()*3, maxDistance, cosMaxAngle))
         {
@@ -823,13 +824,22 @@ steerForSeparation (const float maxDistance,
             steering += (offset / -distanceSquared);
 
             // count neighbors
-            neighbors++;
+            ++neighbors;
         }
     }
 
     // divide by neighbors, then normalize to pure direction
-    if (neighbors > 0) steering = (steering / (float)neighbors).normalize();
-
+    // bk: Why dividing if you normalize afterwards?
+    //     As long as normilization tests for @c 0 we can just call normalize
+    //     and safe the branching if.
+    /*
+    if (neighbors > 0) {
+        steering /= neighbors;
+        steering = steering.normalize();
+    }
+    */
+    steering = steering.normalize();
+    
     return steering;
 }
 

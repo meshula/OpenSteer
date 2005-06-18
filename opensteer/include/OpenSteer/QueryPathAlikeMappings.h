@@ -57,11 +57,13 @@ namespace OpenSteer {
         : public DontExtractPathDistance {
         
     public:
-        PointToPathMapping() : pointOnPathBoundary( 0.0f, 0.0f, 0.0f ), tangent( 0.0f, 0.0f, 0.0f ), distancePointToPath( 0.0f ) {}
+        PointToPathMapping() : pointOnPathCenterLine( 0.0f, 0.0f, 0.0f ), tangent( 0.0f, 0.0f, 0.0f ), distancePointToPath( 0.0f ) {}
             
-        void setPointOnPathCenterLine( Vec3 const& ) {}
-        void setPointOnPathBoundary( Vec3 const& point ) {
-            pointOnPathBoundary = point;
+        void setPointOnPathCenterLine( Vec3 const& point ) {
+            pointOnPathCenterLine = point;
+        }
+        void setPointOnPathBoundary( Vec3 const& ) {
+            // pointOnPathBoundary = point;
         }
         void setRadius( float ) {}
         void setTangent( Vec3 const& t) {
@@ -75,8 +77,8 @@ namespace OpenSteer {
         void setDistanceOnPath( float ) {}
         void setDistanceOnSegment( float ) {}
             
-        
-        Vec3 pointOnPathBoundary; 
+        Vec3 pointOnPathCenterLine;
+        // Vec3 pointOnPathBoundary; 
         Vec3 tangent;
         float distancePointToPath;
             

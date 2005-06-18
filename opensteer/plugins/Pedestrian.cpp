@@ -60,6 +60,8 @@ typedef AbstractTokenForProximityDatabase<AbstractVehicle*> ProximityToken;
 // ----------------------------------------------------------------------------
 
 
+// How many pedestrians to create when the plugin starts first?
+int const gPedestrianStartCount = 100;
 // creates a path for the PlugIn
 PolylineSegmentedPathwaySingleRadius* getTestPath (void);
 PolylineSegmentedPathwaySingleRadius* gTestPath = NULL;
@@ -484,7 +486,7 @@ public:
 
         // create the specified number of Pedestrians
         population = 0;
-        for (int i = 0; i < 100; i++) addPedestrianToCrowd ();
+        for (int i = 0; i < gPedestrianStartCount; i++) addPedestrianToCrowd ();
 
         // initialize camera and selectedVehicle
         Pedestrian& firstPedestrian = **crowd.begin();

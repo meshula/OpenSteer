@@ -73,7 +73,7 @@ OpenSteer::PolylineSegmentedPathwaySingleRadius::PolylineSegmentedPathwaySingleR
 
 
 OpenSteer::PolylineSegmentedPathwaySingleRadius::PolylineSegmentedPathwaySingleRadius( PolylineSegmentedPathwaySingleRadius const& other )
-    : path_( other.path_ ), radius_( other.radius_ )
+    : SegmentedPathway( other ), path_( other.path_ ), radius_( other.radius_ )
 {
     
 }
@@ -164,7 +164,7 @@ OpenSteer::PolylineSegmentedPathwaySingleRadius::mapPointToPath (const Vec3& poi
     mapPointToPathAlike( *this, point, mapping );
     tangent = mapping.tangent;
     outside = mapping.distancePointToPath;
-    return mapping.pointOnPathBoundary;
+    return mapping.pointOnPathCenterLine;
 }
 
 

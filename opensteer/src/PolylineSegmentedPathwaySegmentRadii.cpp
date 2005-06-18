@@ -116,7 +116,7 @@ OpenSteer::PolylineSegmentedPathwaySegmentRadii::PolylineSegmentedPathwaySegment
 
 
 OpenSteer::PolylineSegmentedPathwaySegmentRadii::PolylineSegmentedPathwaySegmentRadii( PolylineSegmentedPathwaySegmentRadii const& other )
-    : path_( other.path_ ), segmentRadii_( other.segmentRadii_ )
+    : SegmentedPathway( other ), path_( other.path_ ), segmentRadii_( other.segmentRadii_ )
 {
     assert( allRadiiNonNegative( segmentRadii_ ) && "All radii must be positive or zero." );    
 }
@@ -233,7 +233,7 @@ OpenSteer::PolylineSegmentedPathwaySegmentRadii::mapPointToPath (const Vec3& poi
     mapPointToPathAlike( *this, point, mapping );
     tangent = mapping.tangent;
     outside = mapping.distancePointToPath;
-    return mapping.pointOnPathBoundary;    
+    return mapping.pointOnPathCenterLine;    
 }
 
 

@@ -128,12 +128,12 @@ namespace {
 
         
     
-    class PointToBoundaryPointAndOutsideMapping : public OpenSteer::DontExtractPathDistance {
+    class PointToPointOnCenterLineAndOutsideMapping : public OpenSteer::DontExtractPathDistance {
     public:
-        PointToBoundaryPointAndOutsideMapping() : pointOnPathBoundary( OpenSteer::Vec3( 0.0f, 0.0f, 0.0f ) ), distancePointToPathBoundary( 0.0f ) {}
+        PointToPointOnCenterLineAndOutsideMapping() : pointOnPathCenterLine( OpenSteer::Vec3( 0.0f, 0.0f, 0.0f ) ), distancePointToPathBoundary( 0.0f ) {}
         
-        void setPointOnPathCenterLine( OpenSteer::Vec3 const& ) {}
-        void setPointOnPathBoundary( OpenSteer::Vec3 const& p ) { pointOnPathBoundary = p; }
+        void setPointOnPathCenterLine( OpenSteer::Vec3 const& point) { pointOnPathCenterLine = point; }
+        void setPointOnPathBoundary( OpenSteer::Vec3 const& ) {}
         void setRadius( float ) {}
         void setTangent( OpenSteer::Vec3 const& ) {}
         void setSegmentIndex( OpenSteer::size_t ) {}
@@ -142,7 +142,7 @@ namespace {
         void setDistanceOnPath( float  ) {}
         void setDistanceOnSegment( float ) {}    
         
-        OpenSteer::Vec3 pointOnPathBoundary;
+        OpenSteer::Vec3 pointOnPathCenterLine;
         float distancePointToPathBoundary;
     };
 
@@ -328,11 +328,11 @@ namespace {
      * Maps @a point to @a pathway and returns the mapping point on the pathway 
      * boundary and how far outside @a point is from the mapping point.
      */
-    OpenSteer::Vec3 mapPointToBoundaryPointAndOutside( OpenSteer::PolylineSegmentedPathwaySegmentRadii const& pathway, OpenSteer::Vec3 const& point, float& outside ) {
-        PointToBoundaryPointAndOutsideMapping mapping;
+    OpenSteer::Vec3 mapPointToPointOnCenterLineAndOutside( OpenSteer::PolylineSegmentedPathwaySegmentRadii const& pathway, OpenSteer::Vec3 const& point, float& outside ) {
+        PointToPointOnCenterLineAndOutsideMapping mapping;
         OpenSteer::mapPointToPathAlike( pathway, point, mapping );
         outside = mapping.distancePointToPathBoundary;
-        return mapping.pointOnPathBoundary;
+        return mapping.pointOnPathCenterLine;
     }
     
     
@@ -1080,7 +1080,7 @@ public:
             {
                 // get offset, distance from obstacle to its image on path
                 float outside;
-                const Vec3 onPath = mapPointToBoundaryPointAndOutside( *path, obstacle, outside );// path->mapPointToPath (obstacle, outside);
+                const Vec3 onPath = mapPointToPointOnCenterLineAndOutside( *path, obstacle, outside );// path->mapPointToPath (obstacle, outside);
                 const Vec3 offset = onPath - obstacle;
                 const float offsetDistance = offset.length();
 
@@ -1764,11 +1764,11 @@ public:
         // XXX special path-defined object which includes two Vec3s and a 
         // XXX bool (onPath,tangent (ignored), withinPath)
         float futureOutside;
-        const Vec3 onPath = mapPointToBoundaryPointAndOutside( path, futurePosition, futureOutside ); // path.mapPointToPath (futurePosition,futureOutside);
+        const Vec3 onPath = mapPointToPointOnCenterLineAndOutside( path, futurePosition, futureOutside ); // path.mapPointToPath (futurePosition,futureOutside);
 
         // determine if we are currently inside the path tube
         float nowOutside;
-        const Vec3 nowOnPath = mapPointToBoundaryPointAndOutside( path, position(), nowOutside );  // path.mapPointToPath (position (), nowOutside);
+        const Vec3 nowOnPath = mapPointToPointOnCenterLineAndOutside( path, position(), nowOutside );  // path.mapPointToPath (position (), nowOutside);
 
         // no steering is required if our present and future positions are
         // inside the path tube and we are facing in the correct direction
@@ -1844,7 +1844,7 @@ public:
         const Vec3 futurePosition = predictFuturePosition (predictionTime);
         // find the point on the path nearest the predicted future position
         float futureOutside;
-        const Vec3 onPath =  mapPointToBoundaryPointAndOutside( path, futurePosition, futureOutside ); // path.mapPointToPath (futurePosition,futureOutside);
+        const Vec3 onPath =  mapPointToPointOnCenterLineAndOutside( path, futurePosition, futureOutside ); // path.mapPointToPath (futurePosition,futureOutside);
         const Vec3 pathHeading =  mapPointAndDirectionToTangent( path, onPath, direction ); // path.tangentAt (onPath, direction);
         const Vec3 rawBraking = forward () * maxForce () * -1;
         const Vec3 braking = ((futureOutside < 0) ? Vec3::zero : rawBraking);

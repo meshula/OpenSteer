@@ -109,9 +109,6 @@ namespace OpenSteer {
          * Maps @a segmentDistance to the center line of segment @a segmentIndex
          * and returns the reached point.
          *
-         * If @a segmentDistance is negative the mapping is done backward from
-         * the end of the path.
-         *
          * If @a segmentDistance is greater or smaller than the segment length
          * is is clamped to @c 0.0f or @c segmentLength().
          */
@@ -121,9 +118,6 @@ namespace OpenSteer {
         /**
          * Maps @a segmentDistance to the center line of segment @a segmentIndex
          * and returns the radius at the reached point.
-         *
-         * If @a segmentDistance is negative the mapping is done backward from
-         * the end of the path.
          *
          * If @a segmentDistance is greater or smaller than the segment length
          * is is clamped to @c 0.0f or @c segmentLength().
@@ -135,9 +129,6 @@ namespace OpenSteer {
          * Maps @a segmentDistance to the centerline of the segment 
          * @a segmentIndex and returns the tangent of the pathway at the reached
          * point.
-         *
-         * If @a segmentDistance is negative the mapping is done backward from
-         * the end of the path.
          *
          * If @a segmentDistance is greater or smaller than the segment length
          * is is clamped to @c 0.0f or @c segmentLength().
@@ -166,8 +157,16 @@ namespace OpenSteer {
                                                                            Vec3& tangent,
                                                                            float& radius) const = 0;
         
-        
-    }; // class Segmented Pathway
+       
+    protected:
+        /**
+         * Protected to disable assigning instances of different inherited 
+         * classes to each other.
+         *
+         * @todo Should this be added or not? Have to read a bit...
+         */
+        // SegmentedPathway& operator=( SegmentedPathway const& );    
+    }; // class SegmentedPathway
     
     
     

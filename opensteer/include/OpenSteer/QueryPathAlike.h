@@ -48,6 +48,9 @@
 // Include OpenSteer::clamp, OpenSteer::modulo
 #include "OpenSteer/Utilities.h"
 
+// Include OpenSteer::PointToPathAlikeBaseDataExtractionPolicy, OpenSteer::DistanceToPathAlikeBaseDataExtractionPolicy
+#include "OpenSteer/QueryPathAlikeBaseDataExtractionPolicies.h"
+
 
 
 namespace OpenSteer {
@@ -171,26 +174,17 @@ namespace OpenSteer {
             // Modify @c distanceOnPath to applicable values.
             if ( pathAlike.isCyclic() ) {
                 distanceOnPath = modulo( distanceOnPath, pathLength );       
-                if ( 0.0f > distanceOnPath ) {
-                    distanceOnPath = pathLength + distanceOnPath;
-                }       
-            } else {    
-                if ( 0.0f > distanceOnPath ) {
-                    distanceOnPath = pathLength + distanceOnPath;
-                }    
-                distanceOnPath = clamp( distanceOnPath, 0.0f, pathLength );
             }
+            distanceOnPath = clamp( distanceOnPath, 0.0f, pathLength );
             
             // Which path alike segment is reached by @c distanceOnPath?
             float remainingDistance = distanceOnPath;
             typedef typename PathAlike::size_type size_type;
             size_type segmentIndex = 0;        
             size_type const maxSegmentIndex = pathAlike.segmentCount() - 1;
-            while( remainingDistance > pathAlike.segmentLength( segmentIndex ) ) {
+            while( ( segmentIndex < maxSegmentIndex ) && 
+                   ( remainingDistance > pathAlike.segmentLength( segmentIndex ) ) ) {
                 remainingDistance -= pathAlike.segmentLength( segmentIndex );
-                if ( segmentIndex == maxSegmentIndex ) { 
-                    break; 
-                }
                 ++segmentIndex;
             }
             

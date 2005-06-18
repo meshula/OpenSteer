@@ -31,3 +31,10 @@ OpenSteer::Pathway::~Pathway()
 {
     // Nothing to do.
 }
+
+/*
+OpenSteer::Pathway& OpenSteer::Pathway::operator=( Pathway const& )
+{
+    return *this;
+}
+*/

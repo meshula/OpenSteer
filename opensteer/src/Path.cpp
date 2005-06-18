@@ -31,3 +31,10 @@ OpenSteer::Path::~Path()
 {
     // Nothing to do.
 }
+
+/*
+OpenSteer::Path& OpenSteer::Path::operator=( Path const& )
+{
+    return *this;
+}
+*/

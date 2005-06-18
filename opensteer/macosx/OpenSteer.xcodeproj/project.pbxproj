@@ -83,6 +83,9 @@
 		324DA5EF082ABDD8000F3779 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 324DA5EE082ABDD8000F3779 /* Color.cpp */; };
 		327C7F2E0857205E00C14AE6 /* OldPathway.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 327C7F2D0857205D00C14AE6 /* OldPathway.cpp */; };
 		327C7F2F0857205E00C14AE6 /* OldPathway.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 327C7F2D0857205D00C14AE6 /* OldPathway.cpp */; };
+		32BF79F40861C70F0045ADCC /* PolylineSegmentedPathwaySingleRadiusTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32BF79F30861C70F0045ADCC /* PolylineSegmentedPathwaySingleRadiusTest.cpp */; };
+		32BF7A5D0861DE270045ADCC /* MapDrive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32FFF56706E9CECE00E1D8A3 /* MapDrive.cpp */; };
+		32BF7CB90864A4550045ADCC /* Pedestrian.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32FFF56A06E9CECE00E1D8A3 /* Pedestrian.cpp */; };
 		32C1508B0765ABE000A8BC25 /* TerrainRayTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32C150890765ABE000A8BC25 /* TerrainRayTest.cpp */; };
 		32C1508C0765ABE000A8BC25 /* TerrainRayTest.h in Resources */ = {isa = PBXBuildFile; fileRef = 32C1508A0765ABE000A8BC25 /* TerrainRayTest.h */; };
 		32ECFEB0083389F000E5E444 /* Vec3Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32ECFEAF083389F000E5E444 /* Vec3Utilities.cpp */; };
@@ -113,7 +116,6 @@
 		32FFF56D06E9CECE00E1D8A3 /* CaptureTheFlag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32FFF56506E9CECE00E1D8A3 /* CaptureTheFlag.cpp */; };
 		32FFF56E06E9CECE00E1D8A3 /* LowSpeedTurn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32FFF56606E9CECE00E1D8A3 /* LowSpeedTurn.cpp */; };
 		32FFF57106E9CECE00E1D8A3 /* OneTurning.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32FFF56906E9CECE00E1D8A3 /* OneTurning.cpp */; };
-		32FFF57206E9CECE00E1D8A3 /* Pedestrian.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32FFF56A06E9CECE00E1D8A3 /* Pedestrian.cpp */; };
 		32FFF57306E9CECE00E1D8A3 /* Soccer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32FFF56B06E9CECE00E1D8A3 /* Soccer.cpp */; };
 		32FFF58106E9CF3800E1D8A3 /* OpenSteer.icns in Resources */ = {isa = PBXBuildFile; fileRef = 32FFF58006E9CF3800E1D8A3 /* OpenSteer.icns */; };
 		841E3BFD0736BF4400E3AD2C /* Obstacle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 841E3BFC0736BF4400E3AD2C /* Obstacle.cpp */; };
@@ -205,6 +207,9 @@
 		324DA5F6082ABE43000F3779 /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		327C7F2D0857205D00C14AE6 /* OldPathway.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = OldPathway.cpp; sourceTree = "<group>"; };
 		327C89DE085762AD00C14AE6 /* QueryPathAlikeBaseDataExtractionPolicies.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QueryPathAlikeBaseDataExtractionPolicies.h; sourceTree = "<group>"; };
+		32BF79F20861C70F0045ADCC /* PolylineSegmentedPathwaySingleRadiusTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PolylineSegmentedPathwaySingleRadiusTest.h; sourceTree = "<group>"; };
+		32BF79F30861C70F0045ADCC /* PolylineSegmentedPathwaySingleRadiusTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PolylineSegmentedPathwaySingleRadiusTest.cpp; sourceTree = "<group>"; };
+		32BF7B31086389600045ADCC /* PedestrianPathwayTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PedestrianPathwayTest.cpp; sourceTree = "<group>"; };
 		32C150890765ABE000A8BC25 /* TerrainRayTest.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TerrainRayTest.cpp; sourceTree = "<group>"; };
 		32C1508A0765ABE000A8BC25 /* TerrainRayTest.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TerrainRayTest.h; sourceTree = "<group>"; };
 		32ECF063082FC7FB00E5E444 /* UnusedParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnusedParameter.h; sourceTree = "<group>"; };
@@ -328,6 +333,8 @@
 				3224E47D08435E0700C13D97 /* TestMain.cpp */,
 				3224E47A08435DE800C13D97 /* PolylineSegmentedPathTest.h */,
 				3224E47B08435DE800C13D97 /* PolylineSegmentedPathTest.cpp */,
+				32BF79F20861C70F0045ADCC /* PolylineSegmentedPathwaySingleRadiusTest.h */,
+				32BF79F30861C70F0045ADCC /* PolylineSegmentedPathwaySingleRadiusTest.cpp */,
 			);
 			comments = "Unit tests for the OpenSteer library and demo application.";
 			name = tests;
@@ -423,6 +430,7 @@
 				32FFF56906E9CECE00E1D8A3 /* OneTurning.cpp */,
 				32FFF56A06E9CECE00E1D8A3 /* Pedestrian.cpp */,
 				32FFF56B06E9CECE00E1D8A3 /* Soccer.cpp */,
+				32BF7B31086389600045ADCC /* PedestrianPathwayTest.cpp */,
 			);
 			name = plugins;
 			path = ../plugins;
@@ -620,6 +628,8 @@
 				3230C089084DB7C400CBB0D9 /* Vec3.cpp in Sources */,
 				3230C08A084DB7C700CBB0D9 /* Vec3Utilities.cpp in Sources */,
 				327C7F2F0857205E00C14AE6 /* OldPathway.cpp in Sources */,
+				32BF79F40861C70F0045ADCC /* PolylineSegmentedPathwaySingleRadiusTest.cpp in Sources */,
+				32BF7A5D0861DE270045ADCC /* MapDrive.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -635,7 +645,6 @@
 				32FFF56D06E9CECE00E1D8A3 /* CaptureTheFlag.cpp in Sources */,
 				32FFF56E06E9CECE00E1D8A3 /* LowSpeedTurn.cpp in Sources */,
 				32FFF57106E9CECE00E1D8A3 /* OneTurning.cpp in Sources */,
-				32FFF57206E9CECE00E1D8A3 /* Pedestrian.cpp in Sources */,
 				32FFF57306E9CECE00E1D8A3 /* Soccer.cpp in Sources */,
 				3243869207292CC300B6EBA6 /* SimpleVehicle.cpp in Sources */,
 				3243869307292CC400B6EBA6 /* PlugIn.cpp in Sources */,
@@ -656,6 +665,7 @@
 				3230BE85084CD9AE00CBB0D9 /* MultiplePursuit.cpp in Sources */,
 				3230C3EF084F4ED600CBB0D9 /* MapDrive.cpp in Sources */,
 				327C7F2E0857205E00C14AE6 /* OldPathway.cpp in Sources */,
+				32BF7CB90864A4550045ADCC /* Pedestrian.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -937,7 +947,7 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				OPTIMIZATION_CFLAGS = "";
+				OPTIMIZATION_CFLAGS = "-O0";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -956,7 +966,7 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				OPTIMIZATION_CFLAGS = "";
+				OPTIMIZATION_CFLAGS = "-O0";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -973,7 +983,7 @@
 		327C7E9E0856F0D200C14AE6 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				OPTIMIZATION_CFLAGS = "";
+				OPTIMIZATION_CFLAGS = "-O0";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";

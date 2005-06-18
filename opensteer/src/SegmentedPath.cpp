@@ -31,3 +31,10 @@ OpenSteer::SegmentedPath::~SegmentedPath()
 {
     // Nothing to do.
 }
+
+/*
+OpenSteer::SegmentedPath& OpenSteer::SegmentedPath::operator=( SegmentedPath const& )
+{
+    return *this;
+}
+*/

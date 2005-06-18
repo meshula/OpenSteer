@@ -209,7 +209,7 @@ OpenSteer::PolylineSegmentedPath::PolylineSegmentedPath( size_type numOfPoints,
 
 
 OpenSteer::PolylineSegmentedPath::PolylineSegmentedPath( PolylineSegmentedPath const& other )
-    : points_( other.points_ ), segmentTangents_( other.segmentTangents_ ), segmentLengths_( other.segmentLengths_ ), closedCycle_( other.closedCycle_ )
+    : SegmentedPath( other ), points_( other.points_ ), segmentTangents_( other.segmentTangents_ ), segmentLengths_( other.segmentLengths_ ), closedCycle_( other.closedCycle_ )
 {
     // Nothing to do.
 }
@@ -338,7 +338,7 @@ OpenSteer::PolylineSegmentedPath::mapPointToPath (const Vec3& point,
     mapPointToPathAlike( *this, point, mapping );
     tangent = mapping.tangent;
     outside = mapping.distancePointToPath;
-    return mapping.pointOnPathBoundary;
+    return mapping.pointOnPathCenterLine;
 }
 
 
@@ -446,11 +446,13 @@ OpenSteer::PolylineSegmentedPath::mapSegmentDistanceToPoint( size_type segmentIn
     assert( segmentIndex < segmentCount() && "segmentIndex is out of range." );
     
     float const segmentLength = segmentLengths_[ segmentIndex ];
-    
+    /*
+     * bk: remove behavior that treats negative numbers as distances beginning 
+     * from the end of the segment
     if ( 0.0f > segmentDistance ) {
         segmentDistance += segmentLength;
     }
-    
+    */
     segmentDistance = clamp( segmentDistance, 0.0f, segmentLength );
     
     return segmentTangents_[ segmentIndex ] * segmentDistance + points_[ segmentIndex ];
@@ -476,10 +478,13 @@ OpenSteer::PolylineSegmentedPath::mapDistanceToSegmentPointAndTangent( size_type
     
     float const segmentLength = segmentLengths_[ segmentIndex ];
     
+    /* 
+     * bk: remove behavior that treats negative numbers as distances beginning 
+     * from the end of the segment
     if ( 0.0f > segmentDistance ) {
         segmentDistance += segmentLength;
     }
-    
+    */
     segmentDistance = clamp( segmentDistance, 0.0f, segmentLength );
     
     pointOnPath = segmentTangents_[ segmentIndex ] * segmentDistance + points_[ segmentIndex ];
