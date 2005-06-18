@@ -42,123 +42,127 @@
 #include "OpenSteer/OpenSteerDemo.h"
 #include "OpenSteer/Color.h"
 
-using namespace OpenSteer;
+namespace {
+
+    using namespace OpenSteer;
 
 
-// ----------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------
 
 
-class OneTurning : public SimpleVehicle
-{
-public:
-
-    // constructor
-    OneTurning () {reset ();}
-
-    // reset state
-    void reset (void)
+    class OneTurning : public SimpleVehicle
     {
-        SimpleVehicle::reset (); // reset the vehicle 
-        setSpeed (1.5f);         // speed along Forward direction.
-        setMaxForce (0.3f);      // steering force is clipped to this magnitude
-        setMaxSpeed (5);         // velocity is clipped to this magnitude
-        clearTrailHistory ();    // prevent long streaks due to teleportation 
-    }
+    public:
 
-    // per frame simulation update
-    void update (const float currentTime, const float elapsedTime)
+        // constructor
+        OneTurning () {reset ();}
+
+        // reset state
+        void reset (void)
+        {
+            SimpleVehicle::reset (); // reset the vehicle 
+            setSpeed (1.5f);         // speed along Forward direction.
+            setMaxForce (0.3f);      // steering force is clipped to this magnitude
+            setMaxSpeed (5);         // velocity is clipped to this magnitude
+            clearTrailHistory ();    // prevent long streaks due to teleportation 
+        }
+
+        // per frame simulation update
+        void update (const float currentTime, const float elapsedTime)
+        {
+            applySteeringForce (Vec3 (-2, 0, -3), elapsedTime);
+            annotationVelocityAcceleration ();
+            recordTrailVertex (currentTime, position());
+        }
+
+        // draw this character/vehicle into the scene
+        void draw (void)
+        {
+            drawBasic2dCircularVehicle (*this, gGray50);
+            drawTrail ();
+        }
+    };
+
+
+    // ----------------------------------------------------------------------------
+    // PlugIn for OpenSteerDemo
+
+
+    class OneTurningPlugIn : public PlugIn
     {
-        applySteeringForce (Vec3 (-2, 0, -3), elapsedTime);
-        annotationVelocityAcceleration ();
-        recordTrailVertex (currentTime, position());
-    }
+    public:
+        
+        const char* name (void) {return "One Turning Away";}
 
-    // draw this character/vehicle into the scene
-    void draw (void)
-    {
-        drawBasic2dCircularVehicle (*this, gGray50);
-        drawTrail ();
-    }
-};
+        float selectionOrderSortKey (void) {return 0.06f;}
 
+        // be more "nice" to avoid a compiler warning
+        virtual ~OneTurningPlugIn() {}
 
-// ----------------------------------------------------------------------------
-// PlugIn for OpenSteerDemo
+        void open (void)
+        {
+            gOneTurning = new OneTurning;
+            OpenSteerDemo::selectedVehicle = gOneTurning;
+            theVehicle.push_back (gOneTurning);
 
+            // initialize camera
+            OpenSteerDemo::init2dCamera (*gOneTurning);
+            OpenSteerDemo::camera.setPosition (10,
+                                               OpenSteerDemo::camera2dElevation,
+                                               10);
+            OpenSteerDemo::camera.fixedPosition.set (40, 40, 40);
+        }
 
-class OneTurningPlugIn : public PlugIn
-{
-public:
-    
-    const char* name (void) {return "One Turning Away";}
+        void update (const float currentTime, const float elapsedTime)
+        {
+            // update simulation of test vehicle
+            gOneTurning->update (currentTime, elapsedTime);
+        }
 
-    float selectionOrderSortKey (void) {return 0.06f;}
+        void redraw (const float currentTime, const float elapsedTime)
+        {
+            // draw test vehicle
+            gOneTurning->draw ();
 
-    // be more "nice" to avoid a compiler warning
-    virtual ~OneTurningPlugIn() {}
+            // textual annotation (following the test vehicle's screen position)
+            std::ostringstream annote;
+            annote << std::setprecision (2) << std::setiosflags (std::ios::fixed);
+            annote << "      speed: " << gOneTurning->speed() << std::ends;
+            draw2dTextAt3dLocation (annote, gOneTurning->position(), gRed, drawGetWindowWidth(), drawGetWindowHeight());
+            draw2dTextAt3dLocation (*"start", Vec3::zero, gGreen, drawGetWindowWidth(), drawGetWindowHeight());
 
-    void open (void)
-    {
-        gOneTurning = new OneTurning;
-        OpenSteerDemo::selectedVehicle = gOneTurning;
-        theVehicle.push_back (gOneTurning);
+            // update camera, tracking test vehicle
+            OpenSteerDemo::updateCamera (currentTime, elapsedTime, *gOneTurning);
 
-        // initialize camera
-        OpenSteerDemo::init2dCamera (*gOneTurning);
-        OpenSteerDemo::camera.setPosition (10,
-                                           OpenSteerDemo::camera2dElevation,
-                                           10);
-        OpenSteerDemo::camera.fixedPosition.set (40, 40, 40);
-    }
+            // draw "ground plane"
+            OpenSteerDemo::gridUtility (gOneTurning->position());
+        }
 
-    void update (const float currentTime, const float elapsedTime)
-    {
-        // update simulation of test vehicle
-        gOneTurning->update (currentTime, elapsedTime);
-    }
+        void close (void)
+        {
+            theVehicle.clear ();
+            delete (gOneTurning);
+            gOneTurning = NULL;
+        }
 
-    void redraw (const float currentTime, const float elapsedTime)
-    {
-        // draw test vehicle
-        gOneTurning->draw ();
+        void reset (void)
+        {
+            // reset vehicle
+            gOneTurning->reset ();
+        }
 
-        // textual annotation (following the test vehicle's screen position)
-        std::ostringstream annote;
-        annote << std::setprecision (2) << std::setiosflags (std::ios::fixed);
-        annote << "      speed: " << gOneTurning->speed() << std::ends;
-        draw2dTextAt3dLocation (annote, gOneTurning->position(), gRed, drawGetWindowWidth(), drawGetWindowHeight());
-        draw2dTextAt3dLocation (*"start", Vec3::zero, gGreen, drawGetWindowWidth(), drawGetWindowHeight());
+        const AVGroup& allVehicles (void) {return (const AVGroup&) theVehicle;}
 
-        // update camera, tracking test vehicle
-        OpenSteerDemo::updateCamera (currentTime, elapsedTime, *gOneTurning);
-
-        // draw "ground plane"
-        OpenSteerDemo::gridUtility (gOneTurning->position());
-    }
-
-    void close (void)
-    {
-        theVehicle.clear ();
-        delete (gOneTurning);
-        gOneTurning = NULL;
-    }
-
-    void reset (void)
-    {
-        // reset vehicle
-        gOneTurning->reset ();
-    }
-
-    const AVGroup& allVehicles (void) {return (const AVGroup&) theVehicle;}
-
-    OneTurning* gOneTurning;
-    std::vector<OneTurning*> theVehicle; // for allVehicles
-};
+        OneTurning* gOneTurning;
+        std::vector<OneTurning*> theVehicle; // for allVehicles
+    };
 
 
-OneTurningPlugIn gOneTurningPlugIn;
+    OneTurningPlugIn gOneTurningPlugIn;
 
 
 
 
-// ----------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------
+
+} // anonymous namespace
