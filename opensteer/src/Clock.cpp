@@ -55,13 +55,16 @@
 // XXX This is a bit ad hoc.  Need to revisit conditionalization on operating
 // XXX system.  As of 5-5-03, this module knows about Win32 (code thanks to
 // XXX Leaf Garland and Bruce Mitchener) and Linux/Unix (Craig's original
-// XXX version).  It tests for Win32 and assumes Linux/Unix otherwise.
+// XXX version).  It tests for Xbox and Win32 and assumes Linux/Unix 
+// XXX otherwise.
 
 
-#ifdef _WIN32
-#include <windows.h>
+#if defined (_XBOX)
+	#include <xtl.h>
+#elif defined (_WIN32)
+	#include <windows.h>
 #else
-#include <sys/time.h> 
+	#include <sys/time.h> 
 #endif
 
 
