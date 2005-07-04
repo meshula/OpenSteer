@@ -56,8 +56,10 @@
 
 #include "OpenSteer/Utilities.h"
 
-#ifdef _WIN32
-#include <windows.h>
+#if defined (_XBOX)
+	#include <xtl.h>
+#elif defined (_WIN32)
+	#include <windows.h>
 #endif
 
 
