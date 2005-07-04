@@ -51,6 +51,10 @@
 // Include OpenSteer::PointToPathAlikeBaseDataExtractionPolicy, OpenSteer::DistanceToPathAlikeBaseDataExtractionPolicy
 #include "OpenSteer/QueryPathAlikeBaseDataExtractionPolicies.h"
 
+#ifdef _MSC_VER
+#undef min
+#undef max
+#endif
 
 
 namespace OpenSteer {
