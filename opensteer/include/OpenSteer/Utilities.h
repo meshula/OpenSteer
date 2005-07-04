@@ -49,6 +49,7 @@
 #include <cmath>     // for sqrt, etc.
 #include <vector>    // for std::vector
 #include <cassert>   // for assert
+#include <limits>    // for numeric_limits
 
 // ----------------------------------------------------------------------------
 // For the sake of Windows, apparently this is a "Linux/Unix thing"
