@@ -2873,36 +2873,36 @@ namespace {
             return (int) frandom2 ((float) min, (float) max);
         }
 
-        void regenerateMap (void)
-        {
-            // regenerate map: clear and add random "rocks"
-            vehicle->map->clear();
-            drawRandomClumpsOfRocksOnMap (*vehicle->map);
-            clearCenterOfMap (*vehicle->map);
+	void regenerateMap (void)
+	{
+	    // regenerate map: clear and add random "rocks"
+	    vehicle->map->clear();
+	    drawRandomClumpsOfRocksOnMap (*vehicle->map);
+	    clearCenterOfMap (*vehicle->map);
 
-            // draw fences for first two demo modes
-            if (vehicle->demoSelect < 2) drawBoundaryFencesOnMap (*vehicle->map);
+	    // draw fences for first two demo modes
+	    if (vehicle->demoSelect < 2) drawBoundaryFencesOnMap (*vehicle->map);
 
-            // randomize path widths
-            if (vehicle->demoSelect == 2)
-            {
-                const int count = vehicle->path->segmentCount();
-                const bool upstream = vehicle->pathFollowDirection > 0;
-                const int entryIndex = upstream ? 0 : count-1;
-                const int exitIndex  = upstream ? count-1 : 0;
-                const float lastExitRadius = vehicle->path->segmentRadius( exitIndex );
-                for (int i = 0; i < count; i++)
-                {
-                     vehicle->path->setSegmentRadius( i, frandom2 (4, 19) );
-                }
-                vehicle->path->setSegmentRadius( entryIndex, lastExitRadius );
-            }
+	    // randomize path widths
+	    if (vehicle->demoSelect == 2)
+	    {
+		const OpenSteer::size_t count = vehicle->path->segmentCount();
+		const bool upstream = vehicle->pathFollowDirection > 0;
+		const OpenSteer::size_t entryIndex = upstream ? 0 : count-1;
+		const OpenSteer::size_t exitIndex  = upstream ? count-1 : 0;
+		const float lastExitRadius = vehicle->path->segmentRadius( exitIndex );
+		for (OpenSteer::size_t i = 0; i < count; i++)
+		{
+		    vehicle->path->setSegmentRadius( i, frandom2 (4, 19) );
+		}
+		vehicle->path->setSegmentRadius( entryIndex, lastExitRadius );
+	    }
 
-            // mark path-boundary map cells as obstacles
-            // (when in path following demo and appropriate mode is set)
-            if (usePathFences && (vehicle->demoSelect == 2))
-                drawPathFencesOnMap (*vehicle->map, *vehicle->path);
-        }
+	    // mark path-boundary map cells as obstacles
+	    // (when in path following demo and appropriate mode is set)
+	    if (usePathFences && (vehicle->demoSelect == 2))
+		drawPathFencesOnMap (*vehicle->map, *vehicle->path);
+	}
 
         void drawRandomClumpsOfRocksOnMap (TerrainMap& map)
         {

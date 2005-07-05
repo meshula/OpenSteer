@@ -180,7 +180,7 @@ namespace {
 
     #ifndef NO_LQ_BIN_STATS
             // maintain stats on max/min/ave neighbors per boids
-            int count = neighbors.size();
+            size_t count = neighbors.size();
             if (maxNeighbors < count) maxNeighbors = count;
             if (minNeighbors > count) minNeighbors = count;
             totalNeighbors += count;
@@ -312,7 +312,7 @@ namespace {
         }
 
     #ifndef NO_LQ_BIN_STATS
-            static int minNeighbors, maxNeighbors, totalNeighbors;
+            static size_t minNeighbors, maxNeighbors, totalNeighbors;
     #endif // NO_LQ_BIN_STATS
     };
 
@@ -321,7 +321,7 @@ namespace {
     float Boid::worldRadius = 50.0f;
     ObstacleGroup Boid::obstacles;
     #ifndef NO_LQ_BIN_STATS
-    int Boid::minNeighbors, Boid::maxNeighbors, Boid::totalNeighbors;
+    size_t Boid::minNeighbors, Boid::maxNeighbors, Boid::totalNeighbors;
     #endif // NO_LQ_BIN_STATS
 
 
