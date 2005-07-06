@@ -52,7 +52,7 @@ namespace OpenSteer {
     public:
         Color();
         explicit Color( float greyValue );
-        Color( float rValue, float gValue, float bValue );
+        Color( float rValue, float gValue, float bValue, float aValue = 1.0f );
         explicit Color( Vec3 const& vector );
         
         float r() const;
@@ -63,10 +63,16 @@ namespace OpenSteer {
         void setR( float value );
         void setG( float value );
         void setB( float value );
-        void set( float rValue, float gValue, float bValue );
+		void setA( float value );
+        void set( float rValue, float gValue, float bValue, float aValue = 1.0f );
         
         Vec3 convertToVec3() const;
     
+		// this is necessary so that graphics API's such as DirectX
+		// requiring a pointer to colors can do their conversion
+		// without a lot of copying.
+		float const*const colorFloatArray() const { return &r_; }
+
         Color& operator+=( Color const& other );
         
         /**
@@ -89,7 +95,7 @@ namespace OpenSteer {
         float r_;
         float g_;
         float b_;
-        
+		 float a_;	// provided for API's which require four components        
     }; // class Color
     
     

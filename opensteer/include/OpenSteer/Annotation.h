@@ -313,7 +313,7 @@ OpenSteer::AnnotationMixin<Super>::recordTrailVertex (const float currentTime,
         trailDottedPhase = (trailDottedPhase + 1) % 2;
         const int tick = (floorXXX (currentTime) >
                           floorXXX (trailLastSampleTime));
-        trailFlags [trailIndex] = trailDottedPhase | (tick ? 2 : 0);
+        trailFlags [trailIndex] = trailDottedPhase | (tick ? '\2' : '\0');
         trailLastSampleTime = currentTime;
     }
     curPosition = position;
