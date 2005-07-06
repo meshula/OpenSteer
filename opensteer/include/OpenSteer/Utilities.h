@@ -59,6 +59,11 @@
 #define OPENSTEER_M_PI 3.14159265358979323846f
 #endif
 
+#ifdef _MSC_VER
+#undef min
+#undef max
+#endif
+
 
 namespace OpenSteer {
 
