@@ -37,28 +37,28 @@
 
 
 OpenSteer::Color::Color()
-    : r_(1.0f), g_(1.0f), b_(1.0f)
+    : r_(1.0f), g_(1.0f), b_(1.0f), a_ (1.0f)
 {
     
 }
 
 
 OpenSteer::Color::Color( float greyValue )
-    : r_( greyValue ), g_( greyValue ), b_( greyValue )
+    : r_( greyValue ), g_( greyValue ), b_( greyValue ), a_ (1.0f)
 {
     
 }
 
 
-OpenSteer::Color::Color( float rValue, float gValue, float bValue )
-    : r_( rValue ), g_( gValue ), b_( bValue )
+OpenSteer::Color::Color( float rValue, float gValue, float bValue, float aValue )
+    : r_( rValue ), g_( gValue ), b_( bValue ), a_( aValue )
 {
     
 }
 
 
 OpenSteer::Color::Color( Vec3 const& vector )
-    : r_( vector.x ), g_( vector.y ), b_( vector.z ) 
+    : r_( vector.x ), g_( vector.y ), b_( vector.z ), a_ (1.0f)
 {
     
 }
@@ -89,7 +89,7 @@ OpenSteer::Color::b() const
 float 
 OpenSteer::Color::a() const
 {
-    return 1.0f;
+    return a_;
 }
 
 
@@ -114,13 +114,19 @@ OpenSteer::Color::setB( float value )
     b_ = value;
 }
 
+void 
+OpenSteer::Color::setA( float value )
+{
+	a_ = value;
+}
 
 void
-OpenSteer::Color::set( float rValue, float gValue, float bValue )
+OpenSteer::Color::set( float rValue, float gValue, float bValue, float aValue )
 {
     r_ = rValue;
     g_ = gValue;
     b_ = bValue;
+	a_ = aValue;
 }
 
 
