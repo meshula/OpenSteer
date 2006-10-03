@@ -870,7 +870,7 @@ a complete copy of the source to try some informal code-tweaking
 experiments.
 Or you may be interested in joining with the community of developers
 actively maintaining and improving the OpenSteer software by using code
-from the <a href="http://sourceforge.net/cvs/?group_id=77546">CVS
+from the <a href="http://sourceforge.net/svn/?group_id=77546">Subversion
 repository</a>.
 <p>To download an executable copy of the OpenSteerDemo application,
 or a zip archive of the full source, visit
@@ -911,48 +911,41 @@ OpenSteer 0.8.2 which contains these files: </p>
     </tr>
   </tbody>
 </table>
-<p>Otherwise, use <a href="http://cvsbook.red-bean.com/cvsbook.html">CVS</a>
+<p>Otherwise, use <a href="http://svnbook.red-bean.com/">Subversion (SVN)</a>
 to obtain the most up-to-date version of the
 OpenSteer source code. If you want to be a developer, or at least
 a serious kibitzer, or want to help by testing the newest version of
 the code, or frankly, as long as you feel comfortable doing a <a
- href="https://www.cvshome.org/">CVS</a> <a
- href="http://cvsbook.red-bean.com/cvsbook.html#Checking%20Out%20A%20Working%20Copy">checkout</a>
+ href="http://subversion.tigris.org/">SVN</a> <a
+ href="http://svnbook.red-bean.com/nightly/en/svn-book.html#svn.tour.initial">checkout</a>
 from <a href="http://sourceforge.net/">SourceForge</a> -- you should
-visit <a href="http://sourceforge.net/cvs/?group_id=77546">OpenSteer's
-CVS
-repository</a> and checkout the code. CVS
+visit <a href="http://sourceforge.net/svn/?group_id=77546">OpenSteer's
+Subversion
+repository</a> and checkout the code. Subversion
 client software is included with
-Linux and Mac OS X systems. A free and easy-to-use Windows CVS
-client is<a href="http://www.tortoisecvs.org/"> TortoiseCVS</a>.</p>
+Linux and Mac OS X systems. Up to date and easy to install Subversion packages for Mac OS X can be found at <a href="http://www.codingmonkeys.de/mbo/">Martin Ott's blog</a>. A free and easy-to-use Windows Subversion
+client is<a href="http://tortoisesvn.tigris.org/"> TortoiseSVN</a>.</p>
 <table align="center" border="0" cellpadding="0" cellspacing="3"
  width="90%">
   <tbody>
     <tr>
-      <td class="graybox" style="padding: 10px;" width="25%">Check out
+      <td class="graybox" style="padding: 10px;" width="25%">On the command line check out
 a local
-working copy of
-OpenSteer from the CVS repository (assumes CVSROOT is set to
-:ext:yourusername@cvs.sourceforge.net:/cvsroot/opensteer):<br>
+working copy of the latest
+OpenSteer code from the SVN repository (this will place the project files into the subdirectory <i>opensteer</i> of the current directory)<br>
       <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
- href="http://cvsbook.red-bean.com/cvsbook.html#Checking%20Out%20A%20Working%20Copy">cvs
-checkout opensteer</a><br>
+ href="http://svnbook.red-bean.com/nightly/en/svn-book.html#svn.tour.initial">svn co https://svn.sourceforge.net/svnroot/opensteer/trunk opensteer</a><br>
       <br>
-If you are not a SourceForge
-member, you can do an anonymous checkout:<br>
+To get all branches and published code snapshots (tags) aside the latest code version use:<br>
       <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cvs -z3
--d:pserver:anonymous@cvs-pserver.sourceforge.net:80/cvsroot/opensteer
-co opensteer<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; svn co https://svn.sourceforge.net/svnroot/opensteer opensteer<br>
       <br>
-Update your local working copy with recent changes from the CVS
-repository (do it once after checkout to prune obsolete
-directories):<br>
+Update your local working copy with recent changes from the SVN
+repository (first change into the directory containing the OpenSteer project files you checked out):<br>
       <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
- href="http://cvsbook.red-bean.com/cvsbook.html#Finding%20Out%20What%20You%20%28And%20Others%29%20Did%20--%20update%20And%20diff">cvs
-update -dP</a><br>
+ href="http://svnbook.red-bean.com/nightly/en/svn-book.html#svn.tour.cycle.update">svn update</a><br>
       <span style="font-weight: bold;"></span></td>
     </tr>
   </tbody>
