@@ -38,7 +38,7 @@ Documentation </big></big></b> <br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><small><br>
-November 11, 2004&nbsp; (revised Oct 3, 2006 for SVN)<br>
+November 11, 2004&nbsp; (revised June 15, 2007 for SVN)<br>
       <small>Version 0.8.2</small></small></td>
       <td style="vertical-align: top; text-align: right;"><a href="index.html"><img src="images/beta_250a.gif" alt="OpenSteer Logo" border="0" height="250" width="250"></a></td>
     </tr>
@@ -94,7 +94,7 @@ alien creatures), vehicles (cars, planes, spaceships) or other kinds
 of mobile agents. OpenSteer was originally developed on Linux and
 was subsequently ported to Windows and Mac OS X.</p>
 <p>OpenSteer provides a toolkit of steering behaviors, defined in
-terms of an abstract mobile agent called a <i>vehicle. </i>Sample
+terms of an abstract mobile agent called a <em>vehicle. </em>Sample
 code
 is provided, including a simple vehicle implementation and examples of
 combining simple steering behaviors to produce more complex
@@ -114,7 +114,7 @@ OpenGL
 graphics. All OpenGL calls are segregated in one module, in case you
 need to substitute another graphics API.
 </p>
-<p>OpenSteerDemo is based on a <i>plug-in</i> architecture: an empty
+<p>OpenSteerDemo is based on a <em>plug-in</em> architecture: an empty
 framework into which plug-ins can be added incrementally. OpenSteerDemo
 comes with several sample plug-ins.
 <small><a href="#SamplePlugIns">[see "Sample PlugIns"
@@ -148,7 +148,7 @@ gratuitous changes. We welcome your interest in OpenSteer and
 encourage experimentation. However please <a href="contact.html">contact
 us</a> before planning to integrate
 OpenSteer into any large project.</p>
-<p>Note also that the term <i>plug-in</i> is currently misused here.
+<p>Note also that the term <em>plug-in</em> is currently misused here.
 Normally it implies that a new module can be added to an application
 at <b>run</b> time. Whereas in OpenSteer 0.8.2 the "plugging-in" must
 happen at application <b>build</b> (link) time. One would hope this
@@ -234,14 +234,14 @@ Keys (labeled F1 through F12 on most keyboards). Type a <span style="font-weight
 commands, including those handled
 by the current PlugIn. (There is an issue with printing <small><a href="KnownBugs">[see "Known Bugs" below]</a></small>.)<br>
 </p>
-<p>OpenSteerDemo keeps track of a single <i>selected</i> agent which
+<p>OpenSteerDemo keeps track of a single <em>selected</em> agent which
 the
 camera follows. In some demos additional annotation is provided for
 the selected agent. The user can change selection with the mouse.
 Pointing the mouse near an agent will cause it to highlight (for
 example, in the provided 2d demos, a gray disk is drawn under it).
 Clicking the (left) mouse button selects the highlighted agent.
-OpenSteerDemo's camera (<i>point of view</i>) adjusts itself
+OpenSteerDemo's camera (<em>point of view</em>) adjusts itself
 automatically
 to keep the selected vehicle in view. Several different camera aiming
 modes are provided:</p>
@@ -275,12 +275,12 @@ offset in the vehicle's local space </td>
   </tbody>
 </table>
 <p>You can adjust the camera's view with the mouse (or whatever input
-device you use). OpenSteerDemo lets you adjust the camera's <i>position
-</i>relative to its <i>aimpoint. </i>The aimpoint is defined by
+device you use). OpenSteerDemo lets you adjust the camera's <em>position
+</em>relative to its <em>aimpoint. </em>The aimpoint is defined by
 camera
 aiming mode and is normally the (predicted future position of the)
 selected vehicle. To adjust the camera: hold down the keyboard's
-<i>control </i>(Ctrl) key while dragging the mouse with its left
+<em>control </em>(Ctrl) key while dragging the mouse with its left
 button held down. 2D mouse motion is mapped into the camera's space,
 rotating the camera's position around its aimpoint. This allows the
 camera to move on the surface of a sphere centered at the aimpoint.
@@ -296,15 +296,15 @@ position relative to the selected vehicle.</p>
 interpolate over changes due to: motion of the selected vehicle,
 mouse-based camera adjustment, or switching camera aiming modes.
 </p>
-<p>OpenSteerDemo's clock provides two time streams: <i>real
-time </i>and
-<i>simulation time. </i>The redraw cycle and camera update are based
+<p>OpenSteerDemo's clock provides two time streams: <em>real
+time </em>and
+<em>simulation time</em>. The redraw cycle and camera update are based
 on passage of real time. Simulation time normally follows real time
-but can also be <i>paused, </i>freezing simulation of vehicle motion.
+but can also be <em>paused</em>, freezing simulation of vehicle motion.
 Pausing the simulation often helps to allow examining annotation in
 detail, or to interactively reposition the camera. (In the current
 implementation: when simulation time is paused, simulation updates
-continue to happen each frame, but the <i>elapsed time </i>("dt") is
+continue to happen each frame, but the <em>elapsed time </em>("dt") is
 given as zero.) The clock can be set to run in one of three modes
 described in the table below. You can use OpenSteerDemo's
 <b>&nbsp;f&nbsp;</b> keyboard command to cycle among several
@@ -351,8 +351,8 @@ utilities that while helpful, might not be critical enough to justify
 writing them during a production schedule. This includes various API
 for drawing annotation using elements such as lines, vectors, boxes,
 circles, disks, spheres and text attached to the screen or positions
-in 3d space. A facility is provided for drawing <i>streamers/trails
-</i>which display a vehicle's recent motion then fade away. There are
+in 3d space. A facility is provided for drawing <em>streamers/trails
+</em>which display a vehicle's recent motion then fade away. There are
 utilities for drawing a ground plane and highlighting vehicles in
 various ways. See <b>Annotation.h</b> and <b>OpenSteerDemo.h</b> for
 details. You can turn annotation on and off with OpenSteerDemo's <b>&nbsp;a&nbsp;</b>
@@ -377,12 +377,12 @@ their equator. Press F1 to add an obstacle (up to 100 of them), F2 to
 remove one. The "game" ends when the attacker reaches the goal or a
 defender tags the attacker. The demo automatically restarts a few
 seconds later. The attacker combines three basic steering behaviors:
-<i>goal seeking,</i> <i>evasion</i> and <i>obstacle avoidance</i>.
-The defenders combine <i>pursuit</i> and <i>obstacle avoidance.</i> A
+<em>goal seeking</em>, <em>evasion</em> and <em>obstacle avoidance</em>.
+The defenders combine <em>pursuit</em> and <em>obstacle avoidance</em>. A
 key to "non-stupid" behavior by the attacker was to notice when there
 is a defender-free "corridor" between it and the goal. When found,
 this corridor is depicted by a green outline. In this case the
-attacker uses pure <i>seek</i> and stops evading nearby defenders.
+attacker uses pure <em>seek</em> and stops evading nearby defenders.
 The pursuit behavior of the defenders needed to specialized so that
 they "knew" not to predict the motion of the attacker past its goal.
 The defenders do not otherwise think about global strategy, for
@@ -426,8 +426,8 @@ reversed when reaches the end of the path. Press F5 to toggle a
 Pedestrian's <span style="font-style: italic;">wander
 </span>component on and off.</p>
 <p><b>Boids:</b> 200 simulated flocking <a href="http://www.red3d.com/cwr/boids/">bird like objects</a>. The
-boids model is a simple combination of <i>separation, alignment
-</i>and <i>cohesion </i>steering behaviors. Press F1 to add a Boid
+boids model is a simple combination of <em>separation, alignment
+</em>and <em>cohesion </em>steering behaviors. Press F1 to add a Boid
 and F2 to remove one. This multiagent simulation uses a spatial
 database to accelerate proximity queries, F3
 cycles among types of proximity databases (two exist in OpenSteer
@@ -435,7 +435,7 @@ cycles among types of proximity databases (two exist in OpenSteer
 boundary
 conditions. One is "steer back when outside" -- when a boid
 travels
-outside the sphere it begins to <i>seek</i>
+outside the sphere it begins to <em>seek</em>
 towards the center. The other is "wrap around (teleport)" --
 boids that fly out of the sphere are instantly repositioned to the
 opposite side of the sphere.<br>
@@ -450,10 +450,10 @@ SimpleVehicle but its vehicle-like motion is replaced by bounce
 physics. Michael invites others to contribute improved Player
 designs. <br>
 </p>
-<p><b>Multiple Pursuit:</b> a "test fixture" for the <i>pursue</i>
+<p><b>Multiple Pursuit:</b> a "test fixture" for the <em>pursue</em>
 behavior. 30 pursuers chase one wandering quarry. The colored lines
 indicate the predicted future position of the quarry being used as a
-<i>seek</i> target by each pursuer. The colors indicate which of nine
+<em>seek</em> target by each pursuer. The colors indicate which of nine
 prediction cases is active. When a pursuer reaches the quarry it is
 "teleported" away to a random position.</p>
 <p><b>Low Speed Turn:</b> a "test fixture" for evaluating the response
@@ -552,7 +552,7 @@ matters is that a single instance of the new PlugIn class (<span class="sourceco
 lifetime of the OpenSteerDemo application. The actual "plugging in" is
 handled by the constructor(/destructor) of the<span class="sourcecode">
 PlugIn</span> base class. A class which is intended to be
-instantiated exactly once is sometimes called a <i>singleton</i>.
+instantiated exactly once is sometimes called a <em>singleton</em>.
 PlugIns expect to be instantiated exactly once but do not enforce or
 detect violations of that policy. Because PlugIns register
 themselves, the samples are defined in <b>.cpp</b> files and there is
@@ -564,7 +564,7 @@ OpenSteer tries to provide a lot of flexibility in how this can be
 done. On the other hand, if you are just trying to get your first
 experiment running under OpenSteerDemo, you probably want what Devo
 called
-"freedom <i>from </i>choice." The easiest approach, and what all the
+"freedom <em>from </em>choice." The easiest approach, and what all the
 provided samples do, is to define a new vehicle class as a
 specialization of<span class="sourcecode"> SimpleVehicle. </span>In
 general, all that is required to make use of the OpenSteer steering
@@ -618,9 +618,9 @@ vehicle's update method:&nbsp;&nbsp; <span class="sourcecode">if&nbsp;(this&nbsp
 <a name="SteeringLibrary"></a>
 Steering Library
 </b></big></big></p>
-<p><i>Note: this section is preliminary and subject to change. The
+<p><em>Note: this section is preliminary and subject to change. The
 documentation could conceivably be out of sync with the library itself.
-For the Real Truth always consult the source code.</i></p>
+For the Real Truth always consult the source code.</em></p>
 <p>In current organization of OpenSteer, its main library of steering
 behaviors is contained in the class SteerLibraryMixin (defined in
 <b>SteerLibrary.h</b>). A mixin is a class with templated superclass
@@ -673,7 +673,7 @@ provides <span style="font-style: italic;">directed path following </span>where
 the vehicle both stays on the path and heads in a given direction along
 the path, as indicated by the <span class="sourcecode">direction</span>
 argument which should be either +1 or -1. The path
-defines a <i>tube </i>in terms of a <i>spine </i>and a <i>radius </i>,
+defines a <em>tube </em>in terms of a <em>spine </em>and a <em>radius </em>,
 the goal is to keep a vehicle headed toward a point inside that tube.
 (OpenSteer 0.8.2 provides one kind of Path with a polyline spine:
 a
@@ -787,8 +787,8 @@ of it.
 <p><big><big><b><a name="Integrating"></a>
 Integrating with Your Code
 </b></big></big></p>
-<p><i>Note: this section is so preliminary that it is really just a
-placeholder...</i></p>
+<p><em>Note: this section is so preliminary that it is really just a
+placeholder...</em></p>
 <p>This section will eventually talk about the structure of
 OpenSteer's classes, and how they are designed to provide you with
 flexibility as you integrate OpenSteer with your existing code. It
@@ -848,23 +848,23 @@ OpenSteer 0.8.2 which contains these files: </p>
 <table align="center" border="0" cellpadding="0" cellspacing="3" width="90%">
   <tbody>
     <tr>
-      <td class="graybox" width="25%">OpenSteer_0_8_2_source.zip<br>
+      <td class="graybox" width="25%"><kbd>OpenSteer_0_8_2_source.zip</kbd><br>
       </td>
       <td class="graybox">Full source code for OpenSteer 0.8.2<br>
       </td>
     </tr>
     <tr>
-      <td class="graybox" width="25%">OpenSteerDemo_0_8_2_linux.zip<br>
+      <td class="graybox" width="25%"><kbd>OpenSteerDemo_0_8_2_linux.zip</kbd><br>
       </td>
       <td class="graybox">OpenSteerDemo application (Linux .elf) </td>
     </tr>
     <tr>
-      <td class="graybox" width="25%">OpenSteerDemo_0_8_2_macosx.dmg<br>
+      <td class="graybox" width="25%"><kbd>OpenSteerDemo_0_8_2_macosx.dmg</kbd><br>
       </td>
       <td class="graybox">OpenSteerDemo application (Mac OS X .app) </td>
     </tr>
     <tr>
-      <td class="graybox" width="25%">OpenSteerDemo_0_8_2_win32.zip<br>
+      <td class="graybox" width="25%"><kbd>OpenSteerDemo_0_8_2_win32.zip</kbd><br>
       </td>
       <td class="graybox">OpenSteerDemo application (Windows .exe) </td>
     </tr>
@@ -888,19 +888,45 @@ client is<a href="http://tortoisesvn.tigris.org/"> TortoiseSVN</a> (<a href="htt
       <td class="graybox" style="padding: 10px;" width="25%">On the command line check out
 a local
 working copy of the latest
-OpenSteer code from the SVN repository (this will place the project files into the subdirectory <i>opensteer</i> of the current directory)<br>
+OpenSteer code from the SVN repository (this will place the project files into the subdirectory <em>opensteer</em> of the current directory):<br>
       <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://svnbook.red-bean.com/nightly/en/svn-book.html#svn.tour.initial">svn co https://svn.sourceforge.net/svnroot/opensteer/trunk opensteer</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <kbd><a href="http://svnbook.red-bean.com/nightly/en/svn-book.html#svn.tour.initial">svn co https://opensteer.svn.sourceforge.net/svnroot/opensteer/trunk opensteer</a></kbd><br>
       <br>
 To get all branches and published code snapshots (tags) aside the latest code version use:<br>
       <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; svn co https://svn.sourceforge.net/svnroot/opensteer opensteer<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <kbd>svn co https://opensteer.svn.sourceforge.net/svnroot/opensteer opensteer</kbd><br>
       <br>
 Update your local working copy with recent changes from the SVN
 repository (first change into the directory containing the OpenSteer project files you checked out):<br>
       <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://svnbook.red-bean.com/nightly/en/svn-book.html#svn.tour.cycle.update">svn update</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <kbd><a href="http://svnbook.red-bean.com/nightly/en/svn-book.html#svn.tour.cycle.update">svn update</a></kbd><br>
       <span style="font-weight: bold;"></span></td>
+    </tr>
+    <tr>
+    	<td class="graybox" style="padding: 10px;" width="25%">
+    	<b>Update</b><br>
+    	Sourceforge.net has changed the access method for Subversion on November 32, 2006 (see <a href="https://sourceforge.net/docs/E09#notice">https://sourceforge.net/docs/E09#notice</a>).<br>
+    	If you have checked out OpenSteer before this date use the following method to switch your local copy to the new access method:
+    	<ol>
+    		<li>Make a backup copy of your local working copy of OpenSteer.</li>
+    		<li>Run <kbd>svn info</kbd> at the root of your local copy, it should display a line similar to <br>
+    			<samp>URL: https://svn.sourceforge.net/svnroot/opensteer/trunk</samp> (your checked out the so called 'trunk') or <br>
+    			<samp>URL: https://svn.sourceforge.net/svnroot/opensteer</samp> (your checked out the whole OpenSteer SVN repository)</li>
+    		<li>
+    			
+    				If you have checked out the 'trunk' execute the following command (without a line break) at the root of your working copy: <br>
+    					<br>
+    					<kbd>svn switch --relocate https://svn.sourceforge.net/svnroot/opensteer/trunk https://opensteer.svn.sourceforge.net/svnroot/opensteer/trunk </kbd><br><br>
+    				If you have checked out the whole OpenSteer SVN repository (with the 'branches', 'tags', and 'trunk' subdirectories) execute the following command (without a line break) at the root of your working copy: <br>
+    					<br>
+    					<kbd>svn switch --relocate https://svn.sourceforge.net/svnroot/opensteer https://opensteer.svn.sourceforge.net/svnroot/opensteer</kbd><br><br>
+    			
+    				
+    		</li>
+    		<li> If everything went fine (without error messages) you should be able to delete the backup copy now.
+    		</li>
+    	</ol>
+    	</td>
     </tr>
   </tbody>
 </table>
@@ -912,37 +938,37 @@ of OpenSteer:&nbsp;<br>
 <table align="center" border="0" cellpadding="0" cellspacing="3" width="90%">
   <tbody>
     <tr>
-      <td class="graybox" width="25%">opensteer/</td>
+      <td class="graybox" width="25%"><kbd>opensteer/</kbd></td>
       <td class="graybox">main directory<br>
       </td>
     </tr>
     <tr>
-      <td class="graybox">opensteer/src/</td>
+      <td class="graybox"><kbd>opensteer/src/</kbd></td>
       <td class="graybox">source code (*.cpp files)</td>
     </tr>
     <tr>
-      <td class="graybox">opensteer/include/OpenSteer/</td>
+      <td class="graybox"><kbd>opensteer/include/OpenSteer/</kbd></td>
       <td class="graybox">headers (*.h files)</td>
     </tr>
     <tr>
-      <td class="graybox">opensteer/plugins/</td>
+      <td class="graybox"><kbd>opensteer/plugins/</kbd></td>
       <td class="graybox">source for supplied OpenSteerDemo PlugIns
 (*.cpp
 files)</td>
     </tr>
     <tr>
-      <td class="graybox">opensteer/linux/</td>
+      <td class="graybox"><kbd>opensteer/linux/</kbd></td>
       <td class="graybox">Makefile (and KDevelop project) for building
 on Linux<br>
       </td>
     </tr>
     <tr>
-      <td class="graybox">opensteer/macosx/</td>
+      <td class="graybox"><kbd>opensteer/macosx/</kbd></td>
       <td class="graybox">files for building with Xcode on Mac OS X<br>
       </td>
     </tr>
     <tr>
-      <td class="graybox">opensteer/win32/</td>
+      <td class="graybox"><kbd>opensteer/win32/</kbd></td>
       <td class="graybox">files for building with Visual Studio on
 Windows<br>
       </td>
@@ -971,22 +997,22 @@ have Xcode you have the right compiler.<br>
       <td class="graybox" width="25%">Linux<br>
       </td>
       <td class="graybox"><span style="font-style: italic;"></span><a href="http://www.gnu.org/software/make/">make</a> command:&nbsp;&nbsp;
-opensteer/linux/Makefile<br>
+<kbd>opensteer/linux/Makefile</kbd><br>
       <a href="http://www.kdevelop.org/">KDevelop</a>:&nbsp;&nbsp;
-opensteer/linux/OpenSteer.kdevelop </td>
+<kbd>opensteer/linux/OpenSteer.kdevelop</kbd> </td>
     </tr>
     <tr>
       <td class="graybox" width="25%">Mac OS X<br>
       </td>
       <td class="graybox"><a href="http://www.apple.com/macosx/features/xcode/">Xcode</a>:&nbsp;&nbsp;
-opensteer/macosx/OpenSteer.xcode </td>
+<kbd>opensteer/macosx/OpenSteer.xcode</kbd> </td>
     </tr>
     <tr>
       <td class="graybox" width="25%">Windows<br>
       </td>
       <td class="graybox"><a href="http://msdn.microsoft.com/vstudio/">Visual
 Studio</a> (<a href="http://msdn.microsoft.com/visualc/">Visual C++</a>):&nbsp;&nbsp;
-opensteer/win32/OpenSteer.sln </td>
+<kbd>opensteer/win32/OpenSteer.sln</kbd> </td>
     </tr>
   </tbody>
 </table>
@@ -995,11 +1021,11 @@ double click on
 the project file indicated above, then do a Full Build or Build
 Solution. To run the resulting application, use the IDE's Run
 command or double click on the OpenSteerDemo desktop icon. To use
-the Linux Makefile, <span style="font-weight: bold;">cd</span>
-to <span style="font-weight: bold;">opensteer/linux/</span> -- build
-using the <span style="font-weight: bold;">make</span>
-command, run the application with the <span style="font-weight: bold;">make
-run</span> command.</p>
+the Linux Makefile, <kbd>cd</kbd>
+to <kbd>opensteer/linux/</kbd> -- build
+using the <kbd>make</kbd>
+command, run the application with the <kbd>make
+run</kbd> command.</p>
 <p><big><big><b><br>
 <a name="KnownBugs"></a>Known Bugs and Missing Features
 </b></big></big></p>
