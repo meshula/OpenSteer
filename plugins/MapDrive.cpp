@@ -386,7 +386,8 @@ namespace {
               xSize(x),
               zSize(z),
               resolution(r),
-              outsideValue (false)
+              outsideValue (false),
+			  map(resolution * resolution)
         {
             map.reserve (resolution * resolution);
         }
