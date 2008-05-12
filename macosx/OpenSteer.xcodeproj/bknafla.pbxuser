@@ -38,9 +38,9 @@
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
 					20,
-					344,
+					411,
 					20,
-					48.16259765625,
+					48,
 					43,
 					43,
 					20,
@@ -153,6 +153,14 @@
 	};
 	327C7E980856F0B300C14AE6 /* Doxygen */ = {
 		activeExec = 0;
+	};
+	32FFF56906E9CECE00E1D8A3 /* OneTurning.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {621, 2394}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 644}, {621, 764}}";
+			sepNavWindowFrame = "{{494, -122}, {666, 878}}";
+		};
 	};
 	8D1107260486CEB800E47090 /* OpenSteerDemo */ = {
 		activeExec = 0;
