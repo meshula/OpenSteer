@@ -2193,10 +2193,6 @@ namespace {
         }
 
 
-        // QQQ move this utility to SimpleVehicle?
-        float relativeSpeed (void) const {return speed () / maxSpeed ();}
-
-
         float wingSlope (void)
         {
             return interpolate (relativeSpeed (),

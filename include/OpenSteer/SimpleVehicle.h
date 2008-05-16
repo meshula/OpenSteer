@@ -145,6 +145,9 @@ namespace OpenSteer {
         float maxSpeed (void) const {return _maxSpeed;}
         float setMaxSpeed (float ms) {return _maxSpeed = ms;}
 
+        // ratio of speed to max possible speed (0 slowest, 1 fastest)
+        float relativeSpeed (void) const {return speed () / maxSpeed ();}
+
 
         // apply a given steering force to our momentum,
         // adjusting our orientation to maintain velocity-alignment.
