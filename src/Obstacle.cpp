@@ -167,7 +167,18 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
 
     // find sphere's "local center" (lc) in the vehicle's coordinate space
     lc = vehicle.localizePosition (center);
+    pi.vehicleOutside = lc.length () > radius;
 
+	// if obstacle is seen from inside, but vehicle is outside, must avoid
+	// (noticed once a vehicle got outside it ignored the obstacle 2008-5-20)
+	if (pi.vehicleOutside && (seenFrom () == inside))
+	{
+		pi.intersect = true;
+		pi.distance = 0.0f;
+		pi.steerHint = (center - vehicle.position()).normalize();
+		return;
+	}
+	
     // compute line-sphere intersection parameters
     const float r = radius + vehicle.radius();
     b = -2 * lc.z;
@@ -204,8 +215,6 @@ findIntersectionWithVehiclePath (const AbstractVehicle& vehicle,
     pi.surfacePoint =
         vehicle.position() + (vehicle.forward() * pi.distance);
     pi.surfaceNormal = (pi.surfacePoint-center).normalize();
-    // hmm, note that this was actually determined already in pi.distance calc
-    pi.vehicleOutside = lc.length () > radius;
     switch (seenFrom ())
     {
     case outside:
