@@ -63,6 +63,8 @@
 		3230C0C5084DBBA100CBB0D9 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32FFF49106E90A9F00E1D8A3 /* GLUT.framework */; };
 		3230C0C6084DBBA500CBB0D9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		3230C3EF084F4ED600CBB0D9 /* MapDrive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32FFF56706E9CECE00E1D8A3 /* MapDrive.cpp */; };
+		3242E4DD11B4207100F217B1 /* PedestriansWalkingAnEight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3242E4DC11B4207100F217B1 /* PedestriansWalkingAnEight.cpp */; };
+		3242E4E011B420C400F217B1 /* SharedPointerTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3242E4DE11B420C400F217B1 /* SharedPointerTest.cpp */; };
 		3243869207292CC300B6EBA6 /* SimpleVehicle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32FFF54C06E9CEBD00E1D8A3 /* SimpleVehicle.cpp */; };
 		3243869307292CC400B6EBA6 /* PlugIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32FFF54B06E9CEBD00E1D8A3 /* PlugIn.cpp */; };
 		3243869407292CCB00B6EBA6 /* OpenSteerDemo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84AD12B1070E224000559513 /* OpenSteerDemo.cpp */; };
@@ -138,6 +140,10 @@
 		3224E59508485F8A00C13D97 /* QueryPathAlikeUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QueryPathAlikeUtilities.h; sourceTree = "<group>"; };
 		3224E6600849C27400C13D97 /* QueryPathAlikeMappings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QueryPathAlikeMappings.h; sourceTree = "<group>"; };
 		3230C46B085066DD00CBB0D9 /* SegmentedPathAlikeUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SegmentedPathAlikeUtilities.h; sourceTree = "<group>"; };
+		3242E4DC11B4207100F217B1 /* PedestriansWalkingAnEight.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PedestriansWalkingAnEight.cpp; sourceTree = "<group>"; };
+		3242E4DE11B420C400F217B1 /* SharedPointerTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SharedPointerTest.cpp; sourceTree = "<group>"; };
+		3242E4DF11B420C400F217B1 /* SharedPointerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedPointerTest.h; sourceTree = "<group>"; };
+		3242E4E111B420DF00F217B1 /* SharedPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedPointer.h; sourceTree = "<group>"; };
 		324386DA07293A2200B6EBA6 /* Draw.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Draw.h; sourceTree = "<group>"; };
 		3248EFBB06F0A6380069A576 /* README_CVS_WITH_XCODE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README_CVS_WITH_XCODE.txt; sourceTree = "<group>"; };
 		324DA5EE082ABDD8000F3779 /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Color.cpp; sourceTree = "<group>"; };
@@ -146,7 +152,6 @@
 		327C89DE085762AD00C14AE6 /* QueryPathAlikeBaseDataExtractionPolicies.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QueryPathAlikeBaseDataExtractionPolicies.h; sourceTree = "<group>"; };
 		32BF79F20861C70F0045ADCC /* PolylineSegmentedPathwaySingleRadiusTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PolylineSegmentedPathwaySingleRadiusTest.h; sourceTree = "<group>"; };
 		32BF79F30861C70F0045ADCC /* PolylineSegmentedPathwaySingleRadiusTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PolylineSegmentedPathwaySingleRadiusTest.cpp; sourceTree = "<group>"; };
-		32BF7B31086389600045ADCC /* PedestrianPathwayTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PedestrianPathwayTest.cpp; sourceTree = "<group>"; };
 		32C150890765ABE000A8BC25 /* TerrainRayTest.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = TerrainRayTest.cpp; sourceTree = "<group>"; };
 		32C1508A0765ABE000A8BC25 /* TerrainRayTest.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TerrainRayTest.h; sourceTree = "<group>"; };
 		32ECF063082FC7FB00E5E444 /* UnusedParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnusedParameter.h; sourceTree = "<group>"; };
@@ -264,9 +269,11 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		3224E43408435A4600C13D97 /* tests */ = {
+		3224E43408435A4600C13D97 /* test */ = {
 			isa = PBXGroup;
 			children = (
+				3242E4DE11B420C400F217B1 /* SharedPointerTest.cpp */,
+				3242E4DF11B420C400F217B1 /* SharedPointerTest.h */,
 				3224E47D08435E0700C13D97 /* TestMain.cpp */,
 				3224E47A08435DE800C13D97 /* PolylineSegmentedPathTest.h */,
 				3224E47B08435DE800C13D97 /* PolylineSegmentedPathTest.cpp */,
@@ -274,8 +281,8 @@
 				32BF79F30861C70F0045ADCC /* PolylineSegmentedPathwaySingleRadiusTest.cpp */,
 			);
 			comments = "Unit tests for the OpenSteer library and demo application.";
-			name = tests;
-			path = ../tests;
+			name = test;
+			path = ../test;
 			sourceTree = SOURCE_ROOT;
 		};
 		32FFF52206E9CEA700E1D8A3 /* include */ = {
@@ -290,6 +297,7 @@
 		32FFF52306E9CEA700E1D8A3 /* OpenSteer */ = {
 			isa = PBXGroup;
 			children = (
+				3242E4E111B420DF00F217B1 /* SharedPointer.h */,
 				32FFF52406E9CEA700E1D8A3 /* AbstractVehicle.h */,
 				32FFF52506E9CEA700E1D8A3 /* Annotation.h */,
 				32FFF52606E9CEA700E1D8A3 /* Camera.h */,
@@ -359,6 +367,7 @@
 		32FFF56306E9CECE00E1D8A3 /* plugins */ = {
 			isa = PBXGroup;
 			children = (
+				3242E4DC11B4207100F217B1 /* PedestriansWalkingAnEight.cpp */,
 				32FFF56406E9CECE00E1D8A3 /* Boids.cpp */,
 				32FFF56506E9CECE00E1D8A3 /* CaptureTheFlag.cpp */,
 				32FFF56606E9CECE00E1D8A3 /* LowSpeedTurn.cpp */,
@@ -367,7 +376,6 @@
 				32FFF56906E9CECE00E1D8A3 /* OneTurning.cpp */,
 				32FFF56A06E9CECE00E1D8A3 /* Pedestrian.cpp */,
 				32FFF56B06E9CECE00E1D8A3 /* Soccer.cpp */,
-				32BF7B31086389600045ADCC /* PedestrianPathwayTest.cpp */,
 			);
 			name = plugins;
 			path = ../plugins;
@@ -388,7 +396,7 @@
 			children = (
 				32FFF56306E9CECE00E1D8A3 /* plugins */,
 				32FFF54406E9CEBD00E1D8A3 /* src */,
-				3224E43408435A4600C13D97 /* tests */,
+				3224E43408435A4600C13D97 /* test */,
 				32FFF52206E9CEA700E1D8A3 /* include */,
 			);
 			name = "Source Code";
@@ -438,9 +446,11 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 3219D30B0855BC5800EB7908 /* Build configuration list for PBXProject "OpenSteer" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = 29B97314FDCFA39411CA2CEA /* opensteer */;
 			projectDirPath = "";
+			projectRoot = "<Project File Directory>/..";
 			targets = (
 				8D1107260486CEB800E47090 /* OpenSteerDemo */,
 				3224E47508435BCC00C13D97 /* UnitTest */,
@@ -532,6 +542,7 @@
 				327C7F2F0857205E00C14AE6 /* OldPathway.cpp in Sources */,
 				32BF79F40861C70F0045ADCC /* PolylineSegmentedPathwaySingleRadiusTest.cpp in Sources */,
 				32BF7A5D0861DE270045ADCC /* MapDrive.cpp in Sources */,
+				3242E4E011B420C400F217B1 /* SharedPointerTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -568,6 +579,7 @@
 				3230C3EF084F4ED600CBB0D9 /* MapDrive.cpp in Sources */,
 				327C7F2E0857205E00C14AE6 /* OldPathway.cpp in Sources */,
 				32BF7CB90864A4550045ADCC /* Pedestrian.cpp in Sources */,
+				3242E4DD11B4207100F217B1 /* PedestriansWalkingAnEight.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -849,7 +861,7 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				OPTIMIZATION_CFLAGS = "-O0";
+				GCC_OPTIMIZATION_LEVEL = 0;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -868,7 +880,7 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				OPTIMIZATION_CFLAGS = "-O0";
+				GCC_OPTIMIZATION_LEVEL = 0;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -885,7 +897,7 @@
 		327C7E9E0856F0D200C14AE6 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				OPTIMIZATION_CFLAGS = "-O0";
+				GCC_OPTIMIZATION_LEVEL = 0;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";

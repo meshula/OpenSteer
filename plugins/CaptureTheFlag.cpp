@@ -52,6 +52,7 @@
 
 
 #include <iomanip>
+#include <string>
 #include <sstream>
 #include "OpenSteer/SimpleVehicle.h"
 #include "OpenSteer/OpenSteerDemo.h"
@@ -668,7 +669,7 @@ namespace {
         CtfBase::draw();
 
         // select string describing current seeker state
-        char* seekerStateString = "";
+        std::string seekerStateString("");
         switch (state)
         {
         case running:

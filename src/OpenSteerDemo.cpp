@@ -47,6 +47,7 @@
 #include "OpenSteer/Vec3.h"
 
 #include <algorithm>
+#include <string>
 #include <sstream>
 #include <iomanip>
 
@@ -822,7 +823,7 @@ OpenSteer::OpenSteerDemo::updatePhaseTimers (void)
 
 namespace {
 
-    char* appVersionName = "OpenSteerDemo 0.8.2";
+    std::string const appVersionName("OpenSteerDemo 0.8.2");
 
     // The number of our GLUT window
     int windowID;
@@ -1455,7 +1456,7 @@ OpenSteer::initializeGraphics (int argc, char **argv)
     const int wh = (int) (sh * ws);
     glutInitWindowPosition ((int) (sw * (1-ws)/2), (int) (sh * (1-ws)/2));
     glutInitWindowSize (ww, wh);
-    windowID = glutCreateWindow (appVersionName);
+    windowID = glutCreateWindow (appVersionName.c_str());
     reshapeFunc (ww, wh);
     initGL ();
 

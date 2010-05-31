@@ -38,7 +38,7 @@
 
 
 #include "OpenSteer/PlugIn.h"
-
+#include <cstring>
 
 // ----------------------------------------------------------------------------
 // PlugIn registry
@@ -102,7 +102,7 @@ OpenSteer::PlugIn::findByName (const char* string)
         {
             PlugIn& pi = *registry[i];
             const char* s = pi.name();
-            if (s && (strcmp (string, s) == 0)) return &pi;
+            if (s && (std::strcmp (string, s) == 0)) return &pi;
         }
     }
     return NULL;
