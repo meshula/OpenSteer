@@ -1024,9 +1024,9 @@ steerForPursuit (const AbstractVehicle& quarry,
     const Vec3 target = quarry.predictFuturePosition (etl);
 
     // annotation
-    annotationLine (position(),
-                    target,
-                    gaudyPursuitAnnotation ? color : gGray40);
+    this->annotationLine (position(),
+                          target,
+                          gaudyPursuitAnnotation ? color : gGray40);
 
     return steerForSeek (target);
 }
@@ -1042,7 +1042,7 @@ steerForEvasion (const AbstractVehicle& menace,
                  const float maxPredictionTime)
 {
     // offset from this to menace, that distance, unit vector toward menace
-    const Vec3 offset = menace.position - position;
+    const Vec3 offset = this->menace.position - position;
     const float distance = offset.length ();
 
     const float roughTime = distance / menace.speed();
