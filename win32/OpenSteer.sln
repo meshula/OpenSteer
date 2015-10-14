@@ -1,30 +1,26 @@
-Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opensteer", "opensteer.vcproj", "{2FCB5399-059F-405F-A19B-3ACBE92057A9}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opensteer", "opensteer.vcxproj", "{2FCB5399-059F-405F-A19B-3ACBE92057A9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenSteerDemo", "steertest.vcproj", "{2FCB5399-059F-405F-A19B-3ACBE92057A9}"
-	ProjectSection(ProjectDependencies) = postProject
-		{2FCB5399-059F-405F-A19B-3ACBE92057A9} = {2FCB5399-059F-405F-A19B-3ACBE92057A9}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenSteerDemo", "steertest.vcxproj", "{1A3F31EB-52E8-4BFA-9456-B1D20B9CA3FF}"
 EndProject
 Global
-	GlobalSection(SolutionConfiguration) = preSolution
-		Debug = Debug
-		Release = Release
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
 	EndGlobalSection
-	GlobalSection(ProjectConfiguration) = postSolution
-		{2FCB5399-059F-405F-A19B-3ACBE92057A9}.Debug.ActiveCfg = Debug|Win32
-		{2FCB5399-059F-405F-A19B-3ACBE92057A9}.Debug.Build.0 = Debug|Win32
-		{2FCB5399-059F-405F-A19B-3ACBE92057A9}.Release.ActiveCfg = Release|Win32
-		{2FCB5399-059F-405F-A19B-3ACBE92057A9}.Release.Build.0 = Release|Win32
-		{2FCB5399-059F-405F-A19B-3ACBE92057A9}.Debug.ActiveCfg = Debug|Win32
-		{2FCB5399-059F-405F-A19B-3ACBE92057A9}.Debug.Build.0 = Debug|Win32
-		{2FCB5399-059F-405F-A19B-3ACBE92057A9}.Release.ActiveCfg = Release|Win32
-		{2FCB5399-059F-405F-A19B-3ACBE92057A9}.Release.Build.0 = Release|Win32
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2FCB5399-059F-405F-A19B-3ACBE92057A9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2FCB5399-059F-405F-A19B-3ACBE92057A9}.Debug|Win32.Build.0 = Debug|Win32
+		{2FCB5399-059F-405F-A19B-3ACBE92057A9}.Release|Win32.ActiveCfg = Release|Win32
+		{2FCB5399-059F-405F-A19B-3ACBE92057A9}.Release|Win32.Build.0 = Release|Win32
+		{1A3F31EB-52E8-4BFA-9456-B1D20B9CA3FF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1A3F31EB-52E8-4BFA-9456-B1D20B9CA3FF}.Debug|Win32.Build.0 = Debug|Win32
+		{1A3F31EB-52E8-4BFA-9456-B1D20B9CA3FF}.Release|Win32.ActiveCfg = Release|Win32
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-	EndGlobalSection
-	GlobalSection(ExtensibilityAddIns) = postSolution
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

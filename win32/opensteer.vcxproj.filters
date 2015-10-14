@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{a1fbc783-81c7-4744-9774-dd338ac38aae}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm</Extensions>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{3fc88cb9-3d57-4458-aabf-3e5a3add6d62}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\Camera.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Clock.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Draw.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\lq.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Obstacle.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Pathway.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\PlugIn.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SimpleVehicle.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Vec3.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Color.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\PolylineSegmentedPathwaySegmentRadii.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\PolylineSegmentedPathwaySingleRadius.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\PolylineSegmentedPath.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SegmentedPath.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SegmentedPathway.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Path.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\OpenSteer\AbstractVehicle.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OpenSteer\Annotation.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OpenSteer\Camera.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OpenSteer\Clock.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OpenSteer\Draw.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OpenSteer\LocalSpace.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OpenSteer\lq.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OpenSteer\Obstacle.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OpenSteer\Pathway.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OpenSteer\PlugIn.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OpenSteer\Proximity.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OpenSteer\SimpleVehicle.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OpenSteer\SteerLibrary.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OpenSteer\SteerTest.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OpenSteer\Utilities.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\OpenSteer\Vec3.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,21 @@
+# Build files
+[Dd]ebug
+build
+bin
+lib
+
+# Temporary Files
+*.*~
+*.swp
+
+# User-specific files
+*.suo
+*.user
+
+# Cache files
+*.sdf
+*.opensdf
+
+# Misc
+UpgradeLog.htm
+Backup
