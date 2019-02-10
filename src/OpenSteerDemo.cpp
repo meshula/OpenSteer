@@ -1241,15 +1241,10 @@ namespace {
     {
         std::ostringstream message;
 
-        // ascii codes
-        const int tab = 9;
-        const int space = 32;
-        const int esc = 27; // escape key
-
         switch (key)
         {
         // reset selected PlugIn
-        case 'r':
+        case 'R':
             OpenSteer::OpenSteerDemo::resetSelectedPlugIn ();
             message << "reset PlugIn "
                     << '"' << OpenSteer::OpenSteerDemo::nameOfSelectedPlugIn () << '"'
@@ -1258,13 +1253,13 @@ namespace {
             break;
 
         // cycle selection to next vehicle
-        case 's':
+        case 'S':
             OpenSteer::OpenSteerDemo::printMessage ("select next vehicle/agent");
             OpenSteer::OpenSteerDemo::selectNextVehicle ();
             break;
 
         // camera mode cycle
-        case 'c':
+        case 'C':
             OpenSteer::OpenSteerDemo::camera.selectNextMode ();
             message << "select camera mode "
                     << '"' << OpenSteer::OpenSteerDemo::camera.modeName () << '"' << std::ends;
@@ -1272,7 +1267,7 @@ namespace {
             break;
 
         // select next PlugIn
-        case tab:
+        case GLFW_KEY_TAB:
             OpenSteer::OpenSteerDemo::selectNextPlugIn ();
             message << "select next PlugIn: "
                     << '"' << OpenSteer::OpenSteerDemo::nameOfSelectedPlugIn () << '"'
@@ -1281,19 +1276,19 @@ namespace {
             break;
 
         // toggle annotation state
-        case 'a':
+        case 'A':
             OpenSteer::OpenSteerDemo::printMessage (OpenSteer::toggleAnnotationState () ?
                                                     "annotation ON" : "annotation OFF");
             break;
 
         // toggle run/pause state
-        case space:
+        case GLFW_KEY_SPACE:
             OpenSteer::OpenSteerDemo::printMessage (OpenSteer::OpenSteerDemo::clock.togglePausedState () ?
                                                     "pause" : "run");
             break;
 
         // cycle through frame rate (clock mode) presets
-        case 'f':
+        case 'F':
             selectNextPresetFrameRate ();
             message << "set clock to ";
             if (OpenSteer::OpenSteerDemo::clock.getAnimationMode ())
