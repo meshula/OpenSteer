@@ -923,7 +923,7 @@ OpenSteer::checkForDrawError (const char * locationDescription)
 OpenSteer::Vec3 
 OpenSteer::directionFromCameraToScreenPosition (int x, int y, int h)
 {
-    return {1, 0, 0};
+    return Vec3(1, 0, 0);
 
 /// @TODO, switch OpenSteer to use a newer linear algebra library such as linalg
 #if 0
