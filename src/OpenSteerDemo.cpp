@@ -59,6 +59,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+GLFWwindow* demo_window = nullptr;
+
 // ----------------------------------------------------------------------------
 // keeps track of both "real time" and "simulation time"
 
@@ -874,44 +876,34 @@ namespace {
     }
 
 
-
-
-
     // ----------------------------------------------------------------------------
     // handler for window resizing
 
-
-    void 
-    reshapeFunc (int width, int height)
+    void reshape( GLFWwindow* window, int width, int height )
     {
-        // set viewport to full window
-        glViewport(0, 0, width, height);
+      GLfloat h = (GLfloat) height / (GLfloat) width;
+      GLfloat xmax, znear, zfar;
 
-        // set perspective transformation
-        glMatrixMode (GL_PROJECTION);
-        glLoadIdentity ();
-        const GLfloat w = width;
-        const GLfloat h = height;
-        const GLfloat aspectRatio = (height == 0) ? 1 : w/h;
-        const GLfloat fieldOfViewY = 45;
-        const GLfloat hither = 1;  // put this on Camera so PlugIns can frob it
-        const GLfloat yon = 400;   // put this on Camera so PlugIns can frob it
-        gluPerspective (fieldOfViewY, aspectRatio, hither, yon);
+      znear = 1.0f;
+      zfar  = 400.0f;
+      xmax  = znear * 0.5f;
 
-        // leave in modelview mode
-        glMatrixMode(GL_MODELVIEW);
+      glViewport( 0, 0, (GLint) width, (GLint) height );
+      glMatrixMode( GL_PROJECTION );
+      glLoadIdentity();
+      glFrustum( -xmax, xmax, -xmax*h, xmax*h, znear, zfar );
+      glMatrixMode( GL_MODELVIEW );
     }
 
 
     // ----------------------------------------------------------------------------
-    // This is called (by GLUT) each time a mouse button pressed or released.
-
+    // This is called (by glfw) each time a mouse button pressed or released.
 
     void 
-    mouseButtonFunc (int button, int state, int x, int y)
+    mouseButtonFunc(GLFWwindow* window, int button, int action, int mods)
     {
         // if the mouse button has just been released
-        if (state == GLUT_UP)
+        if (action == GLFW_RELEASE)
         {
             // end any ongoing mouse-adjusting-camera session
             gMouseAdjustingCameraAngle = false;
@@ -919,17 +911,16 @@ namespace {
         }
 
         // if the mouse button has just been pushed down
-        if (state == GLUT_DOWN)
+        if (action == GLFW_PRESS)
         {
             // names for relevant values of "button" and "state"
-            const int  mods       = glutGetModifiers ();
             const bool modNone    = (mods == 0);
-            const bool modCtrl    = (mods == GLUT_ACTIVE_CTRL);
-            const bool modAlt     = (mods == GLUT_ACTIVE_ALT);
-            const bool modCtrlAlt = (mods == (GLUT_ACTIVE_CTRL | GLUT_ACTIVE_ALT));
-            const bool mouseL     = (button == GLUT_LEFT_BUTTON);
-            const bool mouseM     = (button == GLUT_MIDDLE_BUTTON);
-            const bool mouseR     = (button == GLUT_RIGHT_BUTTON);
+            const bool modCtrl    = (mods & GLFW_MOD_CONTROL);
+            const bool modAlt     = (mods & GLFW_MOD_ALT);
+            const bool modCtrlAlt = modCtrl || modAlt;
+            const bool mouseL     = (button == 0);
+            const bool mouseM     = (button == 1);
+            const bool mouseR     = (button == 2);
 
     #if __APPLE__ && __MACH__
             const bool macosx = true;
@@ -940,7 +931,7 @@ namespace {
             // mouse-left (with no modifiers): select vehicle
             if (modNone && mouseL)
             {
-                OpenSteer::OpenSteerDemo::selectVehicleNearestScreenPosition (x, y);
+                OpenSteer::OpenSteerDemo::selectVehicleNearestScreenPosition (OpenSteer::OpenSteerDemo::mouseX, OpenSteer::OpenSteerDemo::mouseY);
             }
 
             // control-mouse-left: begin adjusting camera angle (on Mac OS X
@@ -950,8 +941,8 @@ namespace {
             if ((modCtrl && mouseL) ||
                (modNone && mouseR && macosx))
             {
-                gMouseAdjustingCameraLastX = x;
-                gMouseAdjustingCameraLastY = y;
+                gMouseAdjustingCameraLastX = OpenSteer::OpenSteerDemo::mouseX;
+                gMouseAdjustingCameraLastY = OpenSteer::OpenSteerDemo::mouseY;
                 gMouseAdjustingCameraAngle = true;
             }
 
@@ -963,8 +954,8 @@ namespace {
                 (modCtrlAlt && mouseM) ||
                 (modAlt     && mouseR && macosx))
             {
-                gMouseAdjustingCameraLastX = x;
-                gMouseAdjustingCameraLastY = y;
+                gMouseAdjustingCameraLastX = OpenSteer::OpenSteerDemo::mouseX;
+                gMouseAdjustingCameraLastY = OpenSteer::OpenSteerDemo::mouseY;
                 gMouseAdjustingCameraRadius = true;
             }
         }
@@ -972,68 +963,59 @@ namespace {
 
 
     // ----------------------------------------------------------------------------
-    // called when mouse moves and any buttons are down
-
-
-    void 
-    mouseMotionFunc (int x, int y)
-    {
-        // are we currently in the process of mouse-adjusting the camera?
-        if (gMouseAdjustingCameraAngle || gMouseAdjustingCameraRadius)
-        {
-            // speed factors to map from mouse movement in pixels to 3d motion
-            const float dSpeed = 0.005f;
-            const float rSpeed = 0.01f;
-
-            // XY distance (in pixels) that mouse moved since last update
-            const float dx = x - gMouseAdjustingCameraLastX;
-            const float dy = y - gMouseAdjustingCameraLastY;
-            gMouseAdjustingCameraLastX = x;
-            gMouseAdjustingCameraLastY = y;
-
-            OpenSteer::Vec3 cameraAdjustment;
-
-            // set XY values according to mouse motion on screen space
-            if (gMouseAdjustingCameraAngle)
-            {
-                cameraAdjustment.x = dx * -dSpeed;
-                cameraAdjustment.y = dy * +dSpeed;
-            }
-
-            // set Z value according vertical to mouse motion
-            if (gMouseAdjustingCameraRadius)
-            {
-                cameraAdjustment.z = dy * rSpeed;
-            }
-
-            // pass adjustment vector to camera's mouse adjustment routine
-            OpenSteer::OpenSteerDemo::camera.mouseAdjustOffset (cameraAdjustment);
-        }
-    }
-
-
-    // ----------------------------------------------------------------------------
     // called when mouse moves and no buttons are down
 
-
     void 
-    mousePassiveMotionFunc (int x, int y)
+    mouseMotionFunc(GLFWwindow* window, double x, double y)
     {
-        OpenSteer::OpenSteerDemo::mouseX = x;
-        OpenSteer::OpenSteerDemo::mouseY = y;
+        OpenSteer::OpenSteerDemo::mouseX = static_cast<int>(x);
+        OpenSteer::OpenSteerDemo::mouseY = static_cast<int>(y);
+
+        if (glfwGetMouseButton(window, 0))
+        {
+            // are we currently in the process of mouse-adjusting the camera?
+            if (gMouseAdjustingCameraAngle || gMouseAdjustingCameraRadius)
+            {
+                // speed factors to map from mouse movement in pixels to 3d motion
+                const float dSpeed = 0.005f;
+                const float rSpeed = 0.01f;
+
+                // XY distance (in pixels) that mouse moved since last update
+                const float dx = static_cast<float>(x - gMouseAdjustingCameraLastX);
+                const float dy = static_cast<float>(y - gMouseAdjustingCameraLastY);
+                gMouseAdjustingCameraLastX = static_cast<int>(x);
+                gMouseAdjustingCameraLastY = static_cast<int>(y);
+
+                OpenSteer::Vec3 cameraAdjustment;
+
+                // set XY values according to mouse motion on screen space
+                if (gMouseAdjustingCameraAngle)
+                {
+                    cameraAdjustment.x = dx * -dSpeed;
+                    cameraAdjustment.y = dy * +dSpeed;
+                }
+
+                // set Z value according vertical to mouse motion
+                if (gMouseAdjustingCameraRadius)
+                {
+                    cameraAdjustment.z = dy * rSpeed;
+                }
+
+                // pass adjustment vector to camera's mouse adjustment routine
+                OpenSteer::OpenSteerDemo::camera.mouseAdjustOffset (cameraAdjustment);
+            }
+        }
     }
 
 
     // ----------------------------------------------------------------------------
     // called when mouse enters or exits the window
 
-
-    void 
-    mouseEnterExitWindowFunc (int state)
+    void mouseEnterExitWindowFunc(GLFWwindow* window, int entered)
     {
-        if (state == GLUT_ENTERED) OpenSteer::OpenSteerDemo::mouseInWindow = true;
-        if (state == GLUT_LEFT)    OpenSteer::OpenSteerDemo::mouseInWindow = false;
+        OpenSteer::OpenSteerDemo::mouseInWindow = !!entered;
     }
+
 
 
     // ----------------------------------------------------------------------------
@@ -1043,7 +1025,7 @@ namespace {
     void 
     drawDisplayPlugInName (void)
     {
-        const float h = glutGet (GLUT_WINDOW_HEIGHT);
+        const float h = OpenSteer::drawGetWindowWidth();
         const OpenSteer::Vec3 screenLocation (10, h-20, 0);
         draw2dTextAt2dLocation (*OpenSteer::OpenSteerDemo::nameOfSelectedPlugIn (),
                                 screenLocation,
@@ -1253,15 +1235,9 @@ namespace {
 
 
     // ------------------------------------------------------------------------
-    // This function is called (by GLUT) each time a key is pressed.
+    // This function is called (by glfw) each time a key is pressed.
     //
-    // XXX the bulk of this should be moved to OpenSteerDemo
-    //
-    // parameter names commented out to prevent compiler warning from "-W"
-
-
-    void 
-    keyboardFunc (unsigned char key, int /*x*/, int /*y*/) 
+    void key( GLFWwindow* window, int key, int s, int action, int mods )
     {
         std::ostringstream message;
 
@@ -1342,10 +1318,31 @@ namespace {
             break;
 
         // exit application with normal status 
-        case esc:
-            glutDestroyWindow (windowID);
+        case GLFW_KEY_ESCAPE:
             OpenSteer::OpenSteerDemo::printMessage ("exit.");
             OpenSteer::OpenSteerDemo::exit (0);
+
+        case GLFW_KEY_F1:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (1);  break;
+        case GLFW_KEY_F2:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (2);  break;
+        case GLFW_KEY_F3:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (3);  break;
+        case GLFW_KEY_F4:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (4);  break;
+        case GLFW_KEY_F5:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (5);  break;
+        case GLFW_KEY_F6:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (6);  break;
+        case GLFW_KEY_F7:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (7);  break;
+        case GLFW_KEY_F8:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (8);  break;
+        case GLFW_KEY_F9:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (9);  break;
+        case GLFW_KEY_F10: OpenSteer::OpenSteerDemo::functionKeyForPlugIn (10); break;
+        case GLFW_KEY_F11: OpenSteer::OpenSteerDemo::functionKeyForPlugIn (11); break;
+        case GLFW_KEY_F12: OpenSteer::OpenSteerDemo::functionKeyForPlugIn (12); break;
+
+        case GLFW_KEY_RIGHT:
+            OpenSteer::OpenSteerDemo::clock.setPausedState (true);
+            message << "single step forward (frame time: "
+                    << OpenSteer::OpenSteerDemo::clock.advanceSimulationTimeOneFrame ()
+                    << ")"
+                    << std::endl;
+            OpenSteer::OpenSteerDemo::printMessage (message);
+            break;
 
         default:
             message << "unrecognized single key command: " << key;
@@ -1354,44 +1351,6 @@ namespace {
             OpenSteer::OpenSteerDemo::printMessage ("");
             OpenSteer::OpenSteerDemo::printMessage (message);
             OpenSteer::OpenSteerDemo::keyboardMiniHelp ();
-        }
-    }
-
-
-    // ------------------------------------------------------------------------
-    // handles "special" keys,
-    // function keys are handled by the PlugIn
-    //
-    // parameter names commented out to prevent compiler warning from "-W"
-
-    void 
-    specialFunc (int key, int /*x*/, int /*y*/)
-    {
-        std::ostringstream message;
-
-        switch (key)
-        {
-        case GLUT_KEY_F1:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (1);  break;
-        case GLUT_KEY_F2:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (2);  break;
-        case GLUT_KEY_F3:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (3);  break;
-        case GLUT_KEY_F4:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (4);  break;
-        case GLUT_KEY_F5:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (5);  break;
-        case GLUT_KEY_F6:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (6);  break;
-        case GLUT_KEY_F7:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (7);  break;
-        case GLUT_KEY_F8:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (8);  break;
-        case GLUT_KEY_F9:  OpenSteer::OpenSteerDemo::functionKeyForPlugIn (9);  break;
-        case GLUT_KEY_F10: OpenSteer::OpenSteerDemo::functionKeyForPlugIn (10); break;
-        case GLUT_KEY_F11: OpenSteer::OpenSteerDemo::functionKeyForPlugIn (11); break;
-        case GLUT_KEY_F12: OpenSteer::OpenSteerDemo::functionKeyForPlugIn (12); break;
-
-        case GLUT_KEY_RIGHT:
-            OpenSteer::OpenSteerDemo::clock.setPausedState (true);
-            message << "single step forward (frame time: "
-                    << OpenSteer::OpenSteerDemo::clock.advanceSimulationTimeOneFrame ()
-                    << ")"
-                    << std::endl;
-            OpenSteer::OpenSteerDemo::printMessage (message);
-            break;
         }
     }
 
@@ -1427,7 +1386,6 @@ namespace {
 
         // double buffering, swap back and front buffers
         glFlush ();
-        glutSwapBuffers();
     }
 
 
@@ -1442,48 +1400,34 @@ namespace {
 void 
 OpenSteer::initializeGraphics (int argc, char **argv)
 {
-    // initialize GLUT state based on command line arguments
-    glutInit (&argc, argv);  
+    if (!glfwInit())
+    {
+        fprintf( stderr, "Failed to initialize GLFW\n" );
+        exit( EXIT_FAILURE );
+    }
 
-    // display modes: RGB+Z and double buffered
-    GLint mode = GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE;
-    glutInitDisplayMode (mode);
+    demo_window = glfwCreateWindow( 1200, 900, "OpenSteer", NULL, NULL );
+    if (!demo_window)
+    {
+        fprintf( stderr, "Failed to open GLFW window\n" );
+        glfwTerminate();
+        exit( EXIT_FAILURE );
+    }
 
-    // create and initialize our window with GLUT tools
-    // (center window on screen with size equal to "ws" times screen size)
-    const int sw = glutGet (GLUT_SCREEN_WIDTH);
-    const int sh = glutGet (GLUT_SCREEN_HEIGHT);
-    const float ws = 0.8f; // window_size / screen_size
-    const int ww = (int) (sw * ws);
-    const int wh = (int) (sh * ws);
-    glutInitWindowPosition ((int) (sw * (1-ws)/2), (int) (sh * (1-ws)/2));
-    glutInitWindowSize (ww, wh);
-    windowID = glutCreateWindow (appVersionName.c_str());
-    reshapeFunc (ww, wh);
-    initGL ();
+    // Set callback functions
+    glfwSetFramebufferSizeCallback(demo_window, reshape);
+    glfwSetKeyCallback(demo_window, key);
+    glfwSetCursorEnterCallback(demo_window, mouseEnterExitWindowFunc);
+    glfwSetCursorPosCallback(demo_window, mouseMotionFunc);
+    glfwSetMouseButtonCallback(demo_window, mouseButtonFunc);
 
-    // register our display function, make it the idle handler too
-    glutDisplayFunc (&displayFunc);  
-    glutIdleFunc (&displayFunc);
+    glfwMakeContextCurrent(demo_window);
+    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    glfwSwapInterval( 1 );
 
-    // register handler for window reshaping
-    glutReshapeFunc (&reshapeFunc);
-
-    // register handler for keyboard events
-    glutKeyboardFunc (&keyboardFunc);
-    glutSpecialFunc (&specialFunc);
-
-    // register handler for mouse button events
-    glutMouseFunc (&mouseButtonFunc);
-
-    // register handler to track mouse motion when any button down
-    glutMotionFunc (mouseMotionFunc);
-
-    // register handler to track mouse motion when no buttons down
-    glutPassiveMotionFunc (mousePassiveMotionFunc);
-
-    // register handler for when mouse enters or exists the window
-    glutEntryFunc (mouseEnterExitWindowFunc);
+    int width, height;
+    glfwGetFramebufferSize(demo_window, &width, &height);
+    reshape(demo_window, width, height);
 }
 
 
@@ -1494,7 +1438,16 @@ OpenSteer::initializeGraphics (int argc, char **argv)
 void 
 OpenSteer::runGraphics (void)
 {
-    glutMainLoop ();  
+    // Main loop
+    while( !glfwWindowShouldClose(demo_window) )
+    {
+        displayFunc();
+
+        // Swap buffers
+        glfwSwapBuffers(demo_window);
+        glfwPollEvents();
+    }
+    glfwTerminate();
 }
 
 
@@ -1506,14 +1459,18 @@ OpenSteer::runGraphics (void)
 float 
 OpenSteer::drawGetWindowHeight (void) 
 {
-    return glutGet (GLUT_WINDOW_HEIGHT);
+    int width, height;
+    glfwGetWindowSize(demo_window, &width, &height);
+    return static_cast<float>(height);
 }
 
 
 float 
 OpenSteer::drawGetWindowWidth  (void) 
 {
-    return glutGet (GLUT_WINDOW_WIDTH);
+    int width, height;
+    glfwGetWindowSize(demo_window, &width, &height);
+    return static_cast<float>(width);
 }
 
 

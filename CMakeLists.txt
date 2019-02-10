@@ -75,6 +75,7 @@ set(OpenSteer_Sources
    src/Vec3Utilities.cpp)
 
 set(OpenSteer_Misc
+   third-party/glfw/deps/glad.c
    src/OpenSteerDemo.cpp
    src/Draw.cpp
    src/Color.cpp
@@ -109,7 +110,7 @@ add_library(OpenSteer::Lib ALIAS libopensteer)
 
 add_executable(OpenSteerDemo ${OpenSteer_Misc})
 target_link_libraries(OpenSteerDemo OpenSteer::Lib)
-target_link_libraries(OpenSteerDemo ${GLFW_LIBRARIES})
+target_link_libraries(OpenSteerDemo "glfw" ${GLFW_LIBRARIES})
 target_include_directories(OpenSteerDemo PRIVATE ${GLFW_DIR}/include)
 target_include_directories(OpenSteerDemo PRIVATE ${GLFW_DIR}/deps)
 target_compile_definitions(OpenSteerDemo PRIVATE "GLFW_INCLUDE_NONE")
