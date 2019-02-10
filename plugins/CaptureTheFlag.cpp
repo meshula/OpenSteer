@@ -184,9 +184,6 @@ namespace {
     const float gAvoidancePredictTimeMax  = 2;
     float gAvoidancePredictTime = gAvoidancePredictTimeMin;
 
-    bool enableAttackSeek  = true; // for testing (perhaps retain for UI control?)
-    bool enableAttackEvade = true; // for testing (perhaps retain for UI control?)
-
     CtfSeeker* gSeeker = NULL;
 
 
@@ -870,10 +867,10 @@ namespace {
         void redraw (const float currentTime, const float elapsedTime)
         {
             // selected vehicle (user can mouse click to select another)
-            AbstractVehicle& selected = *OpenSteerDemo::selectedVehicle;
+            AbstractVehicle* selected = OpenSteerDemo::selectedVehicle;
 
             // vehicle nearest mouse (to be highlighted)
-            AbstractVehicle& nearMouse = *OpenSteerDemo::vehicleNearestToMouse ();
+            AbstractVehicle* nearMouse = OpenSteerDemo::vehicleNearestToMouse ();
 
             // update camera
             OpenSteerDemo::updateCamera (currentTime, elapsedTime, selected);
@@ -885,7 +882,7 @@ namespace {
             const float goalDot = cameraForward.dot (goalDirection);
             const float blend = remapIntervalClip (goalDot, 1, 0, 0.5, 0);
             const Vec3 gridCenter = interpolate (blend,
-                                                 selected.position(),
+                                                 selected->         position(),
                                                  gHomeBaseCenter);
             OpenSteerDemo::gridUtility (gridCenter);
 

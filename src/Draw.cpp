@@ -740,7 +740,7 @@ OpenSteer::drawAxes  (const AbstractLocalSpace& ls,
 
 
 void 
-OpenSteer::drawBoxOutline  (const AbstractLocalSpace& localSpace,
+OpenSteer::drawBoxOutline  (const AbstractLocalSpace* localSpace,
                             const Vec3& size,
                             const Color& color)
 {
@@ -756,15 +756,15 @@ OpenSteer::drawBoxOutline  (const AbstractLocalSpace& localSpace,
     const Vec3 g (-s.x, -s.y, -s.z);
     const Vec3 h (-s.x, +s.y, -s.z);
 
-    const Vec3 A = localSpace.globalizePosition (a);
-    const Vec3 B = localSpace.globalizePosition (b);
-    const Vec3 C = localSpace.globalizePosition (c);
-    const Vec3 D = localSpace.globalizePosition (d);
+    const Vec3 A = localSpace->globalizePosition (a);
+    const Vec3 B = localSpace->globalizePosition (b);
+    const Vec3 C = localSpace->globalizePosition (c);
+    const Vec3 D = localSpace->globalizePosition (d);
 
-    const Vec3 E = localSpace.globalizePosition (e);
-    const Vec3 F = localSpace.globalizePosition (f);
-    const Vec3 G = localSpace.globalizePosition (g);
-    const Vec3 H = localSpace.globalizePosition (h);
+    const Vec3 E = localSpace->globalizePosition (e);
+    const Vec3 F = localSpace->globalizePosition (f);
+    const Vec3 G = localSpace->globalizePosition (g);
+    const Vec3 H = localSpace->globalizePosition (h);
 
     iDrawLine (A, B, color);
     iDrawLine (B, C, color);

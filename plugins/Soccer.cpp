@@ -347,7 +347,7 @@ namespace {
                 draw2dTextAt3dLocation (*"start", Vec3::zero, gGreen, drawGetWindowWidth(), drawGetWindowHeight());
             }
             // update camera, tracking test vehicle
-            OpenSteerDemo::updateCamera (currentTime, elapsedTime, *OpenSteerDemo::selectedVehicle);
+            OpenSteerDemo::updateCamera (currentTime, elapsedTime, OpenSteerDemo::selectedVehicle);
 
             // draw "ground plane"
             OpenSteerDemo::gridUtility (Vec3(0,0,0));

@@ -2621,7 +2621,7 @@ namespace {
         void redraw (const float currentTime, const float elapsedTime)
         {
             // update camera, tracking test vehicle
-            OpenSteerDemo::updateCamera (currentTime, elapsedTime, *vehicle);
+            OpenSteerDemo::updateCamera (currentTime, elapsedTime, vehicle);
 
             // draw "ground plane"  (make it 4x map size)
             const float s = MapDriver::worldSize * 2;

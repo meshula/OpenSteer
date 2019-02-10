@@ -201,7 +201,7 @@ namespace OpenSteer {
         // camera updating utility used by several (all?) plug-ins
         static void updateCamera (const float currentTime,
                                   const float elapsedTime,
-                                  const AbstractVehicle& selected);
+                                  const AbstractVehicle* selected);
 
         // some camera-related default constants
         static const float camera2dElevation;
@@ -217,20 +217,20 @@ namespace OpenSteer {
         static void gridUtility (const Vec3& gridTarget);
 
         // draws a gray disk on the XZ plane under a given vehicle
-        static void highlightVehicleUtility (const AbstractVehicle& vehicle);
+        static void highlightVehicleUtility (const AbstractVehicle* vehicle);
 
         // draws a gray circle on the XZ plane under a given vehicle
-        static void circleHighlightVehicleUtility (const AbstractVehicle& vehicle);
+        static void circleHighlightVehicleUtility (const AbstractVehicle* vehicle);
 
         // draw a box around a vehicle aligned with its local space
         // xxx not used as of 11-20-02
-        static void drawBoxHighlightOnVehicle (const AbstractVehicle& v,
+        static void drawBoxHighlightOnVehicle (const AbstractVehicle* v,
                                                const Color& color);
 
         // draws a colored circle (perpendicular to view axis) around the center
         // of a given vehicle.  The circle's radius is the vehicle's radius times
         // radiusMultiplier.
-        static void drawCircleHighlightOnVehicle (const AbstractVehicle& v,
+        static void drawCircleHighlightOnVehicle (const AbstractVehicle* v,
                                                   const float radiusMultiplier,
                                                   const Color& color);
 

@@ -508,16 +508,16 @@ namespace {
         void redraw (const float currentTime, const float elapsedTime)
         {
             // selected Pedestrian (user can mouse click to select another)
-            AbstractVehicle& selected = *OpenSteerDemo::selectedVehicle;
+            AbstractVehicle* selected = OpenSteerDemo::selectedVehicle;
 
             // Pedestrian nearest mouse (to be highlighted)
-            AbstractVehicle& nearMouse = *OpenSteerDemo::vehicleNearestToMouse ();
+            AbstractVehicle* nearMouse = OpenSteerDemo::vehicleNearestToMouse ();
 
             // update camera
             OpenSteerDemo::updateCamera (currentTime, elapsedTime, selected);
 
             // draw "ground plane"
-            if (OpenSteerDemo::selectedVehicle) gridCenter = selected.position();
+            if (OpenSteerDemo::selectedVehicle) gridCenter = selected->position();
             OpenSteerDemo::gridUtility (gridCenter);
 
             // draw and annotate each Pedestrian
@@ -537,15 +537,15 @@ namespace {
             {
                 const Color color (0.8f, 0.8f, 1.0f);
                 const Vec3 textOffset (0, 0.25f, 0);
-                const Vec3 textPosition = selected.position() + textOffset;
+                const Vec3 textPosition = selected->position() + textOffset;
                 const Vec3 camPosition = OpenSteerDemo::camera.position();
-                const float camDistance = Vec3::distance (selected.position(),
+                const float camDistance = Vec3::distance (selected->position(),
                                                           camPosition);
                 const char* spacer = "      ";
                 std::ostringstream annote;
                 annote << std::setprecision (2);
                 annote << std::setiosflags (std::ios::fixed);
-                annote << spacer << "1: speed: " << selected.speed() << std::endl;
+                annote << spacer << "1: speed: " << selected->speed() << std::endl;
                 annote << std::setprecision (1);
                 annote << spacer << "2: cam dist: " << camDistance << std::endl;
                 annote << spacer << "3: no third thing" << std::ends;
@@ -575,8 +575,8 @@ namespace {
         }
 
 
-        void serialNumberAnnotationUtility (const AbstractVehicle& selected,
-                                            const AbstractVehicle& nearMouse)
+        void serialNumberAnnotationUtility (const AbstractVehicle* selected,
+                                            const AbstractVehicle* nearMouse)
         {
             // display a Pedestrian's serial number as a text label near its
             // screen position when it is near the selected vehicle or mouse.
@@ -587,8 +587,11 @@ namespace {
                     AbstractVehicle* vehicle = *i;
                     const float nearDistance = 6;
                     const Vec3& vp = vehicle->position();
-                    const Vec3& np = nearMouse.position();
-                    if ((Vec3::distance (vp, selected.position()) < nearDistance)
+                    Vec3 np(0,0,0);
+                    if (nearMouse)
+                        np = nearMouse->position();
+
+                    if ((Vec3::distance (vp, selected->position()) < nearDistance)
                         ||
                         (&nearMouse && (Vec3::distance (vp, np) < nearDistance)))
                     {

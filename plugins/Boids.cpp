@@ -379,10 +379,10 @@ namespace {
         void redraw (const float currentTime, const float elapsedTime)
         {
             // selected vehicle (user can mouse click to select another)
-            AbstractVehicle& selected = *OpenSteerDemo::selectedVehicle;
+            AbstractVehicle* selected = OpenSteerDemo::selectedVehicle;
 
             // vehicle nearest mouse (to be highlighted)
-            AbstractVehicle& nearMouse = *OpenSteerDemo::vehicleNearestToMouse ();
+            AbstractVehicle* nearMouse = OpenSteerDemo::vehicleNearestToMouse ();
 
             // update camera
             OpenSteerDemo::updateCamera (currentTime, elapsedTime, selected);
@@ -754,10 +754,6 @@ namespace {
             const float w = box.width / 2;
             const float h = box.height / 2;
             const float d = box.depth / 2;
-            const Vec3 p = box.position ();
-            const Vec3 s = box.side ();
-            const Vec3 u = box.up ();
-            const Vec3 f = box.forward ();
 
             const Vec3 v1 = box.globalizePosition (Vec3 ( w,  h,  d));
             const Vec3 v2 = box.globalizePosition (Vec3 (-w,  h,  d));

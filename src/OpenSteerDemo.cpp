@@ -581,9 +581,9 @@ OpenSteer::OpenSteerDemo::position2dCamera (AbstractVehicle& selected,
 void 
 OpenSteer::OpenSteerDemo::updateCamera (const float currentTime,
                                         const float elapsedTime,
-                                        const AbstractVehicle& selected)
+                                        const AbstractVehicle* selected)
 {
-    camera.vehicleToTrack = &selected;
+    camera.vehicleToTrack = selected;
     camera.update (currentTime, elapsedTime, clock.getPausedState ());
 }
 
@@ -629,10 +629,10 @@ OpenSteer::OpenSteerDemo::gridUtility (const Vec3& gridTarget)
 
 
 void 
-OpenSteer::OpenSteerDemo::highlightVehicleUtility (const AbstractVehicle& vehicle)
+OpenSteer::OpenSteerDemo::highlightVehicleUtility (const AbstractVehicle* vehicle)
 {
-    if (&vehicle != NULL)
-        drawXZDisk (vehicle.radius(), vehicle.position(), gGray60, 20);
+    if (vehicle)
+        drawXZDisk (vehicle->radius(), vehicle->position(), gGray60, 20);
 }
 
 
@@ -641,10 +641,10 @@ OpenSteer::OpenSteerDemo::highlightVehicleUtility (const AbstractVehicle& vehicl
 
 
 void 
-OpenSteer::OpenSteerDemo::circleHighlightVehicleUtility (const AbstractVehicle& vehicle)
+OpenSteer::OpenSteerDemo::circleHighlightVehicleUtility (const AbstractVehicle* vehicle)
 {
-    if (&vehicle != NULL) drawXZCircle (vehicle.radius () * 1.1f,
-                                        vehicle.position(),
+    if (vehicle) drawXZCircle (vehicle->radius () * 1.1f,
+                                        vehicle->position(),
                                         gGray60,
                                         20);
 }
@@ -656,12 +656,12 @@ OpenSteer::OpenSteerDemo::circleHighlightVehicleUtility (const AbstractVehicle& 
 
 
 void 
-OpenSteer::OpenSteerDemo::drawBoxHighlightOnVehicle (const AbstractVehicle& v,
+OpenSteer::OpenSteerDemo::drawBoxHighlightOnVehicle (const AbstractVehicle* v,
                                                const Color& color)
 {
-    if (&v)
+    if (v)
     {
-        const float diameter = v.radius() * 2;
+        const float diameter = v->radius() * 2;
         const Vec3 size (diameter, diameter, diameter);
         drawBoxOutline (v, size, color);
     }
@@ -675,16 +675,16 @@ OpenSteer::OpenSteerDemo::drawBoxHighlightOnVehicle (const AbstractVehicle& v,
 
 
 void 
-OpenSteer::OpenSteerDemo::drawCircleHighlightOnVehicle (const AbstractVehicle& v,
+OpenSteer::OpenSteerDemo::drawCircleHighlightOnVehicle (const AbstractVehicle* v,
                                                   const float radiusMultiplier,
                                                   const Color& color)
 {
-    if (&v)
+    if (v)
     {
         const Vec3& cPosition = camera.position();
-        draw3dCircle  (v.radius() * radiusMultiplier,  // adjusted radius
-                       v.position(),                   // center
-                       v.position() - cPosition,       // view axis
+        draw3dCircle  (v->radius() * radiusMultiplier,  // adjusted radius
+                       v->position(),                   // center
+                       v->position() - cPosition,       // view axis
                        color,                          // drawing color
                        20);                            // circle segments
     }
@@ -829,51 +829,10 @@ namespace {
 
     std::string const appVersionName("OpenSteerDemo 0.8.2");
 
-    // The number of our GLUT window
-    int windowID;
-
     bool gMouseAdjustingCameraAngle = false;
     bool gMouseAdjustingCameraRadius = false;
     int gMouseAdjustingCameraLastX;
     int gMouseAdjustingCameraLastY;
-
-
-
-
-    // ----------------------------------------------------------------------------
-    // initialize GL mode settings
-
-
-    void 
-    initGL (void)
-    {
-        // background = dark gray
-        // @todo bknafla Changed the background color to make some screenshots.
-        glClearColor (0.3f, 0.3f, 0.3f, 0);
-        // glClearColor( 1.0f, 1.0f, 1.0f, 0.0f );
-
-        // enable depth buffer clears
-        glClearDepth (1.0f);
-
-        // select smooth shading
-        glShadeModel (GL_SMOOTH);
-
-        // enable  and select depth test
-        glDepthFunc (GL_LESS);
-        glEnable (GL_DEPTH_TEST);
-
-        // turn on backface culling
-        glEnable (GL_CULL_FACE);
-        glCullFace (GL_BACK);
-
-        // enable blending and set typical "blend into frame buffer" mode
-        glEnable (GL_BLEND);
-        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        // reset projection matrix
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-    }
 
 
     // ----------------------------------------------------------------------------
@@ -1433,6 +1392,7 @@ OpenSteer::initializeGraphics (int argc, char **argv)
 void 
 OpenSteer::runGraphics (void)
 {
+    
     // Main loop
     while( !glfwWindowShouldClose(demo_window) )
     {

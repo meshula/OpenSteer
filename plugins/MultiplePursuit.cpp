@@ -206,16 +206,16 @@ namespace {
         void redraw (const float currentTime, const float elapsedTime)
         {
             // selected vehicle (user can mouse click to select another)
-            AbstractVehicle& selected = *OpenSteerDemo::selectedVehicle;
+            AbstractVehicle* selected = OpenSteerDemo::selectedVehicle;
 
             // vehicle nearest mouse (to be highlighted)
-            AbstractVehicle& nearMouse = *OpenSteerDemo::vehicleNearestToMouse ();
+            AbstractVehicle* nearMouse = OpenSteerDemo::vehicleNearestToMouse ();
 
             // update camera
             OpenSteerDemo::updateCamera (currentTime, elapsedTime, selected);
 
             // draw "ground plane"
-            OpenSteerDemo::gridUtility (selected.position());
+            OpenSteerDemo::gridUtility (selected->position());
 
             // draw each vehicles
             for (iterator i = allMP.begin(); i != pEnd; i++) (**i).draw ();

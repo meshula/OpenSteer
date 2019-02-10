@@ -132,7 +132,7 @@ namespace {
             draw2dTextAt3dLocation (*"start", Vec3::zero, gGreen, drawGetWindowWidth(), drawGetWindowHeight());
 
             // update camera, tracking test vehicle
-            OpenSteerDemo::updateCamera (currentTime, elapsedTime, *gOneTurning);
+            OpenSteerDemo::updateCamera (currentTime, elapsedTime, gOneTurning);
 
             // draw "ground plane"
             OpenSteerDemo::gridUtility (gOneTurning->position());

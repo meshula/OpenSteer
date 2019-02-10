@@ -108,7 +108,7 @@ namespace OpenSteer {
     // "size" is the main diagonal of the box.
 
 
-    void drawBoxOutline  (const AbstractLocalSpace& localSpace,
+    void drawBoxOutline  (const AbstractLocalSpace* localSpace,
                           const Vec3& size,
                           const Color& color);
 
