@@ -3,8 +3,9 @@ OpenSteer
 Steering Behaviors for Autonomous Characters 
 -----------
 
-Migrated from sourceforge http://opensteer.sourceforge.net
+## Feb. 2019
 
+A port to GLFW and CMake is underway on the glfw_port branch. Pull requests welcome!
 
 
 OpenSteer is a C++ library to help construct steering behaviors for autonomous characters in games and animation. 
@@ -59,4 +60,7 @@ and "freshness" of their contributions: Bjoern Knafla (bknafla), Nick Porcino (m
 Ben Forsyth (bforsyth), Dominik (inikofdoom), Paul (spanneradmin), Kris Hauser (kkhauser), 
 Leaf Garland (leaf), Stefan Moises (beffy), Bruce Mitchener (brucem), Maciej Sinilo (yarpen), 
 Michael Holm (gizwiz), Richard Cannock (perambulator).  Let us know of any omissions from this list.
+
+Migrated from sourceforge http://opensteer.sourceforge.net
+
 
