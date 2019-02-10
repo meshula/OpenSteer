@@ -53,26 +53,7 @@
 #include <sstream>
 
 
-// Include headers for OpenGL (gl.h), OpenGL Utility Library (glu.h)
-//
-// XXX In Mac OS X these headers are located in a different directory.
-// XXX Need to revisit conditionalization on operating system.
-#if __APPLE__ && __MACH__
-    #include <OpenGL/gl.h>   // for Mac OS X
-    #include <OpenGL/glu.h>   // for Mac OS X
-    #ifndef HAVE_NO_GLUT
-        #include <GLUT/glut.h>   // for Mac OS X
-    #endif
-#else
-    #ifdef _MSC_VER
-        #include <windows.h>
-    #endif
-    #include <GL/gl.h>     // for Linux and Windows
-    #include <GL/glu.h>     // for Linux and Windows
-    #ifndef HAVE_NO_GLUT
-        #include <GL/glut.h>   // for Mac OS X
-    #endif
-#endif
+#include <glad/glad.h>
 
 
 #include "OpenSteer/Vec3.h"
@@ -258,7 +239,7 @@ OpenSteer::warnIfInUpdatePhase2 (const char* name)
     message << name;
     message << ")";
     message << std::ends;
-    std::cerr << message;       // send message to cerr, let host app worry about where to redirect it
+    std::cerr << message.str();       // send message to cerr, let host app worry about where to redirect it
 }
 
 
@@ -834,18 +815,40 @@ namespace {
 void 
 OpenSteer::drawCameraLookAt (const Vec3& cameraPosition,
                              const Vec3& pointToLookAt,
-                             const Vec3& up)
+                             const Vec3& up_)
 {
     // check for valid "look at" parameters
-    drawCameraLookAtCheck (cameraPosition, pointToLookAt, up);
+    drawCameraLookAtCheck (cameraPosition, pointToLookAt, up_);
 
-    // use LookAt from OpenGL Utilities
-    glLoadIdentity ();
-    gluLookAt (cameraPosition.x, cameraPosition.y, cameraPosition.z,
-               pointToLookAt.x,  pointToLookAt.y,  pointToLookAt.z,
-               up.x,             up.y,             up.z);
+    glLoadIdentity();
+    float matrix2[16];
+
+    Vec3 forward = pointToLookAt - cameraPosition;
+    forward = forward.normalize();
+    Vec3 side;
+    side.cross(forward, up_);
+    side = side.normalize();
+    Vec3 up;
+    up.cross(side, forward);
+
+    matrix2[0] = side.x;
+    matrix2[4] = side.y;
+    matrix2[8] = side.z;
+    matrix2[12] = 0.f;
+    matrix2[1] = up.x;
+    matrix2[5] = up.y;
+    matrix2[9] = up.z;
+    matrix2[13] = 0.f;
+    matrix2[2] = -forward.x;
+    matrix2[6] = -forward.y;
+    matrix2[10] = -forward.z;
+    matrix2[14] = 0.f;
+    matrix2[3] = matrix2[7] = matrix2[11] = 0.f;
+    matrix2[15] = 1.f;
+
+    glLoadMatrixf(matrix2);
+    glTranslatef(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
 }
-
 
 
 void 
@@ -920,10 +923,13 @@ OpenSteer::checkForDrawError (const char * locationDescription)
 // return a normalized direction vector pointing from the camera towards a
 // given point on the screen: the ray that would be traced for that pixel
 
-
 OpenSteer::Vec3 
 OpenSteer::directionFromCameraToScreenPosition (int x, int y, int h)
 {
+    return {1, 0, 0};
+
+/// @TODO, switch OpenSteer to use a newer linear algebra library such as linalg
+#if 0
     // Get window height, viewport, modelview and projection matrices
     GLint vp[4];
     GLdouble mMat[16], pMat[16];
@@ -938,9 +944,10 @@ OpenSteer::directionFromCameraToScreenPosition (int x, int y, int h)
 
     // "direction" is the normalized difference between these far and near
     // unprojected points.  Its parallel to the "eye-mouse" selection line.
-    const Vec3 diffNearFar (un1x-un0x, un1y-un0y, un1z-un0z);
+    const Vec3 diffNearFar (static_cast<float>(un1x-un0x), static_cast<float>(un1y-un0y), static_cast<float>(un1z-un0z));
     const Vec3 direction = diffNearFar.normalize ();
     return direction;
+#endif
 }
 
 
@@ -1534,7 +1541,7 @@ OpenSteer::draw2dTextAt3dLocation (const char& text,
         {
             // otherwise draw character bitmap
             #ifndef HAVE_NO_GLUT
-                glutBitmapCharacter (GLUT_BITMAP_9_BY_15, *p);
+                //glutBitmapCharacter (GLUT_BITMAP_9_BY_15, *p);
             #else
                 // no character drawing with GLUT presently
             #endif
