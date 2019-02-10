@@ -96,9 +96,6 @@ namespace {
         case GL_STACK_OVERFLOW:    std::cerr << "GL_STACK_OVERFLOW";    break;
         case GL_STACK_UNDERFLOW:   std::cerr << "GL_STACK_UNDERFLOW";   break;
         case GL_OUT_OF_MEMORY:     std::cerr << "GL_OUT_OF_MEMORY";     break;
-    #ifndef _WIN32
-        case GL_TABLE_TOO_LARGE:   std::cerr << "GL_TABLE_TOO_LARGE";   break;
-    #endif
         }
         if (locationDescription) std::cerr << " in " << locationDescription;
         std::cerr << std::endl << std::endl << std::flush;
