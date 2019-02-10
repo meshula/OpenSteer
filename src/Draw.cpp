@@ -488,7 +488,7 @@ OpenSteer::drawXZArc (const Vec3& start,
 
 
 void 
-OpenSteer::drawBasic2dCircularVehicle (const AbstractVehicle& vehicle,
+OpenSteer::drawBasic2dCircularVehicle (const AbstractVehicle* vehicle,
                                        const Color& color)
 {
     // "aspect ratio" of body (as seen from above)
@@ -496,14 +496,14 @@ OpenSteer::drawBasic2dCircularVehicle (const AbstractVehicle& vehicle,
     const float y = sqrtXXX (1 - (x * x));
 
     // radius and position of vehicle
-    const float r = vehicle.radius();
-    const Vec3& p = vehicle.position();
+    const float r = vehicle->radius();
+    const Vec3& p = vehicle->position();
 
     // shape of triangular body
     const Vec3 u = r * 0.05f * Vec3 (0, 1, 0); // slightly up
-    const Vec3 f = r * vehicle.forward();
-    const Vec3 s = r * vehicle.side() * x;
-    const Vec3 b = r * vehicle.forward() * -y;
+    const Vec3 f = r * vehicle->forward();
+    const Vec3 s = r * vehicle->side() * x;
+    const Vec3 b = r * vehicle->forward() * -y;
 
     // draw double-sided triangle (that is: no (back) face culling)
     beginDoubleSidedDrawing ();
@@ -523,7 +523,7 @@ OpenSteer::drawBasic2dCircularVehicle (const AbstractVehicle& vehicle,
 
 
 void 
-OpenSteer::drawBasic3dSphericalVehicle (const AbstractVehicle& vehicle,
+OpenSteer::drawBasic3dSphericalVehicle (const AbstractVehicle* vehicle,
                                         const Color& color)
 {
     // "aspect ratio" of body (as seen from above)
@@ -531,14 +531,14 @@ OpenSteer::drawBasic3dSphericalVehicle (const AbstractVehicle& vehicle,
     const float y = sqrtXXX (1 - (x * x));
 
     // radius and position of vehicle
-    const float r = vehicle.radius();
-    const Vec3& p = vehicle.position();
+    const float r = vehicle->radius();
+    const Vec3& p = vehicle->position();
 
     // body shape parameters
-    const Vec3 f = r * vehicle.forward();
-    const Vec3 s = r * vehicle.side() * x;
-    const Vec3 u = r * vehicle.up() * x * 0.5f;
-    const Vec3 b = r * vehicle.forward() * -y;
+    const Vec3 f = r * vehicle->forward();
+    const Vec3 s = r * vehicle->side() * x;
+    const Vec3 u = r * vehicle->up() * x * 0.5f;
+    const Vec3 b = r * vehicle->forward() * -y;
 
     // vertex positions
     const Vec3 nose   = p + f;
@@ -570,7 +570,7 @@ OpenSteer::drawBasic3dSphericalVehicle (const AbstractVehicle& vehicle,
 // provided so non-OpenGL based apps can draw a boid
 
 void 
-OpenSteer::drawBasic3dSphericalVehicle (drawTriangleRoutine draw, const AbstractVehicle& vehicle,
+OpenSteer::drawBasic3dSphericalVehicle (drawTriangleRoutine draw, const AbstractVehicle* vehicle,
                                         const Color& color)
 {
     // "aspect ratio" of body (as seen from above)
@@ -578,14 +578,14 @@ OpenSteer::drawBasic3dSphericalVehicle (drawTriangleRoutine draw, const Abstract
     const float y = sqrtXXX (1 - (x * x));
 
     // radius and position of vehicle
-    const float r = vehicle.radius();
-    const Vec3& p = vehicle.position();
+    const float r = vehicle->radius();
+    const Vec3& p = vehicle->position();
 
     // body shape parameters
-    const Vec3 f = r * vehicle.forward();
-    const Vec3 s = r * vehicle.side() * x;
-    const Vec3 u = r * vehicle.up() * x * 0.5f;
-    const Vec3 b = r * vehicle.forward() * -y;
+    const Vec3 f = r * vehicle->forward();
+    const Vec3 s = r * vehicle->side() * x;
+    const Vec3 u = r * vehicle->up() * x * 0.5f;
+    const Vec3 b = r * vehicle->forward() * -y;
 
     // vertex positions
     const Vec3 nose   = p + f;
@@ -1652,7 +1652,7 @@ namespace OpenSteer {
             const float phi = (1.0f + sqrt5) * 0.5f; // "golden ratio"
             // ratio of edge length to radius
             const float ratio = sqrtXXX (10.0f + (2.0f * sqrt5)) / (4.0f * phi);
-            const float a = (radius / ratio) * 0.5;
+            const float a = (radius / ratio) * 0.5f;
             const float b = (radius / ratio) / (2.0f * phi);
 
             // define the icosahedron's 12 vertices:

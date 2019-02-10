@@ -254,13 +254,13 @@ namespace OpenSteer {
     // ------------------------------------------------------------------------
 
 
-    void drawBasic2dCircularVehicle (const AbstractVehicle& bv,
+    void drawBasic2dCircularVehicle (const AbstractVehicle* bv,
                                      const Color& color);
 
-    void drawBasic3dSphericalVehicle (const AbstractVehicle& bv,
+    void drawBasic3dSphericalVehicle (const AbstractVehicle* bv,
                                       const Color& color);
 
-    void drawBasic3dSphericalVehicle (drawTriangleRoutine, const AbstractVehicle& bv,
+    void drawBasic3dSphericalVehicle (drawTriangleRoutine, const AbstractVehicle* bv,
                                       const Color& color);
 
     // ------------------------------------------------------------------------

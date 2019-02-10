@@ -71,7 +71,7 @@ namespace {
         // draw into the scene
         void draw (void)
         {
-            drawBasic2dCircularVehicle (*this, bodyColor);
+            drawBasic2dCircularVehicle (this, bodyColor);
             drawTrail ();
         }
 

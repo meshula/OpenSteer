@@ -137,7 +137,7 @@ namespace {
         // draw this character/vehicle into the scene
         void draw (void)
         {
-            drawBasic2dCircularVehicle (*this, Color(0.0f,1.0f,0.0f));
+            drawBasic2dCircularVehicle (this, Color(0.0f,1.0f,0.0f));
             drawTrail ();
         }
 
@@ -224,9 +224,9 @@ namespace {
         }
 
         // draw this character/vehicle into the scene
-        void draw (void)
+        void draw ()
         {
-            drawBasic2dCircularVehicle (*this, b_ImTeamA ? Color(1.0f,0.0f,0.0f):Color(0.0f,0.0f,1.0f));
+            drawBasic2dCircularVehicle (this, b_ImTeamA ? Color(1.0f,0.0f,0.0f):Color(0.0f,0.0f,1.0f));
             drawTrail ();
         }
         // per-instance reference to its group
@@ -316,6 +316,9 @@ namespace {
 
         void redraw (const float currentTime, const float elapsedTime)
         {
+            // draw "ground plane"
+            OpenSteerDemo::gridUtility (Vec3(0,0,0));
+
             // draw test vehicle
             for(unsigned int i=0; i < m_PlayerCountA ; i++)
                 TeamA[i]->draw ();
@@ -348,9 +351,6 @@ namespace {
             }
             // update camera, tracking test vehicle
             OpenSteerDemo::updateCamera (currentTime, elapsedTime, OpenSteerDemo::selectedVehicle);
-
-            // draw "ground plane"
-            OpenSteerDemo::gridUtility (Vec3(0,0,0));
         }
 
         void close (void)

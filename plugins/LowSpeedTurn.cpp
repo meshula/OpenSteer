@@ -91,7 +91,7 @@ namespace {
         // draw into the scene
         void draw (void)
         {
-            drawBasic2dCircularVehicle (*this, gGray50);
+            drawBasic2dCircularVehicle (this, gGray50);
             drawTrail ();
         }
 

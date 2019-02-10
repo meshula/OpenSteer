@@ -129,7 +129,7 @@ namespace {
         // draw this boid into the scene
         void draw (void)
         {
-            drawBasic3dSphericalVehicle (*this, gGray70);
+            drawBasic3dSphericalVehicle (this, gGray70);
             // drawTrail ();
         }
 

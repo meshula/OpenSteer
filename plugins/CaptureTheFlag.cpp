@@ -246,7 +246,7 @@ namespace {
 
     void CtfBase::draw (void)
     {
-        drawBasic2dCircularVehicle (*this, bodyColor);
+        drawBasic2dCircularVehicle (this, bodyColor);
         drawTrail ();
     }
 

@@ -78,7 +78,7 @@ namespace {
         // draw this character/vehicle into the scene
         void draw (void)
         {
-            drawBasic2dCircularVehicle (*this, gGray50);
+            drawBasic2dCircularVehicle (this, gGray50);
             drawTrail ();
         }
     };
@@ -121,6 +121,9 @@ namespace {
 
         void redraw (const float currentTime, const float elapsedTime)
         {
+            // draw "ground plane"
+            OpenSteerDemo::gridUtility (gOneTurning->position());
+
             // draw test vehicle
             gOneTurning->draw ();
 
@@ -134,8 +137,6 @@ namespace {
             // update camera, tracking test vehicle
             OpenSteerDemo::updateCamera (currentTime, elapsedTime, gOneTurning);
 
-            // draw "ground plane"
-            OpenSteerDemo::gridUtility (gOneTurning->position());
         }
 
         void close (void)
