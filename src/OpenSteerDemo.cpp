@@ -51,16 +51,13 @@
 #include <sstream>
 #include <iomanip>
 
-// Include headers for OpenGL (gl.h), OpenGL Utility Library (glu.h) and
-// OpenGL Utility Toolkit (glut.h).
-//
-// XXX In Mac OS X these headers are located in a different directory.
-// XXX Need to revisit conditionalization on operating system.
-#if __APPLE__ && __MACH__
-#include <GLUT/glut.h>   // for Mac OS X
-#else
-#include <GL/glut.h>     // for Linux and Windows
-#endif
+#include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 // ----------------------------------------------------------------------------
 // keeps track of both "real time" and "simulation time"
@@ -451,6 +448,10 @@ OpenSteer::OpenSteerDemo::vehicleNearestToMouse (void)
 OpenSteer::AbstractVehicle* 
 OpenSteer::OpenSteerDemo::findVehicleNearestScreenPosition (int x, int y)
 {
+    /// @TODO this routine is dependent on directionFromCameraToScreenPosition
+    /// which needs an unproject implementation
+    return nullptr;
+#if 0
     // find the direction from the camera position to the given pixel
     const Vec3 direction = directionFromCameraToScreenPosition (x, y, glutGet (GLUT_WINDOW_HEIGHT));
 
@@ -476,6 +477,7 @@ OpenSteer::OpenSteerDemo::findVehicleNearestScreenPosition (int x, int y)
     }
 
     return nearest;
+#endif
 }
 
 
