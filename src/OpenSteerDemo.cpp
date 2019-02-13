@@ -827,7 +827,7 @@ OpenSteer::OpenSteerDemo::updatePhaseTimers (void)
 
 namespace {
 
-    std::string const appVersionName("OpenSteerDemo 0.8.2");
+    std::string const appVersionName("OpenSteerDemo 0.8.3");
 
     bool gMouseAdjustingCameraAngle = false;
     bool gMouseAdjustingCameraRadius = false;

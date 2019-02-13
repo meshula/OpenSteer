@@ -38,9 +38,12 @@ Documentation </big></big></b> <br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><small><br>
-November 11, 2004&nbsp; (revised June 15, 2007 for SVN)<br>
-      <small>Version 0.8.2</small></small></td>
-      <td style="vertical-align: top; text-align: right;"><a href="index.html"><img src="images/beta_250a.gif" alt="OpenSteer Logo" border="0" height="250" width="250"></a></td>
+November 11, 2004<BR>
+revised June 15, 2007 for SVN<br>
+revised Feb 12, 2019 for git<BR>
+      <small>Version 0.8.3</small></small></td>
+      <td style="vertical-align: top; text-align: right;"><a href="index.html">
+        <img src="images/beta_250a.gif" alt="OpenSteer Logo" border="0" height="250" width="250"></a></td>
     </tr>
     <tr>
       <td style="vertical-align: top;"> by <br>
@@ -128,7 +131,7 @@ geometry in terms of obstacles, pathways and so on. Plug-ins control
 the camera and handle Function Keys.</p>
 <p>OpenSteerDemo's plug-in framework allows a game AI programmer to
 quickly prototype behaviors during game design, and to develop
-behaviors before the main game engine is finished. In OpenSteer 0.8.2,
+behaviors before the main game engine is finished. In OpenSteer 0.8.3,
 OpenSteerDemo allows the user to interactively control simulation time
 (stop, start, single step), select the vehicle/character/agent of
 interest, and adjust the
@@ -141,7 +144,7 @@ License</a>.</p>
 <a name="WetPaint"></a>
 Wet Paint!
 </b></big></big>
-<p>Warning: OpenSteer 0.8.2 is still under active development. It is
+<p>Warning: OpenSteer 0.8.3 is still under active development. It is
 not mature or stable. Its current design is subject to change and
 reorganization, although every attempt will be made to avoid
 gratuitous changes. We welcome your interest in OpenSteer and
@@ -150,7 +153,7 @@ us</a> before planning to integrate
 OpenSteer into any large project.</p>
 <p>Note also that the term <em>plug-in</em> is currently misused here.
 Normally it implies that a new module can be added to an application
-at <b>run</b> time. Whereas in OpenSteer 0.8.2 the "plugging-in" must
+at <b>run</b> time. Whereas in OpenSteer 0.8.3 the "plugging-in" must
 happen at application <b>build</b> (link) time. One would hope this
 was fixed in a future release (he said, hoping to avoid specific
 promises of future enhancements).</p>
@@ -168,7 +171,7 @@ application from your IDE build tools. If you use the supplied
 Makefile for Linux, you can execute the <span style="font-weight: bold;">make run</span> command.)</small> When you
 first use OpenSteerDemo, this <a href="stref.html">quick
 reference guide</a> may be helpful. The application will open a
-single window labeled "OpenSteerDemo 0.8.2". You should see a
+single window labeled "OpenSteerDemo 0.8.". You should see a
 diagrammatic 3d
 view of the default PlugIn. Typically you will see moving vehicles,
 annotation graphics and textual overlays, as shown in <small><a href="#Figure1">[Figure 1]</a></small>.</p>
@@ -417,7 +420,7 @@ not to collide with each other or two large spherical obstacles.
 Press F1 to add a Pedestrian and F2 to remove one. This multiagent
 simulation uses a spatial database to accelerate proximity queries, F3
 cycles among types of proximity databases (two exist in OpenSteer
-0.8.2). F4 toggles between two versions of path following: <span style="font-style: italic;">stay on the
+0.8.3). F4 toggles between two versions of path following: <span style="font-style: italic;">stay on the
 path </span>and <span style="font-style: italic;">directed path
 following.</span> The latter means to stay on
 the path while moving along it in a given direction. A Pedestrian's
@@ -431,7 +434,7 @@ boids model is a simple combination of <em>separation, alignment
 and F2 to remove one. This multiagent simulation uses a spatial
 database to accelerate proximity queries, F3
 cycles among types of proximity databases (two exist in OpenSteer
-0.8.2). The flock flies within a sphere, F4 toggles between two
+0.8.3). The flock flies within a sphere, F4 toggles between two
 boundary
 conditions. One is "steer back when outside" -- when a boid
 travels
@@ -675,7 +678,7 @@ the path, as indicated by the <span class="sourcecode">direction</span>
 argument which should be either +1 or -1. The path
 defines a <em>tube </em>in terms of a <em>spine </em>and a <em>radius </em>,
 the goal is to keep a vehicle headed toward a point inside that tube.
-(OpenSteer 0.8.2 provides one kind of Path with a polyline spine:
+(OpenSteer 0.8.3 provides one kind of Path with a polyline spine:
 a
 series of connected line segments (see <span style="font-weight: bold;">Pathway.h</span>)
 and a prototype of another kind of path called GCRoute is defined in
@@ -824,208 +827,15 @@ Vehicle in a HAS-A architecture is provided <small><a href="KnownBugs">[see
 <a name="InstallingOpenSteer"></a>
 Installing OpenSteer
 </b></big></big></p>
-OpenSteer can be used several ways. You may want to simply <a href="http://sourceforge.net/project/showfiles.php?group_id=77546">download</a>
-the OpenSteerDemo application to run the demos. You may want to <a href="http://cvs.sourceforge.net/viewcvs.py/opensteer/">browse</a>
-through some of the source code over the web. You may want to <a href="http://sourceforge.net/project/showfiles.php?group_id=77546">download</a>
-a complete copy of the source to try some informal code-tweaking
-experiments.
-Or you may be interested in joining with the community of developers
-actively maintaining and improving the OpenSteer software by using code
-from the <a href="http://sourceforge.net/svn/?group_id=77546">Subversion
-repository</a>.
-<p>To download an executable copy of the OpenSteerDemo application,
-or a zip archive of the full source, visit
-<a href="http://sourceforge.net/project/showfiles.php?group_id=77546">OpenSteer's
-<span style="font-style: italic;">file release</span> page at
-SourceForge</a>. The OpenSteerDemo application is
-available
-as precompiled binary executables for Linux, Mac OS X, and
-Windows.&nbsp; Source code and compiled applications are grouped
-together by release. You can receive&nbsp; notifications of future
-releases by subscribing to a low traffic <a href="http://lists.sourceforge.net/mailman/listinfo/opensteer-announce">mailing
-list for OpenSteer announcements</a>.&nbsp; The current release is
-OpenSteer 0.8.2 which contains these files: </p>
-<table align="center" border="0" cellpadding="0" cellspacing="3" width="90%">
-  <tbody>
-    <tr>
-      <td class="graybox" width="25%"><kbd>OpenSteer_0_8_2_source.zip</kbd><br>
-      </td>
-      <td class="graybox">Full source code for OpenSteer 0.8.2<br>
-      </td>
-    </tr>
-    <tr>
-      <td class="graybox" width="25%"><kbd>OpenSteerDemo_0_8_2_linux.zip</kbd><br>
-      </td>
-      <td class="graybox">OpenSteerDemo application (Linux .elf) </td>
-    </tr>
-    <tr>
-      <td class="graybox" width="25%"><kbd>OpenSteerDemo_0_8_2_macosx.dmg</kbd><br>
-      </td>
-      <td class="graybox">OpenSteerDemo application (Mac OS X .app) </td>
-    </tr>
-    <tr>
-      <td class="graybox" width="25%"><kbd>OpenSteerDemo_0_8_2_win32.zip</kbd><br>
-      </td>
-      <td class="graybox">OpenSteerDemo application (Windows .exe) </td>
-    </tr>
-  </tbody>
-</table>
-<p>Otherwise, use <a href="http://svnbook.red-bean.com/">Subversion (SVN)</a>
-to obtain the most up-to-date version of the
-OpenSteer source code. See this short introduction on <a href="http://sourceforge.net/docman/display_doc.php?docid=31178&amp;group_id=1">using SVN command line tools with SourceForge.net</a>. If you want to be a developer, or at least
-a serious kibitzer, or want to help by testing the newest version of
-the code, or frankly, as long as you feel comfortable doing a <a href="http://subversion.tigris.org/">SVN</a> <a href="http://svnbook.red-bean.com/nightly/en/svn-book.html#svn.tour.initial">checkout</a>
-from <a href="http://sourceforge.net/">SourceForge</a> -- you should
-visit <a href="http://sourceforge.net/svn/?group_id=77546">OpenSteer's
-Subversion
-repository</a> and checkout the code. Subversion
-client software is included with
-Linux and Mac OS X systems. Up to date and easy to install Subversion packages for Mac OS X can be found at <a href="http://www.codingmonkeys.de/mbo/">Martin Ott's blog</a>. A free and easy-to-use Windows Subversion
-client is<a href="http://tortoisesvn.tigris.org/"> TortoiseSVN</a> (<a href="http://sourceforge.net/docman/display_doc.php?docid=31165&amp;group_id=1">instructions how to use TortoiseSVN with SourceForge.net</a>).</p>
-<table align="center" border="0" cellpadding="0" cellspacing="3" width="90%">
-  <tbody>
-    <tr>
-      <td class="graybox" style="padding: 10px;" width="25%">On the command line check out
-a local
-working copy of the latest
-OpenSteer code from the SVN repository (this will place the project files into the subdirectory <em>opensteer</em> of the current directory):<br>
-      <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <kbd><a href="http://svnbook.red-bean.com/nightly/en/svn-book.html#svn.tour.initial">svn co https://opensteer.svn.sourceforge.net/svnroot/opensteer/trunk opensteer</a></kbd><br>
-      <br>
-To get all branches and published code snapshots (tags) aside the latest code version use:<br>
-      <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <kbd>svn co https://opensteer.svn.sourceforge.net/svnroot/opensteer opensteer</kbd><br>
-      <br>
-Update your local working copy with recent changes from the SVN
-repository (first change into the directory containing the OpenSteer project files you checked out):<br>
-      <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <kbd><a href="http://svnbook.red-bean.com/nightly/en/svn-book.html#svn.tour.cycle.update">svn update</a></kbd><br>
-      <span style="font-weight: bold;"></span></td>
-    </tr>
-    <tr>
-    	<td class="graybox" style="padding: 10px;" width="25%">
-    	<b>Update</b><br>
-    	Sourceforge.net has changed the access method for Subversion on November 32, 2006 (see <a href="https://sourceforge.net/docs/E09#notice">https://sourceforge.net/docs/E09#notice</a>).<br>
-    	If you have checked out OpenSteer before this date use the following method to switch your local copy to the new access method:
-    	<ol>
-    		<li>Make a backup copy of your local working copy of OpenSteer.</li>
-    		<li>Run <kbd>svn info</kbd> at the root of your local copy, it should display a line similar to <br>
-    			<samp>URL: https://svn.sourceforge.net/svnroot/opensteer/trunk</samp> (your checked out the so called 'trunk') or <br>
-    			<samp>URL: https://svn.sourceforge.net/svnroot/opensteer</samp> (your checked out the whole OpenSteer SVN repository)</li>
-    		<li>
-    			
-    				If you have checked out the 'trunk' execute the following command (without a line break) at the root of your working copy: <br>
-    					<br>
-    					<kbd>svn switch --relocate https://svn.sourceforge.net/svnroot/opensteer/trunk https://opensteer.svn.sourceforge.net/svnroot/opensteer/trunk </kbd><br><br>
-    				If you have checked out the whole OpenSteer SVN repository (with the 'branches', 'tags', and 'trunk' subdirectories) execute the following command (without a line break) at the root of your working copy: <br>
-    					<br>
-    					<kbd>svn switch --relocate https://svn.sourceforge.net/svnroot/opensteer https://opensteer.svn.sourceforge.net/svnroot/opensteer</kbd><br><br>
-    			
-    				
-    		</li>
-    		<li> If everything went fine (without error messages) you should be able to delete the backup copy now.
-    		</li>
-    	</ol>
-    	</td>
-    </tr>
-  </tbody>
-</table>
-<p>This
-is the
-directory structure
-of OpenSteer:&nbsp;<br>
-</p>
-<table align="center" border="0" cellpadding="0" cellspacing="3" width="90%">
-  <tbody>
-    <tr>
-      <td class="graybox" width="25%"><kbd>opensteer/</kbd></td>
-      <td class="graybox">main directory<br>
-      </td>
-    </tr>
-    <tr>
-      <td class="graybox"><kbd>opensteer/src/</kbd></td>
-      <td class="graybox">source code (*.cpp files)</td>
-    </tr>
-    <tr>
-      <td class="graybox"><kbd>opensteer/include/OpenSteer/</kbd></td>
-      <td class="graybox">headers (*.h files)</td>
-    </tr>
-    <tr>
-      <td class="graybox"><kbd>opensteer/plugins/</kbd></td>
-      <td class="graybox">source for supplied OpenSteerDemo PlugIns
-(*.cpp
-files)</td>
-    </tr>
-    <tr>
-      <td class="graybox"><kbd>opensteer/linux/</kbd></td>
-      <td class="graybox">Makefile (and KDevelop project) for building
-on Linux<br>
-      </td>
-    </tr>
-    <tr>
-      <td class="graybox"><kbd>opensteer/macosx/</kbd></td>
-      <td class="graybox">files for building with Xcode on Mac OS X<br>
-      </td>
-    </tr>
-    <tr>
-      <td class="graybox"><kbd>opensteer/win32/</kbd></td>
-      <td class="graybox">files for building with Visual Studio on
-Windows<br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<p>To
-build your own copy of OpenSteer's library and application you will
-need: (1) a copy of the source code, (2) copies of two external
-libraries (<a href="http://www.opengl.org/">OpenGL</a> and <a href="http://www.opengl.org/resources/libraries/glut.html">GLUT</a>)
-required by OpenSteer, and (3) the
-appropriate programmer's tools for your platform. The table
-below lists three platforms, four build tools, and which <span style="font-style: italic;">project file</span> to use for
-each. Note that <span style="font-style: italic;"> </span><a href="http://www.gnu.org/software/make/">make</a> and <a href="http://www.apple.com/macosx/features/xcode/">Xcode</a> are
-supplied free with their respective operating systems, <a href="http://www.kdevelop.org/">KDevelop</a> is available for free
-download. <a href="http://msdn.microsoft.com/vstudio/">Visual Studio</a>
-and <a href="http://msdn.microsoft.com/visualc/">VC++</a> are
-available for sale.&nbsp; Regarding compiler versions: on Windows
-please use <a href="http://msdn.microsoft.com/visualc/">Visual C++ 7.1</a>
-(or newer), on Linux please use GCC 3.0 (or newer), on Mac OS X if you
-have Xcode you have the right compiler.<br>
-</p>
-<table align="center" border="0" cellpadding="0" cellspacing="3" width="90%">
-  <tbody>
-    <tr>
-      <td class="graybox" width="25%">Linux<br>
-      </td>
-      <td class="graybox"><span style="font-style: italic;"></span><a href="http://www.gnu.org/software/make/">make</a> command:&nbsp;&nbsp;
-<kbd>opensteer/linux/Makefile</kbd><br>
-      <a href="http://www.kdevelop.org/">KDevelop</a>:&nbsp;&nbsp;
-<kbd>opensteer/linux/OpenSteer.kdevelop</kbd> </td>
-    </tr>
-    <tr>
-      <td class="graybox" width="25%">Mac OS X<br>
-      </td>
-      <td class="graybox"><a href="http://www.apple.com/macosx/features/xcode/">Xcode</a>:&nbsp;&nbsp;
-<kbd>opensteer/macosx/OpenSteer.xcode</kbd> </td>
-    </tr>
-    <tr>
-      <td class="graybox" width="25%">Windows<br>
-      </td>
-      <td class="graybox"><a href="http://msdn.microsoft.com/vstudio/">Visual
-Studio</a> (<a href="http://msdn.microsoft.com/visualc/">Visual C++</a>):&nbsp;&nbsp;
-<kbd>opensteer/win32/OpenSteer.sln</kbd> </td>
-    </tr>
-  </tbody>
-</table>
-<p>To build using an IDE (Xcode, Visual Studio or KDevelop) simply
-double click on
-the project file indicated above, then do a Full Build or Build
-Solution. To run the resulting application, use the IDE's Run
-command or double click on the OpenSteerDemo desktop icon. To use
-the Linux Makefile, <kbd>cd</kbd>
-to <kbd>opensteer/linux/</kbd> -- build
-using the <kbd>make</kbd>
-command, run the application with the <kbd>make
-run</kbd> command.</p>
+OpenSteer can be used several ways. The OpenSteer software can be obtained by
+downloading and building from the github repository: <a href="https://github.com/meshula/OpenSteer">(link)</a>.
+<p>Previous versions of OpenSteer are available at the original repository on 
+  sourceforge. 
+<a href="http://sourceforge.net/svn/?group_id=77546">(link)</a>
+<p>To build OpenSteer's library and application you will need version 3.10 or
+  later of cmake. The repository contains all needed dependencies, so building
+should only require running cmake in the usual way with your generator of choice.</p>
+<P>OpenSteer is currently tested on macos, windows, and ubuntu.</P>
 <p><big><big><b><br>
 <a name="KnownBugs"></a>Known Bugs and Missing Features
 </b></big></big></p>
@@ -1099,12 +909,6 @@ in space. Opensteer should provide support for 2d vehicles on
 non-planar surfaces.</p>
   </li>
   <li>
-    <p>OpenSteer should divide cleanly into a runtime library and a
-demo application. It currently does not. <small>[<a href="http://sourceforge.net/tracker/index.php?func=detail&amp;aid=1029515&amp;group_id=77546&amp;atid=550583">bug</a>,
-    <a href="http://sourceforge.net/forum/message.php?msg_id=2805231">forum
-thread</a>.]</small></p>
-  </li>
-  <li>
     <p>When OpenSteerDemo is launched from the desktop (say by
 double-clicking on an icon) printed messages may
 be lost, or at
@@ -1133,10 +937,6 @@ are exceeded.<br>
 OpenSteer in a more traditional, non-mixin, HAS-A architecture. <small>[<a href="https://sourceforge.net/forum/message.php?msg_id=2799598">forum
 thread</a>]</small><br>
     </p>
-  </li>
-  <li>
-    <p>Besides, shouldn't all these bugs be listed in the <a href="http://sourceforge.net/tracker/?group_id=77546">appropriate place</a>
-on SourceForge?</p>
   </li>
 </ul>
 <!-- -----------------------------------------------------------------
