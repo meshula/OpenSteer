@@ -75,7 +75,9 @@ namespace {
      */
     template< typename Iterator >
         bool allRadiiNonNegative( Iterator first, Iterator last ) {
-            return std::find_if( first, last, std::bind2nd( std::less< float >(), 0.0f ) ) == last;
+            for (Iterator i = first; i != last; ++i) if (*i < 0.0f) return false;
+            return true;
+            // return std::find_if( first, last, std::bind2nd( std::less< float >(), 0.0f ) ) == last;
         }
     
     /**
