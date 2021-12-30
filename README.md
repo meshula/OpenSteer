@@ -3,6 +3,29 @@ OpenSteer
 Steering Behaviors for Autonomous Characters 
 -----------
 
+## Dec. 2021
+
+Dependencies and building on RaspberryPi 4:
+
+Dependencies:
+```sh
+sudo apt install libglfw3 libglfw3-dev libglfw3-doc libx11-doc libxcb-doc libxext-doc libegl1-mesa
+sudo apt install libxinerama-dev
+sudo apt install libxcursor-dev
+sudo apt install libxi-dev
+```
+
+CMake configure:
+```sh
+cd OpenSteer
+mkdir -p build
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install ..
+ninja
+
+./OpenSteerDemo
+```
+
+
 ## Feb. 2019
 
 Ported to glfw and Cmake
