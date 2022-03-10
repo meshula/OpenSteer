@@ -1,17 +1,16 @@
-OpenSteer
-=========
-Steering Behaviors for Autonomous Characters 
------------
+![OpenSteer](doc/images/beta_250a.gif)
 
-## Feb. 2019
+# OpenSteer: Steering Behaviors for Autonomous Characters 
 
-Ported to glfw and Cmake
+### Feb. 2019
 
--------------------
+- Ported to glfw and Cmake
 
-OpenSteer is a C++ library to help construct steering behaviors for autonomous characters in games and animation. 
+----------------
+
+OpenSteer is a C++ library for constructing steering behaviors for autonomous characters in games and animation. 
 In addition to the library, OpenSteer provides an OpenGL-based application called OpenSteerDemo which 
-displays predefined demonstrations of steering behaviors. The user can quickly prototype, visualize, 
+demonstrates a variety of steering behaviors. The user can quickly prototype, visualize, 
 annotate and debug new steering behaviors by writing a plug-in for OpenSteerDemo. 
 
 OpenSteer provides a toolkit of steering behaviors, defined in terms of an abstract mobile agent called 
@@ -25,31 +24,19 @@ to interactively adjust aspects of the simulation. The user can: start, stop and
 the vehicle/ character/ agent of interest, adjust the camera's view and its tracking behavior.
 
 OpenSteer is distributed as open source software in accordance with the MIT 
-License http://www.opensource.org/licenses/mit-license.php . OpenSteer was developed with the generous 
-support of Sony Computer Entertainment America http://www.scea.com/. OpenSteer is supported on Linux, 
-Mac OS X and Windows.
+License http://www.opensource.org/licenses/mit-license.php. OpenSteer was originally developed with the
+generous  support of Sony Computer Entertainment America http://www.scea.com/. OpenSteer is supported
+on Linux, Mac OS X and Windows.
 
-Discussion forum http://sourceforge.net/forum/forum.php?forum_id=264792
+The original discussion forum is on sourceforge. Discussion forum http://sourceforge.net/forum/forum.php?forum_id=264792
+If you have issues or modifications please post them here on github in Issues, or as a Pull Request.
 
-Documentation http://opensteer.sourceforge.net/doc.html
-
-Contact: 
-
-If you have questions or comments, the best way to communicate with the OpenSteer community is to post a 
-message at the Open Discussion forum. http://sourceforge.net/forum/forum.php?forum_id=264792  (Free 
-SourceForge registration is required to post there, members can monitor the forum to get email notifications 
-of new posts.)  You can also subscribe to a low traffic mailing list for announcements about OpenSteer.
-
-Alternately you can send email to the author who will pass it along to the forum.  If your message is not 
-appropriate for the public forum please indicate that clearly at the beginning of your email.
-
-
-Credits: 
+### Credits
 
 OpenSteer was initially developed by Craig Reynolds beginning in 2002 at the Research and Development 
-group of Sony Computer Entertainment America. We wish to acknowledge the support of SCEA, SCEI and 
-in particular these executives who had the foresight to release this code as open source for all to 
-use: Shin'ichi Okamoto, Masa Chatani and Dominic Mallinson.
+group of Sony Computer Entertainment America. The OpenSteer authors wish to acknowledge the support 
+of SCEA, SCEI and in particular these executives who had the foresight to release this code as 
+open source for all to use: Shin'ichi Okamoto, Masa Chatani and Dominic Mallinson.
 
 After OpenSteer's source code was first released on May 1, 2003 a group of dedicated volunteers 
 quickly formed and began to extend the system. Ports to Windows and Mac OS X were contributed within 
