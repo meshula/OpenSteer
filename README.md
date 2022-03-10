@@ -11,7 +11,9 @@
 OpenSteer is a C++ library for constructing steering behaviors for autonomous characters in games and animation. 
 In addition to the library, OpenSteer provides an OpenGL-based application called OpenSteerDemo which 
 demonstrates a variety of steering behaviors. The user can quickly prototype, visualize, 
-annotate and debug new steering behaviors by writing a plug-in for OpenSteerDemo. 
+annotate and debug new steering behaviors by writing a plug-in for OpenSteerDemo.
+
+![Demo](doc/images/typical_SteerTest.png)
 
 OpenSteer provides a toolkit of steering behaviors, defined in terms of an abstract mobile agent called 
 a "vehicle." Sample code is provided, including a simple vehicle implementation and examples of combining 
